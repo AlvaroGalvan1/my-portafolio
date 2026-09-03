@@ -10,7 +10,8 @@ export type Job = {
   logoSrc?: string;
 };
 
-export const experience: Job[] = [
+// Every job, including ones still being filled in.
+const allJobs: Job[] = [
   {
     role: "Geospatial Analyst",
     org: "Pano AI",
@@ -47,3 +48,13 @@ export const experience: Job[] = [
     bullets: [],
   },
 ];
+
+// What About actually renders. Same "never show what isn't there" rule the
+// gallery and OrgLogo follow: a job whose fields are still TODO placeholders
+// would otherwise publish the word "TODO" to anyone reading the site, which
+// is worse than the row simply not being there yet. Fill the entry in and it
+// appears on its own — no other change needed.
+const isPlaceholder = (job: Job) =>
+  job.role.startsWith("TODO") || job.dates.startsWith("TODO");
+
+export const experience: Job[] = allJobs.filter((job) => !isPlaceholder(job));
