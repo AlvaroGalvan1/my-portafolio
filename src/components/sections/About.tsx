@@ -62,11 +62,21 @@ export default function About() {
                     "where are you based?", which is the next question after
                     "what did you do?" */}
                 <p className="text-sm text-neutral-500">{job.location}</p>
-                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-neutral-700">
-                  {job.bullets.map((b) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ul>
+                {/* Some roles are one sustained piece of work rather than a
+                    list of three, and read better as a paragraph. Sits above
+                    the bullets on the rare job that has both. */}
+                {job.summary && (
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-700">
+                    {job.summary}
+                  </p>
+                )}
+                {job.bullets.length > 0 && (
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-neutral-700">
+                    {job.bullets.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
           </div>

@@ -3,7 +3,13 @@ export type Job = {
   org: string;
   dates: string;
   location: string;
+  /** Achievement lines. Some roles read better as prose — those set
+   *  `summary` instead and leave this empty. */
   bullets: string[];
+  /** A paragraph in place of (or above) the bullets, for a role whose point
+   *  is one piece of work rather than a list of them. Rendered before the
+   *  bullets when both are present. */
+  summary?: string;
   /** Company mark. These aren't in any open icon set, so they're local
    *  files — drop each at the path below (SVG preferred, PNG fine) and it
    *  appears; until then the row just shows the text, no broken image. */
@@ -25,6 +31,19 @@ const allJobs: Job[] = [
     ],
   },
   {
+    role: "Geospatial Frontend Engineer",
+    org: "Fuego.Earth",
+    logoSrc: "/logos/fuego-earth.svg",
+    dates: "2025 – 2026",
+    location: "San Francisco, CA",
+    bullets: [
+      "Built the public frontend (React, D3) for a wildfire-spread simulation platform, making physics-based fire modeling and multi-source satellite imagery (Copernicus, Sentinel, LANDFIRE) usable by non-specialist audiences",
+      "Redesigned fire-progression visuals from static maps to color-graded, isochronic views and video sequences, applying cartographic best practices to make risk legible at a glance",
+      "Worked with engineers to deploy the platform publicly and support continuous iteration, processing over 1,000 fire-spread simulations daily",
+      "Validated simulated fire perimeters against satellite-observed data, ensuring public-facing outputs held up against ground truth",
+    ],
+  },
+  {
     role: "Data Analyst",
     org: "Gridware · Contract",
     logoSrc: "/logos/gridware.svg",
@@ -37,14 +56,20 @@ const allJobs: Job[] = [
     ],
   },
   {
-    // TODO: fill in real role, dates, location and bullets — I don't have
-    // these, and inventing them on a portfolio isn't something to guess at.
+    // The work is written up below; the role title, dates and location are
+    // still missing and aren't things to guess at on a portfolio. Until
+    // they're filled in, the placeholder filter keeps this entry off the
+    // site entirely (see below) — so it costs nothing to leave here.
     // Drop the logo at public/logos/hyticos.svg.
     role: "TODO: role",
     org: "Hyticos",
     logoSrc: "/logos/hyticos.svg",
     dates: "TODO: dates",
     location: "TODO: location",
+    // Prose rather than bullets: this role was one sustained piece of work,
+    // and splitting it into three achievement lines would pad it.
+    summary:
+      "Built a continuously updating fire-index map for a team without the resources to assess fire potential on their own, using AHP (analytic hierarchy process) to weight the factors feeding the index — shaped throughout by conversations with the people who would end up relying on it.",
     bullets: [],
   },
 ];
