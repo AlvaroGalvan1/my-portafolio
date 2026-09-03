@@ -4,6 +4,8 @@ import {
   siGithub,
   siQgis,
   siArcgis,
+  siGoogleearthengine,
+  siPostgresql,
   siVercel,
   siDocker,
   type SimpleIcon,
@@ -21,9 +23,13 @@ export type Skill = {
   lettermark?: string;
 };
 
-// Adobe and SQL have no simple-icons mark available (Adobe's was removed
-// over trademark restrictions; SQL is a language, not a brand), so they
-// render as lettermark badges instead.
+// Adobe, SQL and Remote Sensing have no simple-icons mark available
+// (Adobe's was removed over trademark restrictions; the other two are a
+// language and a discipline, not brands), so they render as lettermark
+// badges instead.
+//
+// PostGIS borrows the PostgreSQL mark — it's the spatial extension to
+// Postgres rather than a separate product, and the label disambiguates.
 export const skills: Skill[] = [
   { name: "Python", icon: siPython },
   { name: "SQL", lettermark: "SQL" },
@@ -31,6 +37,9 @@ export const skills: Skill[] = [
   { name: "GitHub", icon: siGithub, color: "#181717" },
   { name: "QGIS", icon: siQgis },
   { name: "ArcGIS", icon: siArcgis },
+  { name: "Google Earth Engine", icon: siGoogleearthengine },
+  { name: "PostGIS", icon: siPostgresql },
+  { name: "Remote Sensing", lettermark: "RS" },
   { name: "Adobe", lettermark: "Ad" },
   { name: "Vercel", icon: siVercel, color: "#111111" },
   { name: "Docker", icon: siDocker },

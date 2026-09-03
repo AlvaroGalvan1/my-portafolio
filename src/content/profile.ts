@@ -9,12 +9,4 @@ export const profile = {
     "Currently I'm helping build a next-generation wildfire spread model that's lightweight, deployable, and locally actionable — supporting the people on the front lines of wildfire response.",
     "Outside of work: calisthenics, raves, and interdisciplinary approaches to climate action. If you're building tools for a livable future, let's chat 🌸",
   ],
-  // TODO: refine — currently just pulled from job bullet points
-  skills: [
-    "Python",
-    "GeoPandas / Shapely / NumPy / SciPy",
-    "ArcGIS",
-    "Geospatial ML",
-    "Statistical Analysis",
-  ],
 };
