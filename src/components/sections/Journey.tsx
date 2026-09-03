@@ -6,11 +6,7 @@ import { journeyStats } from "@/content/places";
 // nine campuses across eight countries reads as a wall of place names in a
 // bulleted list and as a route on a map, and the route is the actual point.
 export default function Journey() {
-  const stats = [
-    { value: journeyStats.campuses, label: "campuses" },
-    { value: journeyStats.countries, label: "countries" },
-    { value: journeyStats.institutions, label: "institutions" },
-  ];
+  const { campuses, countries } = journeyStats;
 
   return (
     <section id="journey" className="bg-brand-cream px-6 py-20 sm:px-16">
@@ -18,24 +14,17 @@ export default function Journey() {
         My Journey
       </h2>
 
-      {/* The headline numbers do the work a CV heading would: they say how
-          much there is before anyone clicks a single pin. Counted from the
-          data in places.ts, so they cannot drift out of date. */}
-      <div className="mt-6 flex flex-wrap items-end gap-x-10 gap-y-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="flex items-baseline gap-2">
-            <span className="font-[family-name:var(--font-display)] text-4xl leading-none text-brand-maroon">
-              {stat.value}
-            </span>
-            <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-brand-maroon/60">
-              {stat.label}
-            </span>
-          </div>
-        ))}
-        <p className="font-sans text-sm text-brand-maroon/70">
-          Where the studying happened. Tap a mark to read the entry.
-        </p>
-      </div>
+      {/* The numbers read as a sentence rather than standing as three
+          display-size stats above the map. They were the least interesting
+          thing in the section — the pins are the content — and at that size
+          they competed with the map for the eye. Still counted from
+          places.ts, so they cannot drift out of date. */}
+      <p className="mt-4 max-w-2xl font-sans text-base text-brand-maroon/80">
+        <span className="font-semibold text-brand-maroon">
+          {campuses} campuses, {countries} countries, one degree.
+        </span>{" "}
+        Where the studying happened — tap a mark to read the entry.
+      </p>
 
       {/* Shorter on a phone. The no-repeat zoom floor is derived from the
           container's larger side, so an 85vh-tall, 340px-wide box forced
