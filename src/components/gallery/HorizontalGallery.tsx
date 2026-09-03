@@ -182,7 +182,7 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
         ref={rowRef}
         tabIndex={0}
         role="region"
-        aria-label="Resources — scroll sideways to browse"
+        aria-label="My Wall — scroll sideways to browse"
         className="wall-scroller grid cursor-grab grid-flow-col-dense gap-8 overflow-x-auto px-6 pb-4 will-change-scroll active:cursor-grabbing sm:px-16"
         style={{
           gridTemplateRows: `repeat(2, ${ROW_H_VH}vh)`,

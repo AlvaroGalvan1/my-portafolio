@@ -11,8 +11,8 @@ export default function Nav() {
         <a href="#home" className="hover:text-brand-yellow">
           Home
         </a>
-        <a href="#resources" className="hover:text-brand-yellow">
-          Resources
+        <a href="#wall" className="hover:text-brand-yellow">
+          My Wall
         </a>
         <a href="#about" className="hover:text-brand-yellow">
           About
