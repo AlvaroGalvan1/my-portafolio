@@ -40,28 +40,48 @@ function minZoomForContainer(el: HTMLElement) {
 }
 
 // Built as DOM rather than an HTML string. The content is ours, so this
-// isn't about untrusted input — it's that `textContent` can't produce a
+// isn't about untrusted input. It's that `textContent` cannot produce a
 // broken popup when an address contains an ampersand or a quote.
+//
+// The card is laid out like a CV entry: institution and logo across the
+// top, then city, then the credential and dates, then one line of
+// substance. Same shape for every pin, so nine popups read as one section
+// rather than nine unrelated notes.
 function popupContent(place: Place) {
-  const root = document.createElement("div");
-  root.className = "map-popup";
+  const group = GROUPS[place.group];
 
-  const name = document.createElement("p");
-  name.className = "map-popup__name";
-  name.textContent = place.name;
-  root.append(name);
+  const el = (tag: string, className: string, text?: string) => {
+    const n = document.createElement(tag);
+    n.className = className;
+    if (text) n.textContent = text;
+    return n;
+  };
 
-  const detail = document.createElement("p");
-  detail.className = "map-popup__detail";
-  detail.textContent = place.detail;
-  root.append(detail);
+  const root = el("div", "map-popup");
 
-  if (place.blurb) {
-    const blurb = document.createElement("p");
-    blurb.className = "map-popup__blurb";
-    blurb.textContent = place.blurb;
-    root.append(blurb);
+  const head = el("div", "map-popup__head");
+  if (group.logo) {
+    const img = document.createElement("img");
+    img.src = group.logo;
+    img.alt = "";
+    img.className = "map-popup__logo";
+    head.append(img);
   }
+  head.append(el("p", "map-popup__inst", group.label));
+  root.append(head);
+
+  root.append(el("p", "map-popup__city", place.name));
+  root.append(el("p", "map-popup__detail", `${place.detail}, ${place.country}`));
+
+  if (place.credential || place.dates) {
+    const meta = el("p", "map-popup__meta");
+    if (place.credential) meta.append(el("span", "map-popup__cred", place.credential));
+    if (place.dates) meta.append(el("span", "map-popup__dates", place.dates));
+    root.append(meta);
+  }
+
+  const note = place.note ?? group.about;
+  if (note) root.append(el("p", "map-popup__note", note));
 
   return root;
 }
@@ -73,8 +93,9 @@ export default function BaseMap() {
   // add/remove of a single layer rather than a rebuild of every marker.
   const layersRef = useRef<Partial<Record<PlaceGroup, import("leaflet").LayerGroup>>>({});
   const [hidden, setHidden] = useState<Record<PlaceGroup, boolean>>({
-    education: false,
+    uwc: false,
     minerva: false,
+    uaa: false,
     friends: false,
   });
 
@@ -85,8 +106,9 @@ export default function BaseMap() {
       (Object.keys(GROUPS) as PlaceGroup[])
         .map((id) => ({
           id,
-          label: GROUPS[id].label,
+          label: GROUPS[id].short,
           color: GROUPS[id].color,
+          logo: GROUPS[id].logo,
           count: places.filter((p) => p.group === id).length,
         }))
         .filter((row) => row.count > 0),
@@ -134,27 +156,35 @@ export default function BaseMap() {
         bounds,
       }).addTo(map);
 
-      // A divIcon rather than an image marker: the pin is a CSS dot, so its
-      // colour comes from the group without shipping one PNG per group, and
-      // it inherits the same pulse the hero's location dot uses.
+      // The pin is the institution's own mark on a cream chip, not a
+      // coloured dot. At world zoom the map has to answer "where did he
+      // study" before anything is clicked, and three logos do that where
+      // three dots need a legend first. The ring keeps the grouping legible
+      // when two chips from different institutions sit close together, as
+      // Pune and Hyderabad do.
       for (const group of Object.keys(GROUPS) as PlaceGroup[]) {
         const inGroup = places.filter((p) => p.group === group);
         if (inGroup.length === 0) continue;
 
+        const def = GROUPS[group];
         const layer = L.layerGroup(
-          inGroup.map((place) =>
-            L.marker([place.lat, place.lon], {
-              title: place.name,
-              alt: place.name,
+          inGroup.map((place) => {
+            const label = `${def.label}, ${place.name}`;
+            return L.marker([place.lat, place.lon], {
+              title: label,
+              alt: label,
+              riseOnHover: true,
               icon: L.divIcon({
                 className: "map-pin-wrap",
-                html: `<span class="map-pin" style="--pin:${GROUPS[group].color}"></span>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8],
-                popupAnchor: [0, -8],
+                html: def.logo
+                  ? `<span class="map-pin" style="--pin:${def.color}"><img src="${def.logo}" alt="" /></span>`
+                  : `<span class="map-pin map-pin--plain" style="--pin:${def.color}"></span>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -18],
               }),
-            }).bindPopup(popupContent(place), { maxWidth: 300, minWidth: 200 }),
-          ),
+            }).bindPopup(popupContent(place), { maxWidth: 320, minWidth: 240 });
+          }),
         );
 
         layer.addTo(map);

@@ -88,10 +88,6 @@ Nothing shows a broken box in the meantime (see Guardrails). Run
 
 Roughly in order of how much the site gains per hour spent.
 
-- [ ] **About layout overhaul.** Currently three equal boxed columns, which
-      reads uniform and boxy. Target: Bio full-width up top as plain
-      typography (a lede, no card background); Experience + Skills split
-      below it, Experience wider.
 - [ ] **Friends' pins on "My Journey".** Everything else on the map is
       done (see below) — this group is data-only: add entries to
       `src/content/places.ts` with `group: "friends"` and the legend row
@@ -150,10 +146,15 @@ Roughly in order of how much the site gains per hour spent.
 - Books share one tile format (`book()` in `data.ts`) — How to Do Nothing,
   This Changes Everything, The Dispossessed
 - Graduation post ("Un logro colectivo") on the Wall as the first `post` tile
-- **"My Journey" pins** — 9 campuses geocoded and pinned (`places.ts`),
-  grouped Education / Minerva with a legend that toggles each layer, brand
-  popups, and a "what is UWC" explanation on both UWC pins. The map opens
-  fitted to the pins instead of on the prime meridian.
+- **About layout overhaul** done: Bio runs full-width and unboxed with its
+  first paragraph set as a lede, remaining paragraphs in two columns, and
+  Experience + Skills split 2:1 below a rule.
+- **"My Journey" is the CV education section as a map.** 9 campuses across
+  8 countries, grouped by institution (Minerva / UWC / UAA) with each
+  institution's own logo as the pin and in the legend. Popups are CV
+  entries: institution, city, address, credential, dates, one line of
+  substance. Headline counts above the map are derived from the data, so
+  they cannot go stale.
 - Contact form: personal email, required reply-to field, Formspree-ready
 - Company logos scraped and committed: **Pano AI**, **Gridware**, **LANDFIRE**
 - Skills: added Google Earth Engine, PostGIS, Remote Sensing

@@ -109,30 +109,70 @@ body {
 }
 
 /* ── "My Journey" map pins ─────────────────────────────────────────────
-   A pin is a CSS dot whose colour comes from its group, passed in as
-   --pin by BaseMap. Doing it this way means one marker implementation
-   for every group instead of a PNG per colour. The cream ring is what
-   keeps a dot legible over satellite imagery, which can be any colour
-   underneath it. */
+   The ring colour comes from the pin's group, passed in as --pin by
+   BaseMap, so one marker implementation covers every institution. */
+/* Leaflet sizes this box from iconSize and anchors the marker by it. The
+   chip inside is centred rather than filling it, so the chip can shrink at
+   small widths without the pin drifting off its coordinate. */
 .map-pin-wrap {
   background: none;
   border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* A cream chip carrying the institution's own mark, ringed in that
+   institution's colour. Cream rather than white because it's the page's
+   own paper stock, and a ring because two chips from different schools sit
+   close enough to touch over India. */
 .map-pin {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: var(--color-brand-cream);
+  border: 2.5px solid var(--pin, var(--color-brand-red));
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.55);
+  transition: transform 140ms ease-out;
+}
+
+.map-pin img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Fallback for a group with no mark yet, so it still reads as a pin. */
+.map-pin--plain {
   width: 14px;
   height: 14px;
-  border-radius: 9999px;
   background: var(--pin, var(--color-brand-red));
-  border: 2px solid var(--color-brand-cream);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.6);
-  transition: transform 120ms ease-out;
+  border-color: var(--color-brand-cream);
 }
 
 .leaflet-marker-icon:hover .map-pin,
 .leaflet-marker-icon:focus-visible .map-pin {
-  transform: scale(1.35);
+  transform: scale(1.18);
+}
+
+/* On a phone the map is about a third the width and the same nine pins have
+   to share it, so Maastricht/Berlin and Pune/Hyderabad start covering each
+   other. A smaller chip keeps both of each pair readable. */
+@media (max-width: 639px) {
+  .map-pin {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+  }
+
+  .map-pin img {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 /* Leaflet's default popup is a white rounded bubble with a system font —
@@ -165,19 +205,81 @@ body {
   padding: 6px 6px 0 0;
 }
 
-.map-popup__name {
-  font-weight: 600;
+/* The popup is a CV entry: institution across the top, then the city large,
+   then address, then credential and dates, then one line of substance.
+
+   Every rule below is prefixed with `.leaflet-popup-content` for the same
+   reason the wrapper rules are nested: leaflet.css loads after this file
+   and sets `.leaflet-popup-content p { margin: 18px 0 }`, which is one
+   type selector more specific than a bare class and was quietly winning
+   against all of the spacing here. */
+.leaflet-popup-content .map-popup p {
+  margin: 0;
+}
+
+.leaflet-popup-content .map-popup__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgb(122 23 16 / 0.25);
+}
+
+.leaflet-popup-content .map-popup__logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex: none;
+}
+
+.leaflet-popup-content .map-popup__inst {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-red);
+  line-height: 1.2;
+}
+
+.leaflet-popup-content .map-popup__city {
+  margin-top: 0.55rem;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.1;
   color: var(--color-brand-maroon);
-  line-height: 1.25;
 }
 
-.map-popup__detail {
-  margin-top: 0.2rem;
+.leaflet-popup-content .map-popup__detail {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #78716c;
+}
+
+/* Credential and dates on one line, dates pushed right, so the eye can run
+   down a column of popups and compare them the way it would a CV. */
+.leaflet-popup-content .map-popup__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.leaflet-popup-content .map-popup__cred {
   font-size: 0.8125rem;
-  color: #57534e;
+  font-weight: 600;
+  color: #292524;
 }
 
-.map-popup__blurb {
+.leaflet-popup-content .map-popup__dates {
+  font-size: 0.75rem;
+  color: #78716c;
+  white-space: nowrap;
+}
+
+.leaflet-popup-content .map-popup__note {
   margin-top: 0.6rem;
   padding-top: 0.6rem;
   border-top: 1px solid rgb(122 23 16 / 0.2);
