@@ -18,17 +18,18 @@ export default function Hero() {
       className="relative flex min-h-[90vh] flex-col justify-end overflow-hidden bg-brand-orange px-6 py-20 sm:px-16"
     >
       <div style={{ zIndex: Z.CARD_CONTENT }}>
-        {/* Sized off the viewport rather than a fixed scale, so the name runs
-            near the full width of the column at any size — poster
-            behaviour. 7.6vw is the fit: this display face measures ~10.3em
-            across "Galván Sandoval", so anything past ~8vw runs under the
-            section's overflow clip.
-            Below `sm` that same fit would shrink the name to ~32px, so the
+        {/* Sized off the viewport rather than a fixed scale, so the name
+            tracks the column at any width — poster behaviour, held back
+            from filling it. 5.2vw leaves the two lines ending well short of
+            the right edge, which reads as a deliberate measure rather than
+            type strained to fit; the 7.5rem cap stops it growing past that
+            on a wide monitor.
+            Below `sm` the same fit would shrink the name to ~22px, so the
             rule flips: the lines wrap to one word each and the type stays
             large. Two lines desktop, four stacked on a phone — both
             deliberate, which is why the nowrap is scoped to `sm`. */}
         <h1
-          className="text-signpainted font-[family-name:var(--font-display)] text-[clamp(2.5rem,13.5vw,3.5rem)] leading-[0.95] text-white sm:text-[clamp(1rem,7.6vw,12rem)]"
+          className="text-signpainted font-[family-name:var(--font-display)] text-[clamp(2rem,10.5vw,2.75rem)] leading-[0.95] text-white sm:text-[clamp(1rem,5.2vw,7.5rem)]"
           style={{
             ["--shadow-color" as string]: "var(--color-brand-maroon)",
             WebkitTextStroke: "1.5px var(--color-brand-maroon)",
@@ -57,10 +58,10 @@ export default function Hero() {
             different lengths and wrap at 375px, which left them ragged. */}
         <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
           <a
-            href="#resources"
+            href="#wall"
             className="border-2 border-brand-maroon bg-brand-maroon px-6 py-3 text-center font-sans font-semibold text-brand-cream hover:bg-transparent hover:text-brand-maroon sm:w-auto"
           >
-            View Resources
+            View My Wall
           </a>
           <ContactTrigger className="border-2 border-white bg-white px-6 py-3 text-center font-sans font-semibold text-brand-maroon hover:bg-transparent hover:text-white sm:w-auto">
             Contact Me

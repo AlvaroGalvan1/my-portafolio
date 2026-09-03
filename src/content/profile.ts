@@ -2,7 +2,7 @@ export const profile = {
   nameLines: ["Álvaro Emilio", "Galván Sandoval"],
   // The only line under the name. Add an `href` here and Hero will need a
   // link element again — left off deliberately, see the note there.
-  location: { label: "San Francisco, Mission" },
+  location: { label: "Mission District, San Francisco" },
   photoSrc: "/profile.png", // background-removed PNG — drop the file here
   bio: [
     "Hola! Soy Álvaro de Oaxaca 🌍 I'm passionate about using technology to help society adapt to a changing planet. My work lives at the intersection of GeoAI, satellite data, and people — especially wildfire modeling and the energy transition.",
