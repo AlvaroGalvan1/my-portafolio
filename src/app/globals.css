@@ -3,13 +3,26 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand palette: red / orange / yellow */
+  --color-brand-red: #d92b1c;
+  --color-brand-maroon: #7a1710;
+  --color-brand-orange: #f5821f;
+  --color-brand-yellow: #ffc93c;
+  --color-brand-cream: #fff4de;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-red: var(--color-brand-red);
+  --color-brand-maroon: var(--color-brand-maroon);
+  --color-brand-orange: var(--color-brand-orange);
+  --color-brand-yellow: var(--color-brand-yellow);
+  --color-brand-cream: var(--color-brand-cream);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +32,78 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Geist, loaded in layout.tsx. This was Arial from the Next.js scaffold,
+     which silently overrode the brand font everywhere a component didn't
+     say `font-sans` itself — gallery tiles, captions, the lightbox. */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Hand-painted sign lettering: hard offset drop shadow, no blur */
+.text-signpainted {
+  text-shadow:
+    2px 2px 0 var(--shadow-color, var(--color-brand-red)),
+    4px 4px 0 var(--shadow-color, var(--color-brand-red));
+}
+
+@media (min-width: 640px) {
+  .text-signpainted {
+    text-shadow:
+      3px 3px 0 var(--shadow-color, var(--color-brand-red)),
+      6px 6px 0 var(--shadow-color, var(--color-brand-red));
+  }
+}
+
+/* The Wall's horizontal scrollbar. Styled rather than hidden — it's the one
+   native "this scrolls sideways" signal visitors already know how to read,
+   so removing it would cost more than the visual tidiness gains. */
+.wall-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-brand-yellow) rgba(0, 0, 0, 0.25);
+}
+
+.wall-scroller::-webkit-scrollbar {
+  height: 10px;
+}
+
+.wall-scroller::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.wall-scroller::-webkit-scrollbar-thumb {
+  background: var(--color-brand-yellow);
+}
+
+.wall-scroller:focus-visible {
+  outline: 2px solid var(--color-brand-yellow);
+  outline-offset: -2px;
+}
+
+/* The dot on the hero's location line. Just a mark next to the place — the
+   pulse is what keeps it from reading as a stray bullet point. */
+.location-dot {
+  display: block;
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--color-brand-red);
+  border: 2px solid var(--color-brand-cream);
+  box-shadow: 0 0 0 0 rgb(217 43 28 / 0.6);
+  animation: location-dot-pulse 2.8s ease-out infinite;
+}
+
+@keyframes location-dot-pulse {
+  70% { box-shadow: 0 0 0 10px rgb(217 43 28 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(217 43 28 / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-dot { animation: none; }
 }

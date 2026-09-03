@@ -3,18 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/check-assets.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/check-assets.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:assets": "node scripts/check-assets.mjs"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
+    "leaflet-gesture-handling": "^1.2.2",
     "next": "16.3.3",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "simple-icons": "^16.29.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
