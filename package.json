@@ -12,6 +12,7 @@
     "check:assets": "node scripts/check-assets.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "leaflet": "^1.9.4",
     "leaflet-gesture-handling": "^1.2.2",
     "next": "16.3.3",
