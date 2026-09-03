@@ -84,8 +84,10 @@ function book({
 const allItems: FrameData[] = [
   {
     id: "prairie-dog",
-    // TODO: real title (see TODO.md W2). The credit is settled.
-    title: "Prairie Dog",
+    // Álvaro's own framing of the clip, from the post he shared it in —
+    // "a one-man drama" is the line that makes it funny. "Prairie Dog" was
+    // a filename, not a title.
+    title: "A one-man drama",
     type: "video",
     // Not my footage. A video opens straight to the clip with no sidecard,
     // so the tile's credit badge is the only place attribution can live —
@@ -142,7 +144,10 @@ const allItems: FrameData[] = [
   })),
   {
     id: "leopard-gecko",
-    title: "Leopard Gecko", // TODO: real title
+    // TODO: real title, once it's known whose clip this is — the title and
+    // the credit should be written in the same pass rather than guessing at
+    // one now and correcting it later.
+    title: "Leopard Gecko",
     type: "video",
     // Whose footage this is hasn't been established yet, and the prairie dog
     // next to it turned out not to be mine — so assuming is not safe. The
