@@ -5,12 +5,20 @@ import { CONTACT_OPEN_EVENT } from "./ContactTrigger";
 import { Z } from "@/lib/layers";
 import { socials, CALENDLY_URL } from "@/content/socials";
 
-// Sign up free at formspree.io, create a form, and paste its endpoint here
-// (looks like "https://formspree.io/f/xxxxabcd"). Until this is set, the
-// form falls back to opening the visitor's email client instead — it still
-// works today, it just needs them to hit send themselves rather than
-// landing straight in your inbox.
-const FORMSPREE_ENDPOINT = "";
+// Where submissions go. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT (see .env.example
+// for how to get one) and messages land in your inbox without the visitor
+// leaving the page. It's an env var rather than a constant so the endpoint
+// can be set per-environment — and rotated if it ever gets abused — without
+// a code change.
+//
+// Unset, the form still works: it hands the message to the visitor's own
+// email client, prefilled, and they hit send there. That's the fallback,
+// not the plan — it loses anyone without a configured mail client.
+//
+// NEXT_PUBLIC_ is required: this runs in the browser. That's fine here —
+// a Formspree form ID is a public endpoint by design, the same way a
+// mailto: address is.
+const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? "";
 
 // Public contact email — used for the "prefer to chat directly" link and
 // as the mailto fallback below. A personal address on purpose: the Minerva
@@ -23,7 +31,7 @@ type Status = "idle" | "sending" | "sent" | "opened-email-client" | "error";
 export default function ContactModal() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
-  const [fields, setFields] = useState({ name: "", subject: "", message: "" });
+  const [fields, setFields] = useState({ name: "", email: "", subject: "", message: "" });
 
   useEffect(() => {
     const handleOpen = () => setOpen(true);
@@ -45,7 +53,9 @@ export default function ContactModal() {
   const mailtoHref = `mailto:${CONTACT_EMAIL}${
     fields.subject || fields.message
       ? `?subject=${encodeURIComponent(fields.subject || "Portfolio contact")}&body=${encodeURIComponent(
-          `${fields.message}${fields.name ? `\n\n— ${fields.name}` : ""}`,
+          `${fields.message}${fields.name ? `\n\n— ${fields.name}` : ""}${
+            fields.email ? ` <${fields.email}>` : ""
+          }`,
         )}`
       : ""
   }`;
@@ -66,7 +76,15 @@ export default function ContactModal() {
       const res = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify(fields),
+        // `email` is the one field name Formspree treats specially: it sets
+        // the notification's reply-to, so hitting reply in your inbox
+        // answers the sender rather than Formspree.
+        body: JSON.stringify({
+          name: fields.name,
+          email: fields.email,
+          subject: fields.subject || "Portfolio contact",
+          message: fields.message,
+        }),
       });
       if (!res.ok) throw new Error("Form submission failed");
       setStatus("sent");
@@ -159,8 +177,22 @@ export default function ContactModal() {
             type="text"
             name="name"
             placeholder="Name"
+            required
             value={fields.name}
             onChange={(e) => setFields((f) => ({ ...f, name: e.target.value }))}
+            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+          />
+          {/* Required, and required for a reason: without a return address
+              a submission arrives as a message you can read and can't
+              answer. Formspree also reads this field by name to set the
+              notification's reply-to. */}
+          <input
+            type="email"
+            name="email"
+            placeholder="Your email"
+            required
+            value={fields.email}
+            onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
           />
           <input
@@ -175,6 +207,7 @@ export default function ContactModal() {
             name="message"
             placeholder="Message"
             rows={6}
+            required
             value={fields.message}
             onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
