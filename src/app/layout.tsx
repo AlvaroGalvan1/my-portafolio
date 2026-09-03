@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/content/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,9 +20,37 @@ const bungee = Bungee({
   subsets: ["latin"],
 });
 
+// A portfolio is a link people paste to each other, so the unfurled card
+// is often the first thing anyone sees of it — before the site itself.
+// This shipped as title "Alvaro Galvan" / description "Portfolio" with no
+// image, which unfurls as a blank box reading "Portfolio".
+//
+// `metadataBase` is what makes the relative URLs below resolve to absolute
+// ones in the rendered tags; without it Next warns and social crawlers get
+// paths they can't fetch. The origin lives in content/site.ts so the custom
+// domain is a one-line change.
 export const metadata: Metadata = {
-  title: "Alvaro Galvan",
-  description: "Portfolio",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    // Any future route can set a bare title and still be attributed.
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
