@@ -14,6 +14,9 @@ export default function Nav() {
         <a href="#wall" className="hover:text-brand-yellow">
           My Wall
         </a>
+        <a href="#journey" className="hover:text-brand-yellow">
+          My Journey
+        </a>
         <a href="#about" className="hover:text-brand-yellow">
           About
         </a>
