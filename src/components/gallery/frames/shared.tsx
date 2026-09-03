@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { creditLine, type Credit } from "../credit";
+import { Z } from "@/lib/layers";
 
 // Renders nothing on a 404/load error instead of a broken-image icon or a
 // placeholder box — callers that need the whole tile to disappear when this
@@ -75,6 +76,11 @@ export function TileLabel({
 // Rendered by FrameCell for every frame kind, so an individual frame can't
 // omit it. That also keeps this <a> from landing inside frames that wrap
 // themselves in a <button>.
+//
+// CARD_OVERLAY_CONTROL, not CARD_CONTENT: this is pinned over a tile's
+// media, and on the LANDFIRE tile that media is a Leaflet map whose own
+// panes reach ~700. At any lower layer the map draws straight over the
+// credit and it vanishes — which is the whole failure this is meant to fix.
 export function TileCredit({ credit }: { credit?: Credit }) {
   if (!credit) return null;
   const line = creditLine(credit);
@@ -83,9 +89,10 @@ export function TileCredit({ credit }: { credit?: Credit }) {
   if (!line) return null;
 
   const base =
-    "pointer-events-none absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] truncate rounded bg-black/55 px-1.5 py-0.5 text-[11px] font-medium leading-tight text-white/85 backdrop-blur-[2px]";
+    "pointer-events-none absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/55 px-1.5 py-0.5 text-[11px] font-medium leading-tight text-white/85 backdrop-blur-[2px]";
+  const layer = { zIndex: Z.CARD_OVERLAY_CONTROL };
 
-  if (!credit.href) return <span className={base}>{line}</span>;
+  if (!credit.href) return <span style={layer} className={base}>{line}</span>;
 
   return (
     <a
@@ -93,6 +100,7 @@ export function TileCredit({ credit }: { credit?: Credit }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
+      style={layer}
       className={`${base} pointer-events-auto underline decoration-white/30 underline-offset-2 transition-colors hover:bg-black/75 hover:text-white hover:decoration-white`}
     >
       {line}
