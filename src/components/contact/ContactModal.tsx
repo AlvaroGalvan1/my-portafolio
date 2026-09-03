@@ -12,11 +12,11 @@ import { socials, CALENDLY_URL } from "@/content/socials";
 // landing straight in your inbox.
 const FORMSPREE_ENDPOINT = "";
 
-// Public contact email — used for the "email me directly" link and as the
-// mailto fallback below. Defaults to your Minerva address; swap it for
-// whichever inbox you actually want portfolio visitors writing to (a .edu
-// address won't outlive your enrollment there).
-const CONTACT_EMAIL = "alvagalv@uni.minerva.edu";
+// Public contact email — used for the "prefer to chat directly" link and
+// as the mailto fallback below. A personal address on purpose: the Minerva
+// .edu one won't outlive enrollment there, and this page should keep
+// working after it stops resolving.
+const CONTACT_EMAIL = "alvaroemiliogalvansandoval@gmail.com";
 
 type Status = "idle" | "sending" | "sent" | "opened-email-client" | "error";
 
@@ -139,10 +139,17 @@ export default function ContactModal() {
           </div>
         </div>
 
+        {/* The address is spelled out rather than hidden behind "email me":
+            plenty of people would rather copy it into their own client than
+            hand the page a click. Wraps at the `break-all` because the
+            local part alone is 28 characters and overflowed on a phone. */}
         <p className="mt-4 text-sm text-brand-maroon">
-          Prefer your own email client?{" "}
-          <a href={mailtoHref} className="font-semibold underline underline-offset-2">
-            Email me directly at {CONTACT_EMAIL}
+          Prefer to chat directly?{" "}
+          <a
+            href={mailtoHref}
+            className="font-semibold underline underline-offset-2 break-all"
+          >
+            Email me at {CONTACT_EMAIL}
           </a>
           .
         </p>
