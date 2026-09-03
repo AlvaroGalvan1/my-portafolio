@@ -107,3 +107,81 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .location-dot { animation: none; }
 }
+
+/* ── "My Journey" map pins ─────────────────────────────────────────────
+   A pin is a CSS dot whose colour comes from its group, passed in as
+   --pin by BaseMap. Doing it this way means one marker implementation
+   for every group instead of a PNG per colour. The cream ring is what
+   keeps a dot legible over satellite imagery, which can be any colour
+   underneath it. */
+.map-pin-wrap {
+  background: none;
+  border: 0;
+}
+
+.map-pin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--pin, var(--color-brand-red));
+  border: 2px solid var(--color-brand-cream);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.6);
+  transition: transform 120ms ease-out;
+}
+
+.leaflet-marker-icon:hover .map-pin,
+.leaflet-marker-icon:focus-visible .map-pin {
+  transform: scale(1.35);
+}
+
+/* Leaflet's default popup is a white rounded bubble with a system font —
+   it reads as a browser control dropped onto the page rather than part of
+   this site. Squared off, cream, brand border, brand font.
+
+   Every rule here is written one class deeper than Leaflet's own
+   (`.leaflet-popup X` rather than bare `X`). leaflet.css is imported from
+   BaseMap.tsx, so it lands after globals.css in the bundle and wins any
+   tie on source order — matching its specificity would silently lose. */
+.leaflet-popup .leaflet-popup-content-wrapper {
+  border-radius: 0;
+  background: var(--color-brand-cream);
+  border: 2px solid var(--color-brand-maroon);
+  box-shadow: 6px 6px 0 rgb(0 0 0 / 0.35);
+}
+
+.leaflet-popup .leaflet-popup-content {
+  margin: 0.85rem 1rem;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.leaflet-popup .leaflet-popup-tip {
+  background: var(--color-brand-cream);
+  border: 2px solid var(--color-brand-maroon);
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--color-brand-maroon);
+  padding: 6px 6px 0 0;
+}
+
+.map-popup__name {
+  font-weight: 600;
+  color: var(--color-brand-maroon);
+  line-height: 1.25;
+}
+
+.map-popup__detail {
+  margin-top: 0.2rem;
+  font-size: 0.8125rem;
+  color: #57534e;
+}
+
+.map-popup__blurb {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgb(122 23 16 / 0.2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #44403c;
+}

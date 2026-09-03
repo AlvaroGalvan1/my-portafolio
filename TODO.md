@@ -21,6 +21,15 @@ Nothing shows a broken box in the meantime (see Guardrails). Run
 | LinkedIn video 2 | `public/gallery/video-2.mp4` | ⬜ not wired yet — see note |
 | Gallery slots (20) | `public/gallery/slots/` — each slot tile shows its own path | ⬜ waiting |
 | Fuego.Earth logo | `public/logos/fuego-earth.svg` | ⬜ waiting — not scrapeable, see below |
+| Sunglasses/kitchen portrait, **full resolution** | `public/gallery/portraits/` | ⬜ waiting — see note |
+
+> **Note on the portrait:** the file you have
+> (`~/Downloads/IMG 2476 from Google Photos.jpg`) is a **293 × 220 px, 28 KB
+> thumbnail**, not the original — Google Photos hands out a preview unless
+> you explicitly download the full file. Too small for anything here: even
+> the smallest Wall tile is `26vw` (≈375 px on a laptop, ≈665 px on a large
+> monitor, double that on retina). Re-download the original from Google
+> Photos (⋯ → Download) or pull it off your phone, then it's usable.
 
 > **Note on the LinkedIn videos:** unlike the rows above, these are *not*
 > referenced in `data.ts` yet, so dropping the files alone does nothing.
@@ -41,6 +50,23 @@ Nothing shows a broken box in the meantime (see Guardrails). Run
       job; specifics never decided.
 - [ ] **"ALSO…"** — you got cut off mid-sentence a while back listing more
       things for the Wall. What was the rest?
+- [ ] **Where the sunglasses portrait goes.** You liked a reference style:
+      full-bleed photo, big display type over it in two colours (brand +
+      white), text sitting in the photo's empty space. Three candidate homes,
+      pending the full-res file above:
+  - **Wall tile (recommended)** — as a `post` tile with a caption, the same
+    treatment as "Un logro colectivo". The busy kitchen background and the
+    shades are the *point* here, not a problem to design around.
+  - **About section lede** — the About overhaul already puts Bio full-width;
+    a portrait could anchor that column. Needs the least resolution.
+  - **Hero background** — closest to the reference, and `Hero.tsx` already
+    does the exact type treatment (white display type, maroon stroke,
+    bottom-left) over a flat orange field, so it's a backdrop swap. But
+    this photo fights it: the background is busy right where the name sits
+    (needs a ~50–60% maroon/orange scrim to keep the type readable), and
+    the mirrored shades hide the eye contact that makes the reference land.
+    A photo shot for the job — clean background, subject offset, empty
+    space for the name — would serve the Hero better.
 
 ### Accounts / config only you can create
 - [ ] **Formspree endpoint** so the contact form reaches your inbox. The
@@ -50,6 +76,11 @@ Nothing shows a broken box in the meantime (see Guardrails). Run
       `.env.local` locally and in Vercel for production, and redeploy.
       Full steps are in `.env.example`. Until then the form falls back to
       opening the visitor's own mail client, prefilled.
+- [ ] **Enable Web Analytics** in the Vercel dashboard (Project → Analytics
+      → Enable). The code side is in READY TO BUILD below, but it collects
+      nothing until this toggle is on. Free on the Hobby plan, though the
+      included event allowance is capped — check the current limit on the
+      pricing page if you start firing a lot of custom events.
 
 ---
 
@@ -61,24 +92,43 @@ Roughly in order of how much the site gains per hour spent.
       reads uniform and boxy. Target: Bio full-width up top as plain
       typography (a lede, no card background); Experience + Skills split
       below it, Experience wider.
-- [ ] **"My Journey" pins.** The map is live and empty. All the addresses
-      are known except one:
-  - UAA — Aguascalientes, Mexico (Planet Central)
-  - UWC Mahindra — India *(exact campus coordinates still needed —
-    geocodable from the name, worth you confirming)*
-  - UWC Maastricht — Netherlands
-  - Minerva University — SF (16 Turk St) · Seoul (Shinheungno 26-gil,
-    Yongsan-gu, 04337) · Berlin (Boxhagener Straße 73, Friedrichshain,
-    10245) · Buenos Aires/Retiro (Esmeralda 920, 9th floor) · Taipei
-    (No. 81 Jingfeng St, Wenshan District, 11687) · Hyderabad (Survey
-    No. 09, Kondapur, Whitefields, Telangana 500084)
-  - [ ] Pins for where friends are
-  - [ ] "What is UWC" marker with an info popup
-  - [ ] Legend / layer toggle once there are several pin groups
+- [ ] **Friends' pins on "My Journey".** Everything else on the map is
+      done (see below) — this group is data-only: add entries to
+      `src/content/places.ts` with `group: "friends"` and the legend row
+      appears on its own. **Needs names + cities from you.**
 - [ ] **LANDFIRE tile context.** `LandfireFrame.tsx` shows a live map and a
       link, with no explanation of what LANDFIRE is for someone who's never
       heard of it. Logo is now in the repo (`public/logos/landfire.png`) —
       just needs the copy and the layout.
+- [ ] **Visitor analytics.** Who visits, what they click, where from.
+      Recommended: **Vercel Web Analytics** — you're already hosting there,
+      so it's the least-effort option that actually works:
+      1. `npm i @vercel/analytics`
+      2. Render `<Analytics />` in `src/app/layout.tsx` (inside `<body>`)
+      3. Turn Web Analytics on for the project in the Vercel dashboard
+      No cookies, no consent banner, no PII — so nothing to add to a privacy
+      policy. *Check `node_modules/next/dist/docs/` for the current App
+      Router integration before writing the code — this is Next 16.3.3 and
+      the setup may differ from older guides (see `AGENTS.md`).*
+
+      Out of the box that gives page views, unique visitors, top pages,
+      referrers, country, and device/browser. The interesting part is
+      **custom events** (`track("name", { ...props })`) — worth wiring on:
+  - Wall tile opened in the lightbox, with the tile `id` as a prop —
+    *the most useful signal on the whole site*: it tells you which pieces
+    people actually care about, which should drive what goes on the Wall
+    next and what gets cut
+  - "Download CV" click (`About.tsx`)
+  - Contact modal opened, and separately, form actually submitted — the gap
+    between those two numbers is the real conversion story
+  - Outbound clicks: the three footer socials, LANDFIRE's official viewer,
+    book links, the LinkedIn post links
+  - How far people scroll the Wall before giving up (fire an event at a
+    couple of depth milestones rather than continuously)
+
+      Keep the event names in one small module rather than inline string
+      literals scattered across components — typos in event names fail
+      silently and you won't notice for weeks.
 - [ ] **Post-style layout on more tiles.** `type: "post"` (see
       `PostFrame.tsx`) opens a lightbox with photo + body text + link out.
       You want this treatment applied more widely so tiles carry story
@@ -100,6 +150,10 @@ Roughly in order of how much the site gains per hour spent.
 - Books share one tile format (`book()` in `data.ts`) — How to Do Nothing,
   This Changes Everything, The Dispossessed
 - Graduation post ("Un logro colectivo") on the Wall as the first `post` tile
+- **"My Journey" pins** — 9 campuses geocoded and pinned (`places.ts`),
+  grouped Education / Minerva with a legend that toggles each layer, brand
+  popups, and a "what is UWC" explanation on both UWC pins. The map opens
+  fitted to the pins instead of on the prime meridian.
 - Contact form: personal email, required reply-to field, Formspree-ready
 - Company logos scraped and committed: **Pano AI**, **Gridware**, **LANDFIRE**
 - Skills: added Google Earth Engine, PostGIS, Remote Sensing
