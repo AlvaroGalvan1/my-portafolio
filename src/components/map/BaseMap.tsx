@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-import { BASE_LAYERS, DEFAULT_BASE_LAYER, type BaseLayerId } from "./baseLayers";
-import MapControls from "./MapControls";
+import { SATELLITE_LAYER } from "./baseLayers";
 
 declare module "leaflet" {
   interface MapOptions {
@@ -36,8 +35,6 @@ function minZoomForContainer(el: HTMLElement) {
 export default function BaseMap() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
-  const tileLayerRef = useRef<import("leaflet").TileLayer | null>(null);
-  const [activeLayer, setActiveLayer] = useState<BaseLayerId>(DEFAULT_BASE_LAYER);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -75,10 +72,9 @@ export default function BaseMap() {
         // allows.
       }).setView([20, 0], minZoom);
 
-      const initial = BASE_LAYERS.find((l) => l.id === DEFAULT_BASE_LAYER)!;
-      tileLayerRef.current = L.tileLayer(initial.url, {
-        attribution: initial.attribution,
-        maxZoom: initial.maxZoom,
+      L.tileLayer(SATELLITE_LAYER.url, {
+        attribution: SATELLITE_LAYER.attribution,
+        maxZoom: SATELLITE_LAYER.maxZoom,
         noWrap: true,
         bounds,
       }).addTo(map);
@@ -100,34 +96,8 @@ export default function BaseMap() {
       observer?.disconnect();
       mapRef.current?.remove();
       mapRef.current = null;
-      tileLayerRef.current = null;
     };
   }, []);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    const def = BASE_LAYERS.find((l) => l.id === activeLayer);
-    if (!def) return;
-
-    import("leaflet").then((L) => {
-      if (tileLayerRef.current) {
-        map.removeLayer(tileLayerRef.current);
-      }
-      tileLayerRef.current = L.tileLayer(def.url, {
-        attribution: def.attribution,
-        maxZoom: def.maxZoom,
-        noWrap: true,
-        bounds: worldBounds(L),
-      }).addTo(map);
-    });
-  }, [activeLayer]);
-
-  return (
-    <div className="flex h-full w-full flex-col">
-      <MapControls activeLayer={activeLayer} onSelectLayer={setActiveLayer} />
-      <div ref={containerRef} className="w-full flex-1" />
-    </div>
-  );
+  return <div ref={containerRef} className="h-full w-full" />;
 }

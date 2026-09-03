@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import type { FrameBase, FrameCellProps } from "./base";
 import { TileLabel } from "./shared";
-import { BASE_LAYERS } from "@/components/map/baseLayers";
+import { SATELLITE_LAYER } from "@/components/map/baseLayers";
 import { Z } from "@/lib/layers";
 
 export type LandfireFrameData = FrameBase & {
@@ -22,7 +22,6 @@ export type LandfireFrameData = FrameBase & {
 // response outright).
 const WMS_URL = "/api/landfire-tile";
 const WMS_LAYER = "LF2024_EVC_CONUS"; // Existing Vegetation Cover, CONUS, 2024
-const SATELLITE_BASEMAP = BASE_LAYERS.find((l) => l.id === "satellite")!;
 const CONUS_BOUNDS: [[number, number], [number, number]] = [
   [22.7, -128.4],
   [52.5, -64.9],
@@ -56,9 +55,9 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
       map.fitBounds(CONUS_BOUNDS);
       map.setMinZoom(map.getZoom());
 
-      L.tileLayer(SATELLITE_BASEMAP.url, {
-        attribution: SATELLITE_BASEMAP.attribution,
-        maxZoom: SATELLITE_BASEMAP.maxZoom,
+      L.tileLayer(SATELLITE_LAYER.url, {
+        attribution: SATELLITE_LAYER.attribution,
+        maxZoom: SATELLITE_LAYER.maxZoom,
       }).addTo(map);
 
       const wms = L.tileLayer
