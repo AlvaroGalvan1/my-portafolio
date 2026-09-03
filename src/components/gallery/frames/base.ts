@@ -1,4 +1,5 @@
 import type { LightboxContent } from "../Lightbox";
+import type { Credit } from "../credit";
 
 // Every frame kind extends this. Shared layout/attribution fields live
 // here; whatever makes a frame *that kind* (its media, its behavior) lives
@@ -16,12 +17,12 @@ export type FrameBase = {
   // implies, instead of filling the column. Leave unset for anything meant
   // to fill its cell (photos, video, maps).
   aspectRatio?: number;
-  // Attribution shown in the lightbox.
-  credit?: string;
-  // Small "@handle" byline shown in the tile's corner, linking to the
-  // source's own landing page (e.g. @landfire -> landfire.gov). Preferred
-  // over `credit` for anything with a real home on the web — it puts the
-  // attribution on the piece itself rather than in a separate list.
+  // Who made it. Rendered once for every tile by FrameCell, so no frame
+  // can forget it, and shown again in full in the lightbox. Optional only
+  // until every entry in data.ts is migrated; see credit.ts.
+  credit?: Credit;
+  // Superseded by `credit`. Still read by LinkFrame until the migration
+  // finishes, then deleted.
   source?: { handle: string; href: string };
 };
 

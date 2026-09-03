@@ -122,7 +122,12 @@ export const galleryItems: FrameData[] = [
     title: "Satanizar el Fuego",
     type: "imageSet",
     ...SHAPE.landscape,
-    credit: "Gestión Integral del Fuego en el mundo — Diana Soto, Sept. 2025",
+    credit: {
+      who: "Diana Guadalupe Soto Erazo",
+      relation: "author",
+      href: "https://www.linkedin.com/in/diana-guadalupe-soto-erazo-a7177b4a",
+      context: "Gestión Integral del Fuego en el mundo, Sept. 2025",
+    },
     images: [
       { src: "/gallery/satanizar/01-cover.jpg", alt: "Satanizar el fuego — cover" },
       { src: "/gallery/satanizar/02-que-significa.jpg", alt: "¿Qué significa satanizar el fuego?" },

@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Z } from "@/lib/layers";
+import { creditLine, type Credit } from "./credit";
 
 export type LightboxContent =
-  | { kind: "image"; src: string; alt: string; caption?: string; credit?: string }
-  | { kind: "video"; src: string; title: string; credit?: string }
-  | { kind: "youtube"; videoId: string; title: string; credit?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string; credit?: Credit }
+  | { kind: "video"; src: string; title: string; credit?: Credit }
+  | { kind: "youtube"; videoId: string; title: string; credit?: Credit }
   | {
       kind: "post";
       src: string;
@@ -17,7 +18,7 @@ export type LightboxContent =
       bodyLang?: string;
       href: string;
       linkLabel?: string;
-      credit?: string;
+      credit?: Credit;
     };
 
 export default function Lightbox({
@@ -138,14 +139,39 @@ export default function Lightbox({
           </div>
         )}
 
-        {(caption || credit) && (
+        {(caption || (credit && creditLine(credit))) && (
           <div className="w-full text-center text-sm text-white/80">
             {caption && <p>{caption}</p>}
-            {credit && <p className="mt-1 text-white/50">{credit}</p>}
+            {credit && <LightboxCredit credit={credit} />}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+// The full version of the tile byline: the same line, plus where it
+// appeared, and linked if there's anywhere to link to.
+function LightboxCredit({ credit }: { credit: Credit }) {
+  const line = creditLine(credit);
+  if (!line) return null;
+
+  return (
+    <p className="mt-1 text-white/50">
+      {credit.href ? (
+        <a
+          href={credit.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-white/25 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
+        >
+          {line}
+        </a>
+      ) : (
+        line
+      )}
+      {credit.context && <span className="text-white/35"> — {credit.context}</span>}
+    </p>
   );
 }
 
