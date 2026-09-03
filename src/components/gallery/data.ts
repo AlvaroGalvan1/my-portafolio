@@ -256,37 +256,11 @@ const allItems: FrameData[] = [
     ...SHAPE.small,
   },
 
-  // ── Open slots ────────────────────────────────────────────────────────
-  // Twenty reserved spots for pieces still to come, shown as visible dashed
-  // outlines so the Wall's shape is legible now. Each names the shape it's
-  // holding, so you can match a piece to a slot (or change the slot's shape
-  // to suit the piece).
-  //
-  // To fill one: drop the file at the path shown on the slot, then change
-  // that entry's `type` from "placeholder" to "image" and give it
-  // `src`/`alt` (plus a `source` if it's someone else's work).
-  //
-  // The rhythm below is deliberate — tall/wide/small alternating with two
-  // big moments — so the Wall reads like a hung gallery rather than a grid.
-  ...(
-    [
-      "portrait", "small", "small", "landscape",
-      "statement", "portrait", "small", "small",
-      "landscape", "hero", "portrait", "landscape",
-      "small", "small", "statement", "portrait",
-      "landscape", "small", "small", "portrait",
-    ] as const
-  ).map((shape, i) => {
-    const n = String(i + 1).padStart(2, "0");
-    return {
-      id: `slot-${n}`,
-      title: n,
-      type: "placeholder",
-      slot: `slots/${shape}-${n}.jpg`,
-      shapeName: shape,
-      ...SHAPE[shape],
-    } as const;
-  }),
+  // No open slots. Twenty dashed placeholders held the Wall's shape while it
+  // was being built, but twenty empty boxes is the first thing a visitor
+  // would have counted. The `placeholder` frame kind stays registered — add
+  // one back with `{ id, title, type: "placeholder", slot, shapeName,
+  // ...SHAPE.x }` if the Wall ever needs scaffolding again.
 ];
 
 // What the Wall actually renders. Same rule as experience.ts: a piece whose
