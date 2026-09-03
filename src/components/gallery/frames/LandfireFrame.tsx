@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import "leaflet/dist/leaflet.css";
 import type { FrameBase, FrameCellProps } from "./base";
 import { TileLabel } from "./shared";
@@ -93,6 +94,47 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
   return (
     <div className="absolute inset-0 h-full w-full bg-neutral-950">
       <div ref={containerRef} className="h-full w-full" />
+
+      {/* A legend, not a caption — it has to explain the layer without
+          covering the thing it describes.
+
+          On a wide tile it floats over the Pacific, the one large empty
+          area this projection always leaves, and is vertically centred
+          because every corner is taken: credit top-left, viewer link
+          top-right, TileLabel's hover bar along the bottom.
+
+          On a narrow one the map is portrait and the Pacific is gone, so
+          the same panel there sits over the west half of CONUS. It moves to
+          a strip along the bottom instead, which is open water at that
+          shape — and the hover bar it would clash with never appears on a
+          touch screen, because there is no hover.
+
+          Same layer as the other controls: below this, Leaflet's own panes
+          (~700) draw straight over it. */}
+      <div
+        style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
+        className="pointer-events-none absolute inset-x-3 bottom-3 border border-white/15 bg-black/70 p-3 backdrop-blur-sm sm:inset-x-auto sm:bottom-auto sm:left-5 sm:top-1/2 sm:max-w-[30%] sm:-translate-y-1/2 sm:p-4"
+      >
+        <Image
+          src="/logos/landfire.png"
+          alt="LANDFIRE"
+          width={179}
+          height={87}
+          className="mb-2 h-6 w-auto sm:h-8"
+        />
+        <p className="text-[11px] leading-snug text-white/80 sm:text-xs">
+          A joint US Forest Service and Department of the Interior program
+          mapping vegetation, wildland fuel and disturbance across the entire
+          country at 30-metre resolution.
+        </p>
+        {/* The second half is why it's on a wildfire portfolio at all, but
+            it's the first thing to go when the tile is narrow. */}
+        <p className="mt-2 hidden text-[11px] leading-snug text-white/60 sm:block sm:text-xs">
+          Fuel layers like this one are what fire-behaviour models read to
+          work out where a fire can spread, and how hot it burns.
+        </p>
+      </div>
+
       <TileLabel title={frame.title} />
       <a
         href="https://www.landfire.gov/viewer/"
