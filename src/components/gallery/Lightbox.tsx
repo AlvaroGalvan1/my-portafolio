@@ -7,7 +7,18 @@ import { Z } from "@/lib/layers";
 export type LightboxContent =
   | { kind: "image"; src: string; alt: string; caption?: string; credit?: string }
   | { kind: "video"; src: string; title: string; credit?: string }
-  | { kind: "youtube"; videoId: string; title: string; credit?: string };
+  | { kind: "youtube"; videoId: string; title: string; credit?: string }
+  | {
+      kind: "post";
+      src: string;
+      alt: string;
+      title: string;
+      body: string[];
+      bodyLang?: string;
+      href: string;
+      linkLabel?: string;
+      credit?: string;
+    };
 
 export default function Lightbox({
   content,
@@ -46,7 +57,9 @@ export default function Lightbox({
       </button>
 
       <div
-        className="flex max-h-full w-full max-w-4xl flex-col items-center gap-3"
+        className={`flex max-h-full w-full flex-col items-center gap-3 ${
+          content.kind === "post" ? "max-w-5xl" : "max-w-4xl"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {content.kind === "image" && (
@@ -82,6 +95,46 @@ export default function Lightbox({
               allowFullScreen
               className="h-full w-full rounded-lg border-0"
             />
+          </div>
+        )}
+
+        {/* Photo and words side by side on a desktop, stacked on a phone.
+            The text column scrolls on its own rather than the whole
+            overlay, so the photo stays put while you read past it. */}
+        {content.kind === "post" && (
+          <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg bg-neutral-950 md:flex-row">
+            <div className="flex shrink-0 items-center justify-center bg-black md:w-1/2">
+              <Image
+                src={content.src}
+                alt={content.alt}
+                width={1600}
+                height={1200}
+                sizes="(min-width: 768px) 45vw, 90vw"
+                className="max-h-[38vh] w-full object-contain md:max-h-[85vh]"
+              />
+            </div>
+            <div className="flex flex-col gap-4 overflow-y-auto p-6 sm:p-8 md:w-1/2">
+              <h3 className="font-[family-name:var(--font-display)] text-2xl text-white">
+                {content.title}
+              </h3>
+              {/* `lang` on the prose, not the tile: the title is set in the
+                  page's language, the body isn't. */}
+              <div lang={content.bodyLang} className="flex flex-col gap-3">
+                {content.body.map((paragraph, i) => (
+                  <p key={i} className="text-sm leading-relaxed text-white/75">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+              <a
+                href={content.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 self-start border-2 border-white/40 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-neutral-950"
+              >
+                {content.linkLabel ?? "Read the original ↗"}
+              </a>
+            </div>
           </div>
         )}
 

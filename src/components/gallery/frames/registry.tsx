@@ -4,6 +4,7 @@ import { ImageFrameCell, type ImageFrameData } from "./ImageFrame";
 import { ImageSetFrameCell, type ImageSetFrameData } from "./ImageSetFrame";
 import { VideoFrameCell, type VideoFrameData } from "./VideoFrame";
 import { LinkFrameCell, type LinkFrameData } from "./LinkFrame";
+import { PostFrameCell, type PostFrameData } from "./PostFrame";
 import {
   CellularAutomataFrameCell,
   type CellularAutomataFrameData,
@@ -27,6 +28,7 @@ export type FrameData =
   | ImageSetFrameData
   | VideoFrameData
   | LinkFrameData
+  | PostFrameData
   | CellularAutomataFrameData
   | EmbedFrameData
   | LandfireFrameData
@@ -41,6 +43,7 @@ export const FRAME_REGISTRY: {
   imageSet: ImageSetFrameCell,
   video: VideoFrameCell,
   link: LinkFrameCell,
+  post: PostFrameCell,
   cellularAutomata: CellularAutomataFrameCell,
   embed: EmbedFrameCell,
   landfire: LandfireFrameCell,

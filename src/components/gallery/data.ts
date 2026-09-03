@@ -172,6 +172,28 @@ export const galleryItems: FrameData[] = [
     ...SHAPE.hero,
     source: { handle: "landfire", href: "https://www.landfire.gov/" },
   },
+  {
+    id: "graduacion",
+    title: "Un logro colectivo",
+    type: "post",
+    src: "/gallery/portraits/graduation.jpeg",
+    alt: "Álvaro at his university graduation.",
+    // Kept in the original Spanish — it was written to family, and
+    // translating it would be writing a different post. `bodyLang` tells a
+    // screen reader to switch voice for it.
+    bodyLang: "es",
+    body: [
+      "En Latinoamérica la educación superior representa un logro colectivo y familiar, ¡y quiero agradecer a toda mi familia por acompañarme en este proceso! 🇲🇽",
+      "Hace siete años dejé mi casa para viajar y conocer el mundo. Tuve la oportunidad de ver lugares hermosos, conocer personas increíbles y apreciar la diversidad cultural de muchas partes del planeta. Este proceso me ayudó a ampliar mis horizontes y a comprender que el amor que sentimos es universal.",
+      "A mis tíos y tías que me apoyaron con dinero y ropa para mi primer viaje al extranjero; a mis abuelos (incluida Bechis), que me regalaron mi primera laptop y nunca escatimaron en el amor y los regalos que me mandaban; a mi papá y a mi mamá, que me dieron la fuerza y el coraje para salir a caminar el mundo: ¡muchas gracias! Comparto plenamente este logro con ustedes. No se me ocurre un acto de amor más auténtico que darle alas a tu hijo para que vea el mundo, aunque eso signifique que viva lejos de ti.",
+      "Los pienso, los extraño y los amo. Mi corazón vive con ustedes. ¡¡¡A celebrar!!! 🇮🇳🇳🇱🚢🇺🇸🇰🇷🇩🇪🇦🇷🇹🇼",
+    ],
+    href: "https://lnkd.in/p/gD2DuH3m",
+    linkLabel: "Read on LinkedIn ↗",
+    ...SHAPE.landscape,
+    aspectRatio: 2048 / 1365, // the photo's own 3:2 — uncropped, no cut heads
+  },
+
   // ── Shelf ─────────────────────────────────────────────────────────────
   // Kept adjacent so they read as a run of spines. Add the next one with
   // book({...}) and it lands at the same size as the rest by construction.
