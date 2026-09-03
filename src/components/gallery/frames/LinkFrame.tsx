@@ -25,12 +25,7 @@ export function LinkFrameCell({ frame }: FrameCellProps<LinkFrameData>) {
       )}
       <div style={{ zIndex: Z.CARD_CONTENT }} className="relative p-4">
         <p className="text-base font-semibold text-white">{frame.title}</p>
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="text-xs text-white/50">{frame.linkLabel ?? "Visit ↗"}</p>
-          {frame.source && (
-            <span className="shrink-0 text-xs text-white/40">@{frame.source.handle}</span>
-          )}
-        </div>
+        <p className="text-xs text-white/50">{frame.linkLabel ?? "Visit ↗"}</p>
       </div>
     </a>
   );

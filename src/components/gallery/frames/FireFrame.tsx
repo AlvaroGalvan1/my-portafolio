@@ -192,10 +192,11 @@ export function FireFrameCell({ frame }: FrameCellProps<FireFrameData>) {
       className="absolute inset-0 block h-full w-full cursor-crosshair"
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      {/* No `source` here: TileLabel renders the @handle as a link, and an
-          <a> inside this wrapping <a> is invalid HTML — the parser splits
-          it and hydration fails. The corner badge below carries the credit
-          instead, and the whole tile already links to the same place. */}
+      {/* The credit used to be impossible here — an <a> inside this
+          wrapping <a> is invalid HTML, the parser splits it and hydration
+          fails. FrameCell now renders it as a sibling of this whole
+          component, outside the anchor, so this tile finally carries a real
+          one (see credit.ts). */}
       <TileLabel title={frame.title} />
       <span
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}

@@ -31,7 +31,7 @@ export function ImageFrameCell({ frame, onOpenLightbox, onFail }: FrameCellProps
         alt={frame.alt}
         onLoadError={() => onFail(`image failed to load: ${frame.src}`)}
       />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
     </button>
   );
 }

@@ -77,7 +77,7 @@ export function YouTubeFrameCell({
         </svg>
       </span>
 
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
     </button>
   );
 }

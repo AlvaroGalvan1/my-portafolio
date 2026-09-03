@@ -38,29 +38,13 @@ export function TileImage({
 }
 
 // Title label revealed on hover — the frame wrapper in HorizontalGallery
-// sets `group` so this can key off `group-hover`. An optional `@handle`
-// byline sits alongside it, linking to whoever the work belongs to.
-export function TileLabel({
-  title,
-  source,
-}: {
-  title: string;
-  source?: { handle: string; href: string };
-}) {
+// sets `group` so this can key off `group-hover`. Hover-only is fine for a
+// title (it repeats what the image already shows); it was never fine for a
+// credit, which is why attribution moved to TileCredit below.
+export function TileLabel({ title }: { title: string }) {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent p-3 text-left text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
       <span>{title}</span>
-      {source && (
-        <a
-          href={source.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="pointer-events-auto shrink-0 text-xs font-medium text-white/60 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
-        >
-          @{source.handle}
-        </a>
-      )}
     </div>
   );
 }

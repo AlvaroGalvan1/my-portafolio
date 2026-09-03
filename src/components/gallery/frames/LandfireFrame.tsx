@@ -93,7 +93,7 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
   return (
     <div className="absolute inset-0 h-full w-full bg-neutral-950">
       <div ref={containerRef} className="h-full w-full" />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
       <a
         href="https://www.landfire.gov/viewer/"
         target="_blank"

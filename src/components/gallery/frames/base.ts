@@ -17,13 +17,12 @@ export type FrameBase = {
   // implies, instead of filling the column. Leave unset for anything meant
   // to fill its cell (photos, video, maps).
   aspectRatio?: number;
-  // Who made it. Rendered once for every tile by FrameCell, so no frame
-  // can forget it, and shown again in full in the lightbox. Optional only
-  // until every entry in data.ts is migrated; see credit.ts.
-  credit?: Credit;
-  // Superseded by `credit`. Still read by LinkFrame until the migration
-  // finishes, then deleted.
-  source?: { handle: string; href: string };
+  // Who made it. Required, deliberately: an uncredited tile should be a
+  // type error, not something noticed six months later. Rendered once for
+  // every tile by FrameCell (so no frame kind can forget it) and again in
+  // full in the lightbox. Use `relation: "mine"` for your own work — it
+  // renders no byline but still has to be stated. See credit.ts.
+  credit: Credit;
 };
 
 // Props every frame's cell component receives. `onOpenLightbox` is the one

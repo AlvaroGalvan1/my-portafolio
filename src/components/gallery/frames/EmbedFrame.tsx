@@ -30,7 +30,7 @@ export function EmbedFrameCell({ frame }: FrameCellProps<EmbedFrameData>) {
         sandbox="allow-scripts allow-same-origin allow-popups"
         className="h-full w-full border-0"
       />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
       <a
         href={frame.src}
         target="_blank"

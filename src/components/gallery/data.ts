@@ -54,7 +54,12 @@ function book({
     type: "link",
     href: `https://openlibrary.org/works/${work}`,
     thumbnailSrc: `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`,
-    linkLabel: `${author} ↗`,
+    // The credit badge already names the author, so repeating it here read
+    // as a stutter — two "Naomi Klein"s on one small tile. The label says
+    // where the link *goes* instead, which is different information and
+    // puts Open Library back in as the destination rather than as the
+    // book's author.
+    linkLabel: "Open Library ↗",
     ...BOOK_SHAPE,
     credit: {
       who: author,
@@ -267,6 +272,6 @@ const allItems: FrameData[] = [
 // credit is still a TODO would publish someone else's work under no name at
 // all, which is worse than the tile not being there yet. Fill the credit in
 // and it appears on its own — no other change needed.
-const isUncredited = (item: FrameData) => item.credit?.who.startsWith("TODO") ?? false;
+const isUncredited = (item: FrameData) => item.credit.who.startsWith("TODO");
 
 export const galleryItems: FrameData[] = allItems.filter((item) => !isUncredited(item));

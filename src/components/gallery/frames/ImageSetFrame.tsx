@@ -27,7 +27,7 @@ export function ImageSetFrameCell({ frame, onFail }: FrameCellProps<ImageSetFram
         alt={current.alt}
         onLoadError={() => onFail(`image ${index + 1}/${frame.images.length} failed to load: ${current.src}`)}
       />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
       <div className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white/80">
         {index + 1} / {frame.images.length}
       </div>

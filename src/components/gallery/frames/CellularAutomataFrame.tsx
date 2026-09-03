@@ -130,7 +130,7 @@ export function CellularAutomataFrameCell({ frame }: FrameCellProps<CellularAuto
       }}
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
     </div>
   );
 }

@@ -31,7 +31,7 @@ export function VideoFrameCell({ frame, onOpenLightbox, onFail }: FrameCellProps
         className="absolute inset-0 h-full w-full object-cover"
         onError={() => onFail(`video failed to load: ${frame.src}`)}
       />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
     </button>
   );
 }

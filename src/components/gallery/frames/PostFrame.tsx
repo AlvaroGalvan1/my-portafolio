@@ -46,7 +46,7 @@ export function PostFrameCell({ frame, onOpenLightbox, onFail }: FrameCellProps<
         alt={frame.alt}
         onLoadError={() => onFail(`post image failed to load: ${frame.src}`)}
       />
-      <TileLabel title={frame.title} source={frame.source} />
+      <TileLabel title={frame.title} />
     </button>
   );
 }
