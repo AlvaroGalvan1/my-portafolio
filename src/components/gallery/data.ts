@@ -17,6 +17,42 @@ export const SHAPE = {
   hero: { colSpan: 3, rowSpan: 2 },
 } as const;
 
+// Every book on the Wall is the same tile: one column, half height, at a
+// 0.66 ratio — the proportions of a real trade paperback, so the covers sit
+// in the row like books on a shelf rather than as crops of different sizes.
+// Books are the one category here that *should* look uniform; varying them
+// would read as accident rather than curation.
+const BOOK_SHAPE = { colSpan: 1, rowSpan: 1, aspectRatio: 0.66 } as const;
+
+// Covers are hotlinked from Open Library's cover API rather than copied
+// into public/ — cover IDs come from openlibrary.org/search.json, and the
+// domain is allowlisted in next.config.ts. `work` is the OL work key
+// (e.g. "OL59863W"): the edition-independent page for the title.
+function book({
+  id,
+  title,
+  author,
+  work,
+  coverId,
+}: {
+  id: string;
+  title: string;
+  author: string;
+  work: string;
+  coverId: number;
+}) {
+  return {
+    id,
+    title,
+    type: "link",
+    href: `https://openlibrary.org/works/${work}`,
+    thumbnailSrc: `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`,
+    linkLabel: `${author} ↗`,
+    ...BOOK_SHAPE,
+    source: { handle: "openlibrary", href: "https://openlibrary.org/" },
+  } as const;
+}
+
 // The actual pieces in the Wall. Sizes come from SHAPE above — pick the one
 // that suits the piece. Order here = left-to-right order on the Wall.
 //
@@ -136,20 +172,30 @@ export const galleryItems: FrameData[] = [
     ...SHAPE.hero,
     source: { handle: "landfire", href: "https://www.landfire.gov/" },
   },
-  {
+  // ── Shelf ─────────────────────────────────────────────────────────────
+  // Kept adjacent so they read as a run of spines. Add the next one with
+  // book({...}) and it lands at the same size as the rest by construction.
+  book({
     id: "how-to-do-nothing",
     title: "How to Do Nothing",
-    type: "link",
-    href: "https://openlibrary.org/works/OL20078135W",
-    // Hotlinked from Open Library's cover API instead of hosting a copy of
-    // the cover art ourselves — see next.config.ts for the allowed domain.
-    thumbnailSrc: "https://covers.openlibrary.org/b/id/8750439-L.jpg",
-    linkLabel: "Jenny Odell ↗",
-    colSpan: 1,
-    rowSpan: 1,
-    aspectRatio: 0.66, // standard book cover — keeps row height, narrows width
-    source: { handle: "openlibrary", href: "https://openlibrary.org/" },
-  },
+    author: "Jenny Odell",
+    work: "OL20078135W",
+    coverId: 8750439,
+  }),
+  book({
+    id: "this-changes-everything",
+    title: "This Changes Everything",
+    author: "Naomi Klein",
+    work: "OL17062332W",
+    coverId: 7306100,
+  }),
+  book({
+    id: "the-dispossessed",
+    title: "The Dispossessed",
+    author: "Ursula K. Le Guin",
+    work: "OL59863W",
+    coverId: 6979680,
+  }),
   {
     id: "papers",
     title: "Papers",
