@@ -89,22 +89,6 @@ export const galleryItems: FrameData[] = [
     type: "cellularAutomata",
     ...SHAPE.small,
   },
-  {
-    id: "connie-chan",
-    title: "Connie Chan Campaign",
-    type: "image",
-    src: "/gallery/connie-chan.jpg",
-    alt: "Connie Chan campaign material",
-    ...SHAPE.small,
-  },
-  {
-    id: "pepe-mujica",
-    title: "Pepe Mujica",
-    type: "image",
-    src: "/gallery/pepe-mujica.jpg",
-    alt: "Pepe Mujica",
-    ...SHAPE.portrait,
-  },
   // The four Mexico/Oaxaca maps, each hung as its own framed piece rather
   // than combined into one tile. All are 2048×1448 (A-series landscape), so
   // each carries `aspectRatio: 1.414` and keeps its true proportions instead
@@ -147,14 +131,6 @@ export const galleryItems: FrameData[] = [
       { src: "/gallery/satanizar/05-que-podemos-hacer.jpg", alt: "Gestión del fuego — ¿Qué podemos hacer?" },
       { src: "/gallery/satanizar/06-bibliografia.jpg", alt: "Bibliografía — Gestión del fuego" },
     ],
-  },
-  {
-    id: "mamdani",
-    title: "Mamdani",
-    type: "image",
-    src: "/gallery/mamdani.jpg",
-    alt: "Mamdani",
-    ...SHAPE.small,
   },
   {
     id: "growing-ca",
