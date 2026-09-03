@@ -31,6 +31,21 @@ const allJobs: Job[] = [
     ],
   },
   {
+    // Volunteer sits in `org` rather than in the role title, matching
+    // "Gridware · Contract" — the engagement type is a fact about the
+    // relationship, not part of what the job was called.
+    role: "Geospatial Data Engineer",
+    org: "Hyticos · Volunteer",
+    logoSrc: "/logos/hyticos.svg",
+    dates: "Feb 2026 – Jun 2026",
+    location: "Hyderabad, India",
+    // Prose rather than bullets: this role was one sustained piece of work,
+    // and splitting it into three achievement lines would pad it.
+    summary:
+      "Built a continuously updating fire-index map for a team without the resources to assess fire potential on their own, using AHP (analytic hierarchy process) to weight the factors feeding the index — shaped throughout by conversations with the people who would end up relying on it.",
+    bullets: [],
+  },
+  {
     role: "Geospatial Frontend Engineer",
     org: "Fuego.Earth",
     logoSrc: "/logos/fuego-earth.svg",
@@ -54,23 +69,6 @@ const allJobs: Job[] = [
       "Investigated and diagnosed faults using statistical analysis to reduce response times",
       "Generated real-time and daily reports for utility management and preventive maintenance",
     ],
-  },
-  {
-    // The work is written up below; the role title, dates and location are
-    // still missing and aren't things to guess at on a portfolio. Until
-    // they're filled in, the placeholder filter keeps this entry off the
-    // site entirely (see below) — so it costs nothing to leave here.
-    // Drop the logo at public/logos/hyticos.svg.
-    role: "TODO: role",
-    org: "Hyticos",
-    logoSrc: "/logos/hyticos.svg",
-    dates: "TODO: dates",
-    location: "TODO: location",
-    // Prose rather than bullets: this role was one sustained piece of work,
-    // and splitting it into three achievement lines would pad it.
-    summary:
-      "Built a continuously updating fire-index map for a team without the resources to assess fire potential on their own, using AHP (analytic hierarchy process) to weight the factors feeding the index — shaped throughout by conversations with the people who would end up relying on it.",
-    bullets: [],
   },
 ];
 
