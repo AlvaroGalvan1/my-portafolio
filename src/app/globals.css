@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
 :root {
+  /* This site is one fixed palette painted onto every section — orange
+     hero, brick Wall, white About, cream Journey, maroon footer. There is
+     no dark version of it, and `color-scheme: light` is what says so to
+     the browser. Without it, native chrome follows the OS instead: the
+     contact form's four inputs render with dark backgrounds and light
+     text inside a cream panel, and the Wall's scrollbar loses the styling
+     it was given. */
+  color-scheme: light;
+
   --background: #ffffff;
   --foreground: #171717;
 
@@ -46,12 +55,13 @@
   --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* The dark-mode override that used to sit here flipped --background and
+   --foreground, and changed nothing anyone could see: every section paints
+   its own background, so the two variables only reach the strip of body
+   behind the page. What it did do was leave the document without a stated
+   colour scheme, which is the bug fixed above. Deleted rather than
+   completed — a second palette for this design is a decision, not an
+   oversight, and it isn't this commit's to make. */
 
 html {
   scroll-behavior: smooth;
