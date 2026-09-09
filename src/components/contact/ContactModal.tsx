@@ -180,10 +180,27 @@ export default function ContactModal() {
           .
         </p>
 
+        {/* Every field carries a real <label>, visually hidden. The design
+            wants four unadorned boxes and gets to keep them, but a
+            placeholder is not a label: it disappears the moment you type, so
+            a half-filled form loses the only clue to what each box was, and
+            it's the accessible name of last resort — some screen readers
+            skip it, and none of them treat it as a name that persists.
+            `sr-only` keeps them in the accessibility tree and out of the
+            layout.
+
+            The autoComplete values are what let a browser fill name and
+            email from the visitor's own profile in one gesture, which is
+            most of the reason a contact form gets finished at all. */}
         <form className="mt-8 flex flex-col gap-5" onSubmit={handleSubmit}>
+          <label htmlFor="contact-name" className="sr-only">
+            Name
+          </label>
           <input
+            id="contact-name"
             type="text"
             name="name"
+            autoComplete="name"
             placeholder="Name"
             required
             value={fields.name}
@@ -194,16 +211,25 @@ export default function ContactModal() {
               a submission arrives as a message you can read and can't
               answer. Formspree also reads this field by name to set the
               notification's reply-to. */}
+          <label htmlFor="contact-email" className="sr-only">
+            Your email
+          </label>
           <input
+            id="contact-email"
             type="email"
             name="email"
+            autoComplete="email"
             placeholder="Your email"
             required
             value={fields.email}
             onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
+          <label htmlFor="contact-subject" className="sr-only">
+            Subject
+          </label>
           <input
+            id="contact-subject"
             type="text"
             name="subject"
             placeholder="Subject"
@@ -211,7 +237,11 @@ export default function ContactModal() {
             onChange={(e) => setFields((f) => ({ ...f, subject: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
+          <label htmlFor="contact-message" className="sr-only">
+            Message
+          </label>
           <textarea
+            id="contact-message"
             name="message"
             placeholder="Message"
             rows={6}
