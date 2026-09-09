@@ -254,7 +254,18 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
               gridRow: `span ${item.rowSpan}`,
               width: tileWidth(item),
             }}
-            className="group relative overflow-hidden border-[3px] border-black bg-black shadow-[10px_10px_0_rgba(0,0,0,0.55)]"
+            // The frame turns yellow under the pointer, and under keyboard
+            // focus anywhere inside it. Until now the only sign a tile did
+            // anything was TileLabel's caption fading in, which arrives
+            // after you have already committed to hovering — so a wall of
+            // tiles read as pictures hung on brick rather than as things to
+            // open. Yellow because that is already the page's "this
+            // responds" colour, on the nav and in the edge zones.
+            //
+            // `focus-within` rather than `focus`: what actually takes focus
+            // is the button or link inside the tile, and the frame is what
+            // has to show it.
+            className="group relative overflow-hidden border-[3px] border-black bg-black shadow-[10px_10px_0_rgba(0,0,0,0.55)] transition-colors duration-150 hover:border-brand-yellow focus-within:border-brand-yellow"
           >
             <FrameCell
               frame={item}
