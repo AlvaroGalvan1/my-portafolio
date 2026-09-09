@@ -10,10 +10,17 @@ export default function Home() {
   return (
     <>
       <Nav />
-      <Hero />
-      <Wall />
-      <About />
-      <Journey />
+      {/* The four sections were flat siblings of the nav and the footer,
+          which left the page with no main landmark at all — nothing for
+          assistive tech to jump to, and nothing marking where the chrome
+          stops and the content starts. The contact overlay stays outside:
+          it covers the page rather than being part of it. */}
+      <main>
+        <Hero />
+        <Wall />
+        <About />
+        <Journey />
+      </main>
       <Footer />
       <ContactModal />
     </>
