@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Z } from "@/lib/layers";
+import { useDialog } from "@/lib/useDialog";
 import { creditLine, type Credit } from "./credit";
 
 export type LightboxContent =
@@ -34,14 +35,10 @@ export default function Lightbox({
   content: LightboxContent | null;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    if (!content) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [content, onClose]);
+  // Escape, focus in and back out, Tab containment and the scroll lock all
+  // come from here — see lib/useDialog.ts. Called before the early return
+  // below, as every hook has to be.
+  const dialogRef = useDialog(Boolean(content), onClose);
 
   if (!content) return null;
 
@@ -50,12 +47,22 @@ export default function Lightbox({
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={dialogLabel(content)}
+      tabIndex={-1}
       style={{ zIndex: Z.MODAL }}
+      // The dialog and the backdrop are the same element here: the close
+      // button sits outside the content column, in the overlay's own corner,
+      // so a dialog wrapped tightly around the content would leave the one
+      // control that dismisses it outside the dialog.
+      //
       // `overlay-dark` is the hook globals.css uses to flip the focus ring
       // to yellow: this sits on near-black, where the page's default maroon
       // ring is invisible. The lightbox renders at the document root rather
       // than inside a section, so it can't inherit that from one.
-      className="overlay-dark fixed inset-0 flex items-center justify-center bg-black/85 px-4 py-10"
+      className="overlay-dark fixed inset-0 flex items-center justify-center bg-black/85 px-4 py-10 focus:outline-none"
       onClick={onClose}
     >
       <button
@@ -151,6 +158,13 @@ export default function Lightbox({
       </div>
     </div>
   );
+}
+
+// What a screen reader announces when the overlay opens. Each kind already
+// carries the words for it — an image its alt text, everything else its
+// title — so there is nothing to write per piece in data.ts.
+function dialogLabel(content: LightboxContent) {
+  return content.kind === "image" ? content.alt : content.title;
 }
 
 // The photo half of a post. One image is the common case and renders as it

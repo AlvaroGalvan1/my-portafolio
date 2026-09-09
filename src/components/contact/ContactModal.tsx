@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CONTACT_OPEN_EVENT } from "./ContactTrigger";
 import { Z } from "@/lib/layers";
+import { useDialog } from "@/lib/useDialog";
 import { socials, CALENDLY_URL } from "@/content/socials";
 
 // Where submissions go. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT (see .env.example
@@ -39,14 +40,10 @@ export default function ContactModal() {
     return () => window.removeEventListener(CONTACT_OPEN_EVENT, handleOpen);
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [open]);
+  // Escape, focus in and back out, Tab containment and the scroll lock all
+  // come from here — see lib/useDialog.ts. Called before the early return
+  // below, as every hook has to be.
+  const dialogRef = useDialog(open, () => setOpen(false));
 
   if (!open) return null;
 
@@ -101,8 +98,16 @@ export default function ContactModal() {
       className="fixed inset-0 flex items-center justify-center bg-black/70 px-4"
       onClick={() => setOpen(false)}
     >
+      {/* The cream panel is the dialog; the element above it is only the
+          backdrop. Named by the heading inside it rather than by a duplicate
+          aria-label, so the two can never drift apart. */}
       <div
-        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-4 border-brand-maroon bg-brand-cream p-10 font-sans sm:p-12"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contact-heading"
+        tabIndex={-1}
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-4 border-brand-maroon bg-brand-cream p-10 font-sans focus:outline-none sm:p-12"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -114,7 +119,10 @@ export default function ContactModal() {
           &times;
         </button>
 
-        <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-red sm:text-5xl">
+        <h2
+          id="contact-heading"
+          className="font-[family-name:var(--font-display)] text-4xl text-brand-red sm:text-5xl"
+        >
           Get In Touch
         </h2>
 
