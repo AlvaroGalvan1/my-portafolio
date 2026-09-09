@@ -10,6 +10,20 @@
   --color-brand-orange: #f5821f;
   --color-brand-yellow: #ffc93c;
   --color-brand-cream: #fff4de;
+
+  /* Height of the sticky nav, so anchor targets can clear it. Two values
+     because the bar grows at `sm`: py-4 either side plus the Contact
+     button, which is py-1/text-xs on a phone and py-1.5/text-sm above it.
+     Kept here rather than measured at runtime — the nav is a fixed piece
+     of chrome, and a resize observer for two numbers is not a trade worth
+     making. If Nav's padding or type size changes, change these. */
+  --nav-h: 3.75rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --nav-h: 4.25rem;
+  }
 }
 
 @theme inline {
@@ -34,6 +48,22 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Smooth scrolling is a motion effect like any other, and this one is
+   triggered by every nav link on the page. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* The nav is `sticky top-0`, so an anchor that scrolls its target flush
+   with the viewport top parks the section heading *behind* the maroon bar.
+   Every jump on this page goes to a `<section id>`, so the offset belongs
+   on the target rather than on each link. */
+section[id] {
+  scroll-margin-top: var(--nav-h);
 }
 
 body {
