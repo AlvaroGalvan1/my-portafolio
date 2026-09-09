@@ -25,8 +25,14 @@ export type { FrameData } from "./frames/registry";
 //   4. A real scrollbar, styled rather than hidden — hiding it is a common
 //      mistake that removes the one native signal people already read.
 const ROW_H_VH = 34;
-// Width of one column track, for tiles that don't carry their own shape.
-const COL_W_VW = 26;
+// Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
+// (see globals.css) rather than here, because it has to change with the
+// viewport: a single 26vw track is 97px on a 375px phone, which turned every
+// tile without its own aspect ratio — the Game of Life, the fire sim, the
+// papers card — into a 97x227 vertical sliver. `--wall-tile-max` is the
+// other half of that: widening the track makes a 3-span tile 138vw, so
+// every tile is also capped to just under the viewport, which leaves a
+// sliver of the next one showing and says "this continues" for free.
 const GAP_REM = 2;
 
 // How wide one tile is. Two cases:
@@ -42,7 +48,9 @@ function tileWidth(item: FrameData) {
   if (item.aspectRatio) {
     return `calc((${heightVh}vh + ${innerGaps * GAP_REM}rem) * ${item.aspectRatio})`;
   }
-  return `calc(${item.colSpan * COL_W_VW}vw + ${(item.colSpan - 1) * GAP_REM}rem)`;
+  return `min(calc(${item.colSpan} * var(--wall-col) + ${
+    (item.colSpan - 1) * GAP_REM
+  }rem), var(--wall-tile-max))`;
 }
 
 export default function HorizontalGallery({ items }: { items: FrameData[] }) {

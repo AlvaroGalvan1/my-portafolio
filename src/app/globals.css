@@ -115,12 +115,39 @@ body {
   }
 }
 
-/* The Wall's horizontal scrollbar. Styled rather than hidden — it's the one
-   native "this scrolls sideways" signal visitors already know how to read,
-   so removing it would cost more than the visual tidiness gains. */
+/* The Wall's column track and its per-tile ceiling. Read with `tileWidth`
+   in HorizontalGallery.tsx, which builds every tile's width from these.
+
+   The track has to shrink as the screen grows, not the other way round: a
+   fixed 26vw is a comfortable ~340px on a laptop and a useless 97px on a
+   375px phone, which is what a 1-span tile with no aspect ratio of its own
+   was getting. Wide track on a phone, narrow on a desktop — the tile ends
+   up roughly the same physical size either way.
+
+   The ceiling is what makes that safe. Widening the track to 46vw would
+   make the 3-span LANDFIRE tile 138vw, so nothing may exceed 86vw — which
+   also leaves a slice of the next tile showing at the edge, doing the
+   "there's more this way" job for free. Above `lg` the widest tile is
+   ~82vw, so the 90vw ceiling there never actually binds; it's a guard for
+   the tablet range, where a 3-span would otherwise run past the viewport. */
 .wall-scroller {
+  --wall-col: 46vw;
+  --wall-tile-max: 86vw;
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-yellow) rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 640px) {
+  .wall-scroller {
+    --wall-col: 32vw;
+    --wall-tile-max: 90vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wall-scroller {
+    --wall-col: 26vw;
+  }
 }
 
 .wall-scroller::-webkit-scrollbar {
