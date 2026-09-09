@@ -29,7 +29,7 @@ export default function Wall() {
           explanation is there for whoever wonders. CSS-only — the button
           exists to give keyboard and touch users a focus target, since
           hover alone would strand both. */}
-      <h2 className="flex items-center gap-3 bg-[#8f1c14] px-6 pt-16 pb-6 font-[family-name:var(--font-display)] text-4xl text-white sm:px-16">
+      <h2 className="flex items-center gap-3 bg-brand-brick px-6 pt-16 pb-6 font-[family-name:var(--font-display)] text-4xl text-white sm:px-16">
         My Wall
         <span className="group relative inline-flex">
           <button

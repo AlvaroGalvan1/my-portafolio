@@ -10,6 +10,12 @@
   --color-brand-orange: #f5821f;
   --color-brand-yellow: #ffc93c;
   --color-brand-cream: #fff4de;
+  /* The Wall's field — between red and maroon, darker than the section
+     headings so the tiles read as hung on it rather than printed on it.
+     It was written as a literal in four separate class strings, which is
+     how a sixth and seventh near-identical red get added later without
+     anyone noticing. */
+  --color-brand-brick: #8f1c14;
 
   /* Height of the sticky nav, so anchor targets can clear it. Two values
      because the bar grows at `sm`: py-4 either side plus the Contact
@@ -34,6 +40,7 @@
   --color-brand-orange: var(--color-brand-orange);
   --color-brand-yellow: var(--color-brand-yellow);
   --color-brand-cream: var(--color-brand-cream);
+  --color-brand-brick: var(--color-brand-brick);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);

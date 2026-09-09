@@ -190,7 +190,7 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
   };
 
   return (
-    <div className="relative bg-[#8f1c14] py-10">
+    <div className="relative bg-brand-brick py-10">
       {/* Set bold in the sans face rather than in the display one: it has to
           carry across a red field at small size, and Bungee — the display
           face — only ships at one weight and reads as a second heading
@@ -336,8 +336,8 @@ function EdgeZone({
       <div
         className={`pointer-events-none absolute inset-0 ${
           side === "left"
-            ? "bg-gradient-to-r from-[#8f1c14] to-transparent"
-            : "bg-gradient-to-l from-[#8f1c14] to-transparent"
+            ? "bg-gradient-to-r from-brand-brick to-transparent"
+            : "bg-gradient-to-l from-brand-brick to-transparent"
         }`}
       />
       {/* Warm-up tint — opacity driven by how deep the pointer is. */}
