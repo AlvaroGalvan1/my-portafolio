@@ -180,7 +180,7 @@ export default function ContactModal() {
             required
             value={fields.name}
             onChange={(e) => setFields((f) => ({ ...f, name: e.target.value }))}
-            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           {/* Required, and required for a reason: without a return address
               a submission arrives as a message you can read and can't
@@ -193,7 +193,7 @@ export default function ContactModal() {
             required
             value={fields.email}
             onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
-            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           <input
             type="text"
@@ -201,7 +201,7 @@ export default function ContactModal() {
             placeholder="Subject"
             value={fields.subject}
             onChange={(e) => setFields((f) => ({ ...f, subject: e.target.value }))}
-            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           <textarea
             name="message"
@@ -210,7 +210,7 @@ export default function ContactModal() {
             required
             value={fields.message}
             onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))}
-            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+            className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           <button
             type="submit"

@@ -51,7 +51,11 @@ export default function Lightbox({
   return (
     <div
       style={{ zIndex: Z.MODAL }}
-      className="fixed inset-0 flex items-center justify-center bg-black/85 px-4 py-10"
+      // `overlay-dark` is the hook globals.css uses to flip the focus ring
+      // to yellow: this sits on near-black, where the page's default maroon
+      // ring is invisible. The lightbox renders at the document root rather
+      // than inside a section, so it can't inherit that from one.
+      className="overlay-dark fixed inset-0 flex items-center justify-center bg-black/85 px-4 py-10"
       onClick={onClose}
     >
       <button

@@ -24,7 +24,7 @@ export default function Wall() {
             type="button"
             aria-label="What's on this wall?"
             aria-describedby="wall-note"
-            className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white/50 font-sans text-xs font-bold leading-none text-white/80 transition-colors hover:border-white hover:text-white focus:outline-none focus-visible:border-white focus-visible:text-white"
+            className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white/50 font-sans text-xs font-bold leading-none text-white/80 transition-colors hover:border-white hover:text-white focus-visible:border-white focus-visible:text-white"
           >
             i
           </button>

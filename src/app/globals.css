@@ -115,6 +115,33 @@ body {
   }
 }
 
+/* Keyboard focus, everywhere, in one place.
+
+   Three components were removing the browser's own ring and putting back
+   either nothing (all four contact-form fields) or a border tint too faint
+   to find (the Wall's info button) — which leaves a keyboard visitor typing
+   into a form with no way to tell which field has the caret.
+
+   Maroon is the default because most of the page is white, cream or orange
+   and maroon clears 4:1 on all three. It disappears on the dark fields, so
+   those flip the same ring to yellow: the nav bar, the Wall's brick, the
+   footer, and the lightbox — which is at the document root rather than
+   inside a section, hence its own hook.
+
+   `:focus-visible`, not `:focus`, so a mouse click on a button doesn't
+   leave a ring behind it. */
+:focus-visible {
+  outline: 3px solid var(--color-brand-maroon);
+  outline-offset: 2px;
+}
+
+nav :focus-visible,
+#wall :focus-visible,
+footer :focus-visible,
+.overlay-dark :focus-visible {
+  outline-color: var(--color-brand-yellow);
+}
+
 /* The Wall's column track and its per-tile ceiling. Read with `tileWidth`
    in HorizontalGallery.tsx, which builds every tile's width from these.
 
