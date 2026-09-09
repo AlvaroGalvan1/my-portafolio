@@ -6,14 +6,13 @@ For what's already shipped, see `git log` — this file is only what's left.
 ## How to use this list
 
 The page has four sections, and the list is split the same way, in page
-order: **The Top** → **The Wall** → **Experience** → **My Journey**. Two
-threads cut across all four (Credits, Analytics) and get their own sections
-at the end.
+order: **The Top** → **The Wall** → **About** → **My Journey**. One thread
+cuts across all four (Analytics) and gets its own section at the end.
 
 Every task is written to stand alone. Each has a **Prompt** you can copy
 straight into a fresh conversation without explaining any background — it
-names its own files and its own constraints. Nothing here depends on you having read
-anything above it.
+names its own files and its own constraints. Nothing here depends on you
+having read anything above it.
 
 Each task is tagged with what it needs:
 
@@ -25,40 +24,87 @@ Each task is tagged with what it needs:
 
 ---
 
+# 🚀 BEFORE YOU PUBLISH
+
+The short list. Everything else in this file is improvement; these are the
+things that are either **broken** or **collect nothing until you flip a
+switch**. Nothing here is more than a few minutes of work, but three of
+them only you can do.
+
+| # | What | Who |
+|---|---|---|
+| 1 | **The Papers tile 404s** — see [W8](#w8). The only dead link on the site. | 🔴 you decide, 🟢 I change it |
+| 2 | **The contact form has no backend.** Unset, it falls back to opening the visitor's mail client prefilled — which works, but loses anyone without one configured. Set `NEXT_PUBLIC_FORMSPREE_ENDPOINT` (see `.env.example`, it's a 5-minute free signup) in **Vercel → Settings → Environment Variables**, then **redeploy** — `NEXT_PUBLIC_` vars are baked in at build time, so an existing deployment won't pick it up. | 🔴 you |
+| 3 | **Vercel Web Analytics is installed but collects nothing** until it's switched on at **Project → Analytics → Enable**. | 🔴 you |
+| 4 | **The custom domain**, if one is coming. `SITE_URL` in `src/content/site.ts` falls back to the `.vercel.app` URL, which is what social cards will unfurl with. Set `NEXT_PUBLIC_SITE_URL` and it follows. Fine to publish without. | 🔴 you |
+| 5 | **[N2](#n2) — custom click events.** Not a blocker, but worth doing *before* launch rather than after: it's the difference between knowing which tiles people open from day one and starting that clock a month late. | 🟢 me |
+
+**What is *not* blocking:** the portrait ([T2](#t2)), the leopard gecko
+([W2](#w2)) and anything else with a `TODO:` credit simply don't render —
+the guardrails keep unfinished pieces off the page rather than showing them
+half-built. The site is publishable with all of them outstanding.
+
+---
+
 # 📥 FILE DROPS
 
 Drop the file at the exact path and it appears on its own — no code change.
 A missing file renders as a hidden tile, never a broken box. Run
-`npm run check:assets` any time to see what's still missing.
+`npm run check:assets` any time to see what's still missing — **it is
+currently clean**; everything below is a file nothing references yet.
 
 | What | Exact path | Status |
 |---|---|---|
-| **Satanizar el Fuego slides (6)** | `public/gallery/satanizar/` — see filenames below | ⬜ **this is the folder you asked about** |
-| Gallery slot images (20) | `public/gallery/slots/` — each slot tile shows its own path on the Wall | ⬜ waiting |
+| Portrait, **full resolution**, background removed | `public/gallery/portraits/sunglasses.png` | ⬜ waiting — see [T2](#t2) |
 | Fuego.Earth logo | `public/logos/fuego-earth.svg` | ⬜ waiting |
-| Sunglasses/kitchen portrait, **full resolution** | `public/gallery/portraits/sunglasses.jpg` | ⬜ waiting — see [T2](#t2) |
+| Hyticos logo | `public/logos/hyticos.svg` | ⬜ waiting |
 
-### Satanizar el Fuego — the six filenames
+The logos are only referenced from `src/content/experience.ts`, which
+currently renders nowhere — see [E4](#e4). They're worth having anyway.
 
-Put them in **`public/gallery/satanizar/`**, named exactly:
+### Where a deck's files go
+
+**Both decks are in and live.** Satanizar el Fuego (6 slides) is at
+`public/gallery/satanizar/`, and *Cuando la plataforma me diga cuándo
+quemar* (8 pages) at `public/gallery/abuelos-y-plataforma/`. Both are
+credited to Diana Guadalupe Soto Erazo, and the second one also names
+Pablo, Jeanneth and Diana for the drawings.
+
+For the next one: **one folder per deck under `public/gallery/`**, and
+drop the files under the names `data.ts` lists for that deck.
+
+**If it's a PDF**, hand me the PDF rather than exporting pages yourself —
+Ghostscript is on this machine and renders the pages straight into the
+folder:
 
 ```
-public/gallery/satanizar/01-cover.jpg
-public/gallery/satanizar/02-que-significa.jpg
-public/gallery/satanizar/03-por-que-lo-hacemos.jpg
-public/gallery/satanizar/04-por-que-dejarlo.jpg
-public/gallery/satanizar/05-que-podemos-hacer.jpg
-public/gallery/satanizar/06-bibliografia.jpg
+gs -q -dNOPAUSE -dBATCH -dSAFER -dUsePDFPageSize \
+   -sDEVICE=jpeg -r150 -dJPEGQ=82 \
+   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 \
+   -sOutputFile=p%d.jpeg <file>.pdf
 ```
 
-The tile is already wired in `data.ts` and credited to *Diana Soto,
-"Gestión Integral del Fuego en el mundo", Sept. 2025*. Names must match
-character for character — `.jpg`, not `.jpeg`. Drop all six and the tile
-turns on by itself.
+150dpi and quality 82 put an 8-page deck at about 2.4 MB, which is the
+right trade for slides that get read up close.
 
-**✅ No longer waiting:** the two LinkedIn videos are in
-(`prairie-dog.mp4`, `leopard-gecko.mp4`) and wired. They now need titles
-and credits instead — see [W2](#w2).
+Two things that make dropping files forgiving:
+
+- **A partial drop works.** A deck probes its slides on load and shows the
+  ones that exist, so three of eight renders as a three-page deck rather
+  than the tile vanishing.
+- **`npm run check:assets` lists what's still missing** by name, any time.
+
+The one part that isn't drag-and-drop is the `data.ts` entry naming the
+slides and the credit. Tell me the folder and the creator and I'll wire it.
+
+The Satanizar deck's tags, from the original post, for whenever we write
+copy for it:
+
+```
+#NoSatanicemosElFuego #ManejoIntegralDelFuego #GestiónAmbiental
+#CambioClimático #ConocimientoAncestral #IncendiosForestales
+#CuencaAmazonica
+```
 
 ---
 
@@ -89,14 +135,15 @@ settle before any code, roughly in order:
    trigger has to read as clickable without a button's worth of chrome, or
    nobody clicks it and the line is never seen.
 2. **What's the reveal?** Slide down, type on, panel over the orange, name
-   moves aside. This is where the reference-hunting goes — worth looking at
-   how other portfolio sites handle a hidden intro, then picking.
+   moves aside.
 3. **What happens for people who don't click?** If the line is genuinely
    the most important sentence on the site, hiding it entirely behind an
    interaction is a real cost. Options: reveal automatically after a beat,
    show a truncated version, or accept it as a reward for the curious.
 
-Also to decide: does the line stay in About as well, or move out entirely?
+Do this **with [T2](#t2)**, not before it — a click-to-reveal designed over
+flat orange is a different thing from one designed over a photograph, and
+the photo is the bigger change of the two.
 
 > **Prompt:** *Read `src/components/sections/Hero.tsx`,
 > `src/components/sections/About.tsx` and `src/content/profile.ts`. I want
@@ -108,239 +155,215 @@ Also to decide: does the line stay in About as well, or move out entirely?
 > trigger, the animation, and whether the line stays in About too.*
 
 <a id="t2"></a>
-## T2 🔴🟣 The portrait, in the style you liked
+## T2 🔴🟣 The portrait at the top, cut out of its background
 
-**Blocked on the file.** The version you have
-(`~/Downloads/IMG 2476 from Google Photos.jpg`) is a **293 × 220 px, 28 KB
-thumbnail** — Google Photos hands out a preview unless you explicitly
-download the original. Too small for anything on this site: the *smallest*
-Wall tile is 26vw, roughly 375 px on a laptop and 665 px on a large
-monitor, doubled again on a retina screen. Re-download the full file
-(Google Photos → ⋯ → Download) or pull it off your phone, and put it at
-`public/gallery/portraits/sunglasses.jpg`.
+**Still blocked on the file, and it's the same blocker as last time.**
+The version in `~/Downloads/IMG 2476 from Google Photos.jpg` is *still* a
+**293 × 220 px, 28 KB thumbnail** — Google Photos hands out a preview
+unless you explicitly download the original. It is too small for anything
+on this page: the hero runs full-bleed, so even a phone needs ~800 px wide
+and a laptop wants 2000+.
 
-**The treatment you're after**, from the reference you showed: a full-bleed
-photo running edge to edge, with big display type sitting *over* it in the
-photo's empty space, split across two colours — part in the brand red, part
-in white. Subject offset to one side, type in the gap the subject leaves.
+**How to get the real one:** Google Photos → open the photo → ⋯ menu →
+**Download** (not right-click-save, which saves the preview). Or AirDrop it
+off your phone, which gives you the untouched original.
 
-Your Hero already does most of that: `Hero.tsx` sets your name in the
-display font, white with a maroon stroke, anchored bottom-left. The change
-is the backdrop — flat orange becomes the photo. Two problems specific to
-*this* photo, both solvable but worth naming:
+**What you said you want this time**, which is a change from the last
+description: the portrait at the top **with no background** — you cut out,
+sitting on the brand colour, rather than a full-bleed photo with a scrim
+over it. That's a better fit for this particular photo, because the busy
+kitchen behind you was the whole problem with the full-bleed version.
 
-- **The background is busy** exactly where the type goes — fruit bowl,
-  jars, striped wall. The reference gets away with clean type because the
-  wall behind it is empty. Fix: a brand-coloured scrim over the photo at
-  roughly 50–60%, which keeps the orange/maroon identity while flattening
-  the clutter enough for white type to hold.
-- **The sunglasses hide your eyes.** In the reference, the eye contact is
-  what makes it land. Mirrored shades read fun, not "front door of a
-  portfolio". Not a blocker — a taste call you should make deliberately.
+Two consequences worth knowing before you cut it out:
 
-If the Hero version doesn't convince once it's on screen, the fallback is
-the Wall, where the fruit and the shades are the point rather than
-something to design around.
+- **Cutout means PNG, not JPG.** A JPEG can't hold transparency. Save it as
+  `public/gallery/portraits/sunglasses.png`. `profile.png` at the repo root
+  is already a background-removed PNG — same treatment.
+- **The edges do the work.** Hair and the sunglasses' rim are where a bad
+  cutout shows. Photoshop / Photos' own "remove background" / remove.bg all
+  work; check the result on both the orange *and* the maroon, since a white
+  halo is invisible on one and obvious on the other.
 
-> **Prompt:** *The file `public/gallery/portraits/sunglasses.jpg` is now in
-> place. Read `src/components/sections/Hero.tsx`. Replace the flat orange
-> background with this photo, full-bleed, keeping the existing display-type
-> treatment for my name (white, maroon stroke, bottom-left). Add a
-> brand-coloured scrim over the photo — start around 55% — so the type
-> stays readable over the busy kitchen background, and tune it until the
-> name reads cleanly at both mobile and desktop widths. Keep the location
-> line and both buttons. Show me the result before committing.*
+Still an open taste call, unchanged: **the sunglasses hide your eyes.** In
+the reference you liked, the eye contact is what makes it land.
+
+🟣 **The design half is the part you're gathering references for in Google
+Stitch** — bring those back and we'll do the layout against them rather
+than guessing. The questions the references need to answer: does the name
+sit over you or beside you, which side you stand on, and whether the
+buttons and location line stay where they are.
+
+> **Prompt:** *The file `public/gallery/portraits/sunglasses.png` is now in
+> place — a background-removed cutout with transparency. Read
+> `src/components/sections/Hero.tsx`. Put me in the hero next to the name,
+> keeping the existing display-type treatment (white, maroon stroke) and the
+> brand background rather than a photo backdrop. Here are the layout
+> references I collected: [PASTE]. Match the one I've marked, keep the
+> location line and both buttons, and show me the result at mobile and
+> desktop widths before committing.*
 
 ---
 
 # 2️⃣ THE WALL — `src/components/gallery/`
 
-<a id="w1"></a>
-## W1 🟣 Credit strategy — do this before W2 and W4
+<a id="w8"></a>
+## W8 🔴🟢 The Papers tile points at a 404 — **publish blocker**
 
-**The one you flagged as important, and the one that should go first**,
-because W2 and W4 both write credit data and shouldn't be written twice.
+`data.ts` has a tile titled "Papers" whose `href` is `/papers`. That route
+does not exist; clicking it on the live site returns a 404. It's the only
+dead link on the site, and the only thing in this file that is genuinely
+broken rather than merely unfinished.
 
-**The goal, in your words:** anyone looking at a piece on the Wall should
-be able to get from it to the person or agency who made it — LANDFIRE, the
-person who posted it on LinkedIn, the photographer — easily.
+🔴 **Pick one** and it's a one-line change:
 
-**What exists today is two half-systems that don't know about each other:**
+1. **Cut the tile.** Nothing else references it, and the Wall doesn't miss
+   a tile that was a placeholder for something that doesn't exist yet.
+2. **Point it at a real destination** — a Google Scholar profile, an ORCID
+   page, a PDF in `public/papers/` (the folder exists and is empty).
+3. **Build a real `/papers` index page.** Most work, only worth it if
+   there's more than one thing to list.
 
-- `source: { handle, href }` → renders as a small `@handle` in the tile
-  corner, **only on hover**, and only links to a homepage. Used by the
-  books, Distill, and LANDFIRE.
-- `credit: "free text string"` → a plain sentence with no link, shown
-  **only inside the lightbox**. Used by the Satanizar deck.
+> **Prompt:** *In `src/components/gallery/data.ts`, the `papers` tile links
+> to `/papers`, which 404s. [Delete the tile / point it at URL]. Check
+> nothing else references it.*
 
-So some pieces credit on the tile, some in the lightbox, some in neither,
-the shapes differ, and hover-only means credit is invisible on a phone —
-where there is no hover at all. That last point is the real bug: on mobile,
-most of the Wall is currently uncredited.
+<a id="w7"></a>
+## W7 🔴 The platform essay — two things still missing
 
-**The proposal to react to:** collapse both into one structured field, so
-every tile is credited the same way and it's impossible to add a piece
-without saying where it came from.
+*Cuando la plataforma me diga cuándo quemar* is live on the Wall: eight
+pages rendered from Diana's PDF, ‹ › to flip, credited to her with the
+illustrators named.
 
-```ts
-credit: {
-  who: "Diana Soto",                    // person or organisation
-  relation: "author",                   // author | data | photo | posted | mine
-  href: "https://linkedin.com/in/…",    // straight to them, not a homepage
-  context: "Gestión Integral del Fuego en el mundo, Sept. 2025",  // optional
-}
-```
+Not a publish blocker — the credit links to her profile, which is the part
+that matters. Two things would finish it:
 
-Points to settle with you:
-
-- **Is `relation` the right vocabulary?** "Data from LANDFIRE" and "Posted
-  by Diana Soto" and "Photo by X" are genuinely different relationships and
-  flattening them to one word loses that.
-- **Where does it show?** Recommendation: tile corner *always visible*
-  (not hover) at small size, plus the full credit in the lightbox. You
-  liked how "Un logro colectivo" reads — that's the lightbox layout, so the
-  lightbox half is already close.
-- **Does `mine` render at all?** Your own work probably shouldn't carry a
-  byline, but the field should still be required so nothing slips through
-  uncredited by accident.
-- **Enforcement:** make `credit` non-optional in the `FrameBase` type, so
-  TypeScript refuses to build a tile without one. That's what stops this
-  drifting again in six months.
-
-> **Prompt:** *Read `src/components/gallery/frames/base.ts`,
-> `frames/shared.tsx`, `frames/registry.tsx`, `data.ts`, and the lightbox
-> component. The Wall currently has two overlapping attribution mechanisms:
-> a hover-only `source: {handle, href}` byline on the tile, and a free-text
-> `credit` string shown only in the lightbox. I want one credit system:
-> structured, required by the type system so no tile can ship uncredited,
-> always visible on the tile (not hover-only — it's invisible on mobile
-> today), and linking straight to the creator rather than a homepage.
-> Propose the data shape and the two render treatments (tile + lightbox)
-> before writing code. Then migrate every existing entry in `data.ts` to
-> it. The lightbox treatment should follow how the "Un logro colectivo"
-> post already reads.*
+1. **The post's permalink and date.** The Satanizar tile reads "Gestión
+   Integral del Fuego en el mundo, Sept. 2025"; this one has no such line.
+   The post is here:
+   <https://www.linkedin.com/posts/diana-guadalupe-soto-erazo-a7177b4a_entre-mis-abuelos-y-la-plataforma-activity-7494073346297339905-J_-6>
+2. **Whether it should carry the post's words.** A tile can hold a slide
+   set *and* body text (that's what the map tiles do), so this could open
+   with Diana's framing beside the pages instead of the pages alone.
 
 <a id="w2"></a>
-## W2 🔴🟢 Fix the two video tiles — titles and credits
+## W2 🔴 Leopard gecko — whose clip is it?
 
-Both LinkedIn videos are in the repo and on the Wall, but:
+Down to one tile. The prairie dog is sorted: real title, and credited to
+Fernando Boza & Tyler Smith / The Nature Conservancy.
 
-- **`prairie-dog`** has a literal `TODO: real title` comment and no credit.
-  The code notes it's a clip from a **Nature Conservancy Colorado** post,
-  so it is *not* your footage and needs attribution before it's live.
-- **`leopard-gecko`** — needs the same check. Yours, or someone else's?
+`leopard-gecko` still carries `credit: { who: "TODO: whose footage?" }`,
+which keeps it off the live Wall entirely — the filter at the bottom of
+`data.ts` drops any tile whose credit starts with "TODO" rather than
+publishing someone's video with no name on it. It also still has a
+filename for a title.
 
-🔴 **From you:** a real title for each, and for anything not yours, the
-name + link of whoever made it. Then it's a 🟢 five-minute edit.
+🔴 **From you:** yours or someone else's, a name and link if it's theirs,
+and a real title. Then it's a two-minute edit and it appears.
 
-Best done right after W1, so the credits get written in the new shape once.
-
-> **Prompt:** *In `src/components/gallery/data.ts`, the `prairie-dog` and
-> `leopard-gecko` video entries need real titles and proper attribution —
-> prairie-dog is a Nature Conservancy Colorado clip, not my footage. Set
-> the titles to [TITLES] and the credits to [CREDITS]. Use the credit
-> system as it stands after W1.*
+> **Prompt:** *In `src/components/gallery/data.ts`, the `leopard-gecko`
+> entry has a placeholder credit that keeps it filtered off the Wall, and
+> "Leopard Gecko" as a title. It's [MINE / X's footage, at LINK]. Set the
+> title to [TITLE] and write the credit in the existing `Credit` shape from
+> `credit.ts`.*
 
 <a id="w3"></a>
-## W3 🟣 Post-style tiles — the treatment you like, applied wider
+## W3 🟣 More post-style tiles
 
-`type: "post"` (see `PostFrame.tsx`) is the "Un logro colectivo" tile: the
-photo on the Wall, and clicking opens a lightbox with the photo, the full
-text, the credit, and a link out to where it lives. You want more tiles
-carrying story this way instead of being bare images.
+`type: "post"` is the treatment you like: the image on the Wall, and
+clicking opens a lightbox with the image, the full text, the credit, and a
+link out. Three tiles use it now — the graduation post, the rivers maps and
+the soils maps.
 
-**The layout already exists and works — what's missing is the words.** This
-is a writing task disguised as a code task. It can't be batch-executed;
-it needs a pass per tile with you.
+**The layout exists and works — what's missing is the words.** This is a
+writing task disguised as a code task. It can't be batch-executed; it needs
+a pass per tile with you.
 
 🔴 **From you:** for each tile you want converted, the body copy and the
 link out. Realistically one sitting where we go tile by tile.
+
+Candidates as the Wall stands: the YouTube "I have a Mission" video, the
+Conway's Life tile, and the Satanizar deck once its slides land.
 
 **Exception, as you said: videos keep no sidecard.** `VideoFrame.tsx` opens
 straight to the video at full size with sound, and that stays.
 
 > **Prompt:** *Read `src/components/gallery/frames/PostFrame.tsx` and
 > `data.ts`. I want to convert these tiles to `type: "post"` so they open
-> with body text like the graduation post does: [LIST TILES]. Go one at a
-> time — show me the current entry, ask me for the body copy and the link
-> out, then write it. Do not convert any video tile.*
+> with body text like the graduation and map posts do: [LIST TILES]. Go one
+> at a time — show me the current entry, ask me for the body copy and the
+> link out, then write it. Do not convert any video tile.*
 
-<a id="w4"></a>
-## W4 🟢 LANDFIRE tile — say what LANDFIRE actually is
+<a id="w6"></a>
+## W6 🔴🟢 The two LinkedIn permalinks for the map posts
 
-`LandfireFrame.tsx` renders a live vegetation-cover map and a link to the
-official viewer, with zero explanation. Someone who's never heard of
-LANDFIRE sees a green map of the US and moves on. The logo is already in
-the repo at `public/logos/landfire.png` — it just needs the copy and a
-layout that fits it in without covering the map.
+The rivers and soils maps now carry the text you wrote for them on
+LinkedIn, and open as posts. What they don't have is a **link back to the
+original post** — the graduation tile has one ("Read on LinkedIn ↗") and
+these two don't, so the lightbox just ends after the last paragraph.
 
-Fully unblocked; the only open question is how much text, which is easier
-to answer looking at it than in the abstract.
+`href` is optional on a post now, so nothing is broken — the button simply
+doesn't render. But a post with no way back to where it was published is
+the one thing missing from those two tiles.
 
-> **Prompt:** *Read `src/components/gallery/frames/LandfireFrame.tsx`. The
-> tile shows a live LANDFIRE vegetation-cover map with no context for
-> anyone who doesn't already know what LANDFIRE is. Add the logo
-> (`public/logos/landfire.png`) and a short explanation of what LANDFIRE is
-> and why this layer matters for wildfire work. Keep the live map the main
-> event — the text should not cover it. Propose two layout options before
-> implementing.*
+🔴 **From you:** the two LinkedIn URLs. On LinkedIn: open the post → ⋯ →
+*Copy link to post*.
 
-<a id="w5"></a>
-## W5 🔴 The 20 empty slots — fill or cut
-
-`data.ts` ends with twenty `placeholder` tiles rendering as dashed outlines
-so the Wall's shape is visible. They're honest scaffolding, but twenty
-empty boxes is a lot of empty on a live site.
-
-🔴 **Decide:** fill them (drop images at the paths each slot shows), or cut
-the count down to however many pieces you actually have coming.
+> **Prompt:** *In `src/components/gallery/data.ts`, the `map-rivers` and
+> `map-soils` post entries have a TODO where their LinkedIn permalink
+> should be. Set `href` on map-rivers to [URL] and on map-soils to [URL],
+> with `linkLabel: "Read on LinkedIn ↗"` to match the graduation post.*
 
 ---
 
-# 3️⃣ EXPERIENCE — `About.tsx` *(currently "About")*
+# 3️⃣ ABOUT — `About.tsx`
+
+The section is now: the bio, then one cream panel holding Skills and the
+CV download. The transcribed job history is gone — you called it cluttered,
+and the CV says it better.
+
+<a id="e4"></a>
+## E4 🟣 `experience.ts` renders nowhere now — decide what that means
+
+**New, and a direct consequence of deleting the on-page CV.**
+`src/content/experience.ts` is complete and correct — four jobs, Hyticos
+included, all fields filled — and **nothing on the site reads it.**
+`OrgLogo.tsx` is likewise now unused.
+
+That's fine as a deliberate state, but it should be a decision rather than
+a leftover. Three ways it goes:
+
+1. **Leave it.** The data stays as the source for the CV and for whatever
+   comes next; the site says who you are and the PDF says where you worked.
+   Zero work, and defensible.
+2. **Bring back something much lighter** — a single line per job (org, role,
+   years) with no bullets, no logos, no location. Three lines instead of
+   forty, which was the actual complaint.
+3. **Delete `experience.ts` and `OrgLogo.tsx`.** Cleanest repo, and the one
+   that's hard to undo. Only if you're sure the history never comes back to
+   the page.
+
+Worth settling alongside [E3](#e3) — they're the same question asked twice.
+
+> **Prompt:** *`src/content/experience.ts` and
+> `src/components/sections/OrgLogo.tsx` are no longer read by anything since
+> the job history came off the About section. Show me what option 2 would
+> look like — one compact line per job, no bullets or logos — as a diff
+> against the current `About.tsx`, so I can compare it against just leaving
+> the section as it is.*
 
 <a id="e1"></a>
-## E1 🟢 Rename the section
+## E1 🟢 Does the section still want renaming?
 
-You want "About" to become "Experience" or similar. Small, but it touches
-four places and should be done in one commit: the `<h2>` in `About.tsx`,
-the nav link label and `#about` anchor in `Nav.tsx`, the section `id`, and
-the filename itself if you want it to match.
+The old plan was "About" → "Experience". **That's now backwards**: with the
+job history gone, the section is the bio plus skills, which is exactly what
+"About" means. Renaming it to "Experience" would name it after the one
+thing it no longer contains.
 
-Worth deciding the name first — if T1 moves the bio up to the Hero, this
-section becomes purely Experience + Skills, and "Experience" is exactly
-right. If the bio stays, "About" still fits better. **So do T1 first, or
-decide the name knowing T1 is coming.**
+So: 🟢 do nothing, unless [T1](#t1) moves the bio to the hero — at which
+point the section is *only* skills and a CV button, and wants a different
+name again (and probably a different shape).
 
-> **Prompt:** *Rename the About section to "Experience" throughout:
-> the heading in `src/components/sections/About.tsx`, the nav label and
-> anchor in `Nav.tsx` (`#about` → `#experience`), the section `id`, and
-> rename the file to `Experience.tsx`, updating the import in
-> `src/app/page.tsx`. Check nothing else links to `#about`.*
-
-<a id="e2"></a>
-## E2 🔴 Hyticos — three missing fields
-
-**Mostly done.** Fuego.Earth is written up in full and live. Hyticos has its
-work described (the AHP fire-index map), but is still missing three things,
-and they're not things to invent on a portfolio:
-
-- **Role title**
-- **Dates**
-- **Location**
-
-Until those land, the placeholder filter at the bottom of `experience.ts`
-keeps the whole entry off the site — so nothing broken is showing, it's
-just absent. Give me the three fields and it appears on its own.
-
-Still waiting on the logo too: `public/logos/hyticos.svg`.
-
-> **Prompt:** *In `src/content/experience.ts`, the Hyticos entry has its
-> `summary` written but `role`, `dates` and `location` are still `TODO:`
-> placeholders, which keeps it filtered off the site. Set them to
-> [ROLE], [DATES], [LOCATION]. Then check it renders in the Experience
-> section and sits in the right chronological position among the other
-> jobs.*
+Parked here rather than deleted so it gets revisited after T1 lands.
 
 <a id="e3"></a>
 ## E3 🟣 The tuned-CV problem
@@ -353,71 +376,43 @@ conversation:
 > — broader, or emphasising other things. The gap between the two is
 > awkward at best and looks inconsistent at worst.
 
-No obvious right answer, so this is a discussion, not a task. The shapes it
-could take, roughly from least to most work:
+**Deleting the on-page history changed this problem rather than solving
+it.** There's now no contradiction to spot, because the site says nothing
+about the jobs at all — but the CV is also no longer the *short* version of
+anything, it's the only version. Whatever the reader was sent is the whole
+story.
 
-1. **Make the site the superset.** The site shows everything; each CV is a
-   subset of it. The gap stops being a contradiction and becomes "the CV is
-   the short version" — which is what a reader assumes anyway.
-2. **Reframe by outcome rather than by role.** Write bullets around what
-   changed because of the work rather than the tools used, so the same text
-   reads as relevant to a GIS role and a climate-policy role without being
-   rewritten for either.
+The shapes it could take, roughly from least to most work:
+
+1. **The site is the superset.** Needs some history back on the page —
+   see [E4](#e4) option 2.
+2. **Reframe by outcome rather than by role.** Bullets about what changed
+   because of the work rather than the tools used, so the same text reads
+   as relevant to a GIS role and a climate-policy role.
 3. **Let the visitor pick the lens.** A toggle — "I'm here about GeoAI /
-   climate / data" — that re-emphasises which bullets show. Genuinely
-   useful, real design and content work, and risks feeling gimmicky if
-   done lightly.
+   climate / data" — that re-emphasises what shows. Real design and content
+   work, and risks feeling gimmicky if done lightly.
 4. **Per-application links.** A URL like `?role=geoai` that tunes the page
-   to match the CV you sent. Most precise, most machinery, and easy to
+   to match the CV you sent. Most precise, most machinery, easiest to
    forget to maintain.
 
-There's also the related thing you mentioned earlier and never specified:
-**extra content per experience** beyond the bullets. Worth folding into the
-same conversation, since both are "how much does each job say, and to
-whom".
+Best done after [N2](#n2), so there's data on whether anyone clicks
+Download CV at all.
 
 > **Prompt:** *I send CVs tuned to different roles, and I'm worried about
-> the gap between a tuned CV and what my portfolio's experience section
-> says. Read `src/content/experience.ts` and
-> `src/components/sections/About.tsx`. Walk me through the options for
-> handling this — superset, outcome-framed bullets, a visitor-selectable
-> lens, per-application URLs — with the real tradeoffs of each, then
-> recommend one. I also want more content per job than bullets; factor that
-> in. Don't write code until we've settled the approach.*
+> the gap between a tuned CV and what my site says. The job history is
+> currently not on the site at all — only a Download CV button. Read
+> `src/content/experience.ts` and `src/components/sections/About.tsx`, and
+> walk me through the options — superset, outcome-framed bullets, a
+> visitor-selectable lens, per-application URLs — with the real tradeoffs of
+> each, then recommend one. Don't write code until we've settled it.*
 
 ---
 
 # 4️⃣ MY JOURNEY — `Journey.tsx`, `src/components/map/`
 
-<a id="j1"></a>
-## J1 🟢 Move the headline numbers
-
-`Journey.tsx` currently opens with three big numbers in a row — campuses,
-countries, institutions — above the map. You want the "8 countries" out of
-that row, and whatever survives placed somewhere better.
-
-The row has a real problem: three display-size numbers stacked above a map
-compete with the map for the eye, and they're the least interesting thing
-in the section — the pins are the content. Options, needing one decision
-from you:
-
-- **Cut the row entirely**, and let the map speak. Cleanest.
-- **Keep one number**, woven into the intro line as a sentence rather than
-  standing as a stat — *"Nine campuses, eight countries, one degree."*
-- **Move them onto the map** as a small overlay in a corner, so they label
-  the thing they describe instead of sitting above it.
-
-All three are derived from `places.ts` and stay accurate automatically.
-
-> **Prompt:** *Read `src/components/sections/Journey.tsx` and
-> `src/content/places.ts`. The three headline stats (campuses, countries,
-> institutions) sit in a row above the map and compete with it. Remove the
-> row. Show me two alternatives: one where the numbers become part of the
-> intro sentence, and one where a single number overlays a corner of the
-> map. Keep them derived from `places.ts` so they can't go stale.*
-
 <a id="j2"></a>
-## J2 🔴 Friends' pins
+## J2 🔴 Friends' pins, and a "What is UWC" marker
 
 The map, legend, and grouping all work — this group is data-only. Add
 entries to `src/content/places.ts` with `group: "friends"` and the legend
@@ -426,55 +421,32 @@ row appears by itself.
 🔴 **From you:** names and cities. Also worth thinking about whether you
 want friends' names public on a site recruiters read.
 
-Two smaller map ideas from earlier, still open: a **"What is UWC" marker**
-with an info popup, for the many readers who won't know the acronym.
+Still open from earlier: a **"What is UWC" marker** with an info popup, for
+the many readers who won't know the acronym.
 
 ---
 
-# 📊 ANALYTICS — the good place to start
-
-Genuinely the best first task on this list: small, self-contained, touches
-almost nothing, and every other decision here gets easier once you can see
-what people actually click. Do it before the design work, so the design
-work has data.
-
-<a id="n1"></a>
-## N1 🟢 Install and turn on
-
-Three steps: `npm i @vercel/analytics`, render `<Analytics />` inside
-`<body>` in `src/app/layout.tsx`, then enable Web Analytics in the Vercel
-dashboard (Project → Analytics → Enable — 🔴 only you can do that part; it
-collects nothing until the toggle is on).
-
-No cookies, no consent banner, no PII, so nothing to add to a privacy
-policy. Out of the box: page views, unique visitors, top pages, referrers,
-country, device/browser.
-
-⚠️ This project is on **Next 16.3.3**, and `AGENTS.md` is explicit that
-published guides may be stale for this version — check
-`node_modules/next/dist/docs/` for the current App Router integration
-before writing the code.
-
-> **Prompt:** *Add Vercel Web Analytics to this project. Install
-> `@vercel/analytics` and render `<Analytics />` in
-> `src/app/layout.tsx`. This is Next 16.3.3 — per `AGENTS.md`, check
-> `node_modules/next/dist/docs/` for the current App Router integration
-> before writing anything, rather than following a remembered guide.*
+# 📊 ANALYTICS
 
 <a id="n2"></a>
 ## N2 🟢 Custom click events
 
-Where the real value is. Do it as its own task after N1 is deployed and
-confirmed working.
+Vercel Web Analytics is installed and rendering (`<Analytics />` in
+`layout.tsx`). Page views, referrers and countries are already coming in
+— assuming the dashboard toggle is on (Project → Analytics → Enable; 🔴
+only you can do that part).
+
+What's left is the part with the real value:
 
 - **Wall tile opened, with the tile `id` as a property** — *the single most
   useful number on this site.* It tells you which pieces earn their place
-  and which should be cut, which directly answers W5 and W3.
-- **"Download CV" clicked** (`About.tsx`)
+  and which should be cut, which is what [W3](#w3) needs to know.
+- **"Download CV" clicked** (`About.tsx`) — now the *only* route to your job
+  history, so this number matters more than it did.
 - **Contact modal opened**, and separately, **form actually submitted** —
-  the gap between those two is the real conversion story
-- **Outbound clicks** — the three footer socials, LANDFIRE's viewer, book
-  links, LinkedIn post links
+  the gap between those two is the real conversion story.
+- **Outbound clicks** — the three footer socials, LANDFIRE's viewer, the
+  credit-badge links, LinkedIn post links.
 - **Wall scroll depth** — how far people get before giving up. Fire at two
   or three milestones, not continuously.
 
@@ -497,19 +469,15 @@ appears in the dashboard, and you won't notice for weeks.
 
 # 🧭 Suggested order
 
-Rough sequence, given what unblocks what:
-
-1. **N1 + N2 — analytics.** Small, isolated, and starts collecting data
-   while everything else is still being decided.
-2. **W1 — credit strategy.** Blocks W2 and W3; doing it after them means
-   writing every credit twice.
-3. **W2, W4, J1, E1** — the small unblocked ones, any order.
-5. **T1 — the click-to-reveal intro.** Design conversation. Settle it
-   before E1's rename, since it decides whether the section is still
-   "About".
-6. **T2 — the portrait**, once the full-res file exists.
-7. **E3 — the tuned-CV question.** The most open-ended thing here, and the
-   one that benefits most from having analytics data first.
+1. **The publish checklist above**, in order. That's the launch.
+2. **[W6](#w6) + [W2](#w2)** — two facts from you, five minutes of edits,
+   and both tiles are finished.
+3. **[T2](#t2) + [T1](#t1) together** — the hero. The biggest visible change
+   left, and the one you're gathering references for.
+4. **[E4](#e4), then [E3](#e3)** — what happens to the job history, decided
+   once.
+5. **[W3](#w3)** — a writing sitting, tile by tile, informed by which tiles
+   the analytics say people actually open.
 
 ---
 
@@ -527,21 +495,33 @@ Two layers, so nothing broken is ever *shown*:
    console with the reason. Open devtools and filter for `gallery:hidden`
    to see what's currently hidden and why.
 
+A third, narrower one: any tile whose `credit.who` starts with "TODO" is
+filtered out of `data.ts` before it reaches the Wall, and the same rule
+applies to `role`/`dates` in `experience.ts`. Uncredited work doesn't ship.
+
 ## Module structure
 
 Split by feature so pieces can be worked on without touching shared files:
 
 - `src/components/gallery/` — the Wall.
-  - `HorizontalGallery.tsx` — the looping horizontal scroller.
+  - `HorizontalGallery.tsx` — the looping horizontal scroller, its edge-zone
+    panning, and the one-time hint line above it.
   - `data.ts` — the actual pieces. **Edit this file to add/reorder/resize
     tiles — no need to touch any component.**
+  - `credit.ts` — the one attribution shape. Every tile carries one; the
+    type system won't build without it.
   - `frames/` — one file per tile *kind*; `frames/registry.tsx` documents
-    how to add a new kind.
+    how to add a new kind. `ImageSetFrame.tsx` is the deck: ‹ › page
+    controls, click-anywhere to advance, and slides that haven't been
+    dropped yet are skipped rather than taking the tile down.
+  - `Lightbox.tsx` — every kind of "opened" tile: image, video, YouTube, and
+    the post layout (photo or photo-set on one side, words on the other).
   - `reportAssetIssue.ts` — the single place failures get logged.
 - `src/components/map/` — `BaseMap.tsx` + `baseLayers.ts` + `MapLegend.tsx`.
 - `src/components/contact/` — `ContactModal.tsx` + `ContactTrigger.tsx`.
 - `src/components/sections/` — one file per page section, composed in
   `src/app/page.tsx`.
-- `src/content/` — text as data, separate from components.
+- `src/content/` — text as data, separate from components. Note that
+  `experience.ts` is currently read by nothing — see [E4](#e4).
 - `src/app/api/landfire-tile/` — proxy for LANDFIRE map tiles (works around
   a browser block; see the file's comment).

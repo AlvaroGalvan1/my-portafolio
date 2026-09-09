@@ -29,12 +29,15 @@ const BOOK_SHAPE = { colSpan: 1, rowSpan: 1, aspectRatio: 0.66 } as const;
 // domain is allowlisted in next.config.ts. `work` is the OL work key
 // (e.g. "OL59863W"): the edition-independent page for the title.
 //
+// A book is an `image`, not a `link`: clicking a cover enlarges the cover.
+// It used to navigate to Open Library, which took the visitor off the site
+// mid-Wall to a catalogue page that isn't the point — the point is what's
+// on the shelf. Open Library is still reachable through the credit badge,
+// which is the acknowledgement that actually matters to them.
+//
 // The credit names the author, not Open Library. Open Library hosts the
 // cover JPEG; it didn't write the book, and a byline reading "@openlibrary"
-// on The Dispossessed credits the wrong party entirely. Hotlinking their
-// cover API is an asset courtesy, not an authorship claim — the link out
-// goes to the OL work page either way, which is the acknowledgement that
-// actually matters to them.
+// on The Dispossessed credits the wrong party entirely.
 function book({
   id,
   title,
@@ -51,15 +54,12 @@ function book({
   return {
     id,
     title,
-    type: "link",
-    href: `https://openlibrary.org/works/${work}`,
-    thumbnailSrc: `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`,
-    // The credit badge already names the author, so repeating it here read
-    // as a stutter — two "Naomi Klein"s on one small tile. The label says
-    // where the link *goes* instead, which is different information and
-    // puts Open Library back in as the destination rather than as the
-    // book's author.
-    linkLabel: "Open Library ↗",
+    type: "image",
+    src: `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`,
+    alt: `${title} — ${author}`,
+    // The caption is the one place the author's name is spelled out next to
+    // the title; the tile itself stays a cover and nothing else.
+    caption: `${title} — ${author}`,
     ...BOOK_SHAPE,
     credit: {
       who: author,
@@ -121,27 +121,61 @@ const allItems: FrameData[] = [
     credit: { who: "John Conway", relation: "after", context: "Game of Life, 1970" },
     ...SHAPE.small,
   },
-  // The four Mexico/Oaxaca maps, each hung as its own framed piece rather
-  // than combined into one tile. All are 2048×1448 (A-series landscape), so
-  // each carries `aspectRatio: 1.414` and keeps its true proportions instead
-  // of being cropped to fill a grid cell.
-  ...[
-    { id: "map-rivers-mexico", title: "The Rivers of Mexico", src: "/gallery/maps/river_mexico.jpeg" },
-    { id: "map-rivers-oaxaca", title: "The Rivers of Oaxaca", src: "/gallery/maps/river_oaxaca.jpeg" },
-    { id: "map-soils-mexico", title: "Soils of Mexico", src: "/gallery/maps/soil_mexico.jpeg" },
-    { id: "map-soils-oaxaca", title: "Soils of Oaxaca", src: "/gallery/maps/soil_oaxaca.jpeg" },
-  ].map((m) => ({
-    id: m.id,
-    title: m.title,
-    type: "image" as const,
-    src: m.src,
-    alt: m.title,
-    caption: m.title,
-    colSpan: 1 as const,
-    rowSpan: 1 as const,
+  // The QGIS map series — two pieces, not four tiles. Each was published as
+  // one post with one piece of writing covering a national sheet and an
+  // Oaxaca sheet, so they hang as one framed piece each: the Wall shows the
+  // national sheet, and clicking opens the writing with both sheets to flip
+  // between. Four separate tiles read as four unrelated prints and left the
+  // words off the site entirely.
+  //
+  // All the sheets are 2048×1448 (A-series landscape), hence
+  // `aspectRatio: 1.414` — they keep their true proportions instead of
+  // being cropped to fill a grid cell.
+  {
+    id: "map-rivers",
+    title: "The Rivers of Mexico",
+    type: "post",
+    src: "/gallery/maps/river_mexico.jpeg",
+    alt: "A map of Mexico's river network, drawn as fine branching lines.",
+    images: [
+      { src: "/gallery/maps/river_mexico.jpeg", alt: "The river network of Mexico." },
+      { src: "/gallery/maps/river_oaxaca.jpeg", alt: "The river network of Oaxaca." },
+    ],
+    credit: { who: "Álvaro Galván", relation: "mine" },
+    body: [
+      "can't help but see veins—not on a body, but on the land. 🫀",
+      "Rivers are the circulatory system of our planet—carving landscapes, sustaining life, and shaping human history. They don't just flow; they define. They nourish ecosystems, dictate settlements, and even draw the lines between nations.",
+      "Take the Rio Grande: a natural border, a political divide, a lifeline for communities on both sides 🇲🇽 🇺🇸",
+      "My latest map traces these vital arteries across Mexico, inspired by the work of Mashford Mahute. More than just geography, it's a reminder of how rivers silently sculpt our civilizations—past, present, and future.",
+    ],
+    // TODO: the LinkedIn permalink for this post, so the lightbox can link
+    // out the way the graduation post does. Until then the words are here
+    // and the button simply doesn't render.
+    colSpan: 1,
+    rowSpan: 1,
     aspectRatio: 1.414,
-    credit: { who: "Álvaro Galván", relation: "mine" as const },
-  })),
+  },
+  {
+    id: "map-soils",
+    title: "The Soils of Oaxaca",
+    type: "post",
+    src: "/gallery/maps/soil_mexico.jpeg",
+    alt: "A map of Mexico's soil profiles, shaded by soil type.",
+    images: [
+      { src: "/gallery/maps/soil_mexico.jpeg", alt: "Soil type profiles across Mexico." },
+      { src: "/gallery/maps/soil_oaxaca.jpeg", alt: "Soil type profiles across Oaxaca." },
+    ],
+    credit: { who: "Álvaro Galván", relation: "mine" },
+    body: [
+      "I'm from Oaxaca, a beautiful state in southern Mexico known for its rich culture, stunning landscapes, and incredible biodiversity. To practice my QGIS skills and showcase my home's cultural and natural wonders, I've created a series of maps inspired by the work of Mashford Mahute.",
+      "This map highlights Mexico's different soil type profiles, focusing on Oaxaca. Soil is the foundation of life; it supports agriculture, regulates water systems, stores carbon, and sustains ecosystems. In Oaxaca, the diversity of soil types reflects the region's unique geography.",
+      "I hope this map helps others appreciate the beauty and complexity of Oaxaca's natural resources. It's a small way to stay connected to my home 🏡",
+    ],
+    // TODO: the LinkedIn permalink for this post — see map-rivers above.
+    colSpan: 1,
+    rowSpan: 1,
+    aspectRatio: 1.414,
+  },
   {
     id: "leopard-gecko",
     // TODO: real title, once it's known whose clip this is — the title and
@@ -161,9 +195,20 @@ const allItems: FrameData[] = [
   },
   {
     id: "satanizar-el-fuego",
-    title: "Satanizar el Fuego",
+    // Diana's own title for the deck, emoji included — it's the name she
+    // published it under, not a description of it.
+    title: "Satanizar el Fuego 🔥",
     type: "imageSet",
+    // The slides are 1920×1080, so `aspectRatio: 16/9` is doing real work:
+    // without it the tile fills its cell at roughly 2.4:1 and `object-cover`
+    // crops a quarter of every slide's height away, text included.
+    //
+    // Half height, not full. A deck at full height dominates the Wall, and
+    // the reading happens by flipping through it up close rather than at a
+    // glance — the tile's job is to say "there are six slides here", which
+    // it does at this size.
     ...SHAPE.landscape,
+    aspectRatio: 16 / 9,
     credit: {
       who: "Diana Guadalupe Soto Erazo",
       relation: "author",
@@ -177,6 +222,42 @@ const allItems: FrameData[] = [
       { src: "/gallery/satanizar/04-por-que-dejarlo.jpg", alt: "¿Por qué debemos dejar de hacerlo?" },
       { src: "/gallery/satanizar/05-que-podemos-hacer.jpg", alt: "Gestión del fuego — ¿Qué podemos hacer?" },
       { src: "/gallery/satanizar/06-bibliografia.jpg", alt: "Bibliografía — Gestión del fuego" },
+    ],
+  },
+  {
+    // Titled from its own cover page, not from the LinkedIn URL slug —
+    // "entre mis abuelos y la plataforma" is the line the post opens with,
+    // and the piece itself is called this.
+    id: "cuando-la-plataforma",
+    title: "Cuando la plataforma me diga cuándo quemar",
+    type: "imageSet",
+    // Rendered from Diana's PDF at 150dpi (US Letter landscape, 1650×1275),
+    // hence the ratio — same reasoning as the Satanizar deck above.
+    ...SHAPE.landscape,
+    aspectRatio: 1650 / 1275,
+    credit: {
+      who: "Diana Guadalupe Soto Erazo",
+      relation: "author",
+      href: "https://www.linkedin.com/in/diana-guadalupe-soto-erazo-a7177b4a",
+      // The drawings are signed by three people across the eight pages —
+      // Pablo, Jeanneth and Diana — and they're half of what the piece is.
+      // Naming only the writer would credit half the work.
+      context: "Ilustraciones de Pablo, Jeanneth y Diana",
+    },
+    // Alt text in Spanish, like the Satanizar deck: the pages are Spanish,
+    // and a screen reader announcing them should stay in the voice they're
+    // written in. Each line describes its drawing and the line of the essay
+    // that page turns on — a page of prose can't be transcribed into an
+    // alt attribute, so it names what the page *is*.
+    images: [
+      { src: "/gallery/abuelos-y-plataforma/p1.jpeg", alt: "Portada — «Cuando la plataforma me diga cuándo quemar», de Diana Guadalupe Soto Erazo, sobre un cielo azul pintado a mano." },
+      { src: "/gallery/abuelos-y-plataforma/p2.jpeg", alt: "Página 1 — «mis abuelos sabían cuándo quemar» y ahora «la plataforma dice cuándo quemar»; dibujo de un niño con sombrero bajo el sol." },
+      { src: "/gallery/abuelos-y-plataforma/p3.jpeg", alt: "Página 2 — «Porque sin tejido social no vamos a ningún lado»; dibujo de un ala con corazones y la frase «¡Qué la vida se vuelva cada vez más linda!»." },
+      { src: "/gallery/abuelos-y-plataforma/p4.jpeg", alt: "Página 3 — la prohibición, el aumento de costos y el incendio que llega después; dibujo de un colibrí frente a un rostro." },
+      { src: "/gallery/abuelos-y-plataforma/p5.jpeg", alt: "Página 4 — «Miré el cielo. Sentí el viento. Toqué nuevamente la hierba»; dibujo de un pavo real." },
+      { src: "/gallery/abuelos-y-plataforma/p6.jpeg", alt: "Página 5 — «No quiero escoger entre el conocimiento de mis abuelos y la ciencia. Quiero que vuelvan a encontrarse»; dibujo de un árbol florecido." },
+      { src: "/gallery/abuelos-y-plataforma/p7.jpeg", alt: "Página 6 — «Que la plataforma advierta, pero que la comunidad comprenda, converse y decida»; dibujo de una raíz extendida." },
+      { src: "/gallery/abuelos-y-plataforma/p8.jpeg", alt: "Fin — dibujo de una tormenta sobre una casa y una flor roja, con la frase «Se resiste con todo»." },
     ],
   },
   {

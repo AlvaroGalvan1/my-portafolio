@@ -46,6 +46,31 @@ body {
 }
 
 /* Hand-painted sign lettering: hard offset drop shadow, no blur */
+/* The Wall's one-time hint points at the edge zone that starts the pan.
+   A static arrow beside a sentence reads as punctuation; one that drifts
+   toward the thing it names reads as a gesture, which is what makes anyone
+   put their pointer there. Stops entirely for a visitor who has asked their
+   OS for less motion. */
+@keyframes hint-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(7px);
+  }
+}
+
+.hint-arrow {
+  animation: hint-nudge 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint-arrow {
+    animation: none;
+  }
+}
+
 .text-signpainted {
   text-shadow:
     2px 2px 0 var(--shadow-color, var(--color-brand-red)),

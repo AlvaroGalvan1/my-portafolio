@@ -48,6 +48,11 @@ function tileWidth(item: FrameData) {
 export default function HorizontalGallery({ items }: { items: FrameData[] }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<LightboxContent | null>(null);
+  // The hint below the heading, and whether it's been earned out. Sideways
+  // scrolling is the one interaction on this page nobody arrives expecting,
+  // so it gets said in words once — and then never again, because a hint
+  // that stays after you've done the thing is just noise.
+  const [hinted, setHinted] = useState(false);
   // Tiles whose content failed to load — filtered out of the grid entirely
   // (not shown as an empty/broken box). A frame reports itself broken via
   // `onFail`, which also logs why through reportAssetIssue.
@@ -96,7 +101,10 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
     const onPointerMove = (e: PointerEvent) => {
       if (!down) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) moved = true;
+      if (Math.abs(dx) > 4) {
+        moved = true;
+        setHinted(true);
+      }
       if (moved) {
         row.scrollLeft = startScroll - dx;
         row.setPointerCapture(e.pointerId);
@@ -169,11 +177,42 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
 
   const setPan = (direction: -1 | 1, intensity: number) => {
     speedRef.current = direction * (MIN_SPEED + intensity * (MAX_SPEED - MIN_SPEED));
+    setHinted(true);
     runLoop();
   };
 
   return (
     <div className="relative bg-[#8f1c14] py-10">
+      {/* Set bold in the sans face rather than in the display one: it has to
+          carry across a red field at small size, and Bungee — the display
+          face — only ships at one weight and reads as a second heading
+          under "My Wall" rather than as an instruction.
+
+          Right-aligned, with the arrow trailing and drifting toward the
+          right edge zone. The arrow is the actual instruction: it ends up
+          about 64px from the edge, which on `sm` and up is already inside
+          that zone, so following it to read it starts the Wall moving. It
+          fades rather than disappearing, so cause and effect land in the
+          same moment.
+
+          The wording splits by input: the edge zones below are pointer-only
+          (`sm:block`), and telling a phone to move its mouse is telling it
+          nothing — so touch gets the gesture it actually has, and no arrow
+          pointing at a zone that isn't there. */}
+      <p
+        aria-hidden={hinted}
+        className={`mb-6 flex items-center justify-end gap-3 px-6 font-sans text-sm font-bold tracking-wide text-white transition-opacity duration-700 sm:px-16 sm:text-base ${
+          hinted ? "opacity-0" : "opacity-95"
+        }`}
+      >
+        <span className="sm:hidden">Swipe — the wall keeps going.</span>
+        <span className="hidden sm:inline">
+          Put your mouse here and the wall starts moving.
+        </span>
+        <span aria-hidden className="hint-arrow hidden text-xl leading-none sm:inline">
+          →
+        </span>
+      </p>
 
       <EdgeZone side="left" onPan={setPan} onLeave={stopLoop} />
       <EdgeZone side="right" onPan={setPan} onLeave={stopLoop} />

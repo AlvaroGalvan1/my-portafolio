@@ -11,12 +11,18 @@ export type LightboxContent =
   | { kind: "youtube"; videoId: string; title: string; credit?: Credit }
   | {
       kind: "post";
-      src: string;
-      alt: string;
+      /** One or more images. A written post usually has one photo; a map
+       *  series has several sheets that belong to the same piece of writing,
+       *  so the pane flips between them rather than the Wall carrying a tile
+       *  per sheet. */
+      images: { src: string; alt: string }[];
       title: string;
       body: string[];
       bodyLang?: string;
-      href: string;
+      /** Where the post lives, if it's somewhere public. Optional: a piece
+       *  can carry its own words here without there being an original to
+       *  link out to. */
+      href?: string;
       linkLabel?: string;
       credit?: Credit;
     };
@@ -104,16 +110,7 @@ export default function Lightbox({
             overlay, so the photo stays put while you read past it. */}
         {content.kind === "post" && (
           <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg bg-neutral-950 md:flex-row">
-            <div className="flex shrink-0 items-center justify-center bg-black md:w-1/2">
-              <Image
-                src={content.src}
-                alt={content.alt}
-                width={1600}
-                height={1200}
-                sizes="(min-width: 768px) 45vw, 90vw"
-                className="max-h-[38vh] w-full object-contain md:max-h-[85vh]"
-              />
-            </div>
+            <PostImages images={content.images} />
             <div className="flex flex-col gap-4 overflow-y-auto p-6 sm:p-8 md:w-1/2">
               <h3 className="font-[family-name:var(--font-display)] text-2xl text-white">
                 {content.title}
@@ -127,14 +124,16 @@ export default function Lightbox({
                   </p>
                 ))}
               </div>
-              <a
-                href={content.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 self-start border-2 border-white/40 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-neutral-950"
-              >
-                {content.linkLabel ?? "Read the original ↗"}
-              </a>
+              {content.href && (
+                <a
+                  href={content.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 self-start border-2 border-white/40 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-neutral-950"
+                >
+                  {content.linkLabel ?? "Read the original ↗"}
+                </a>
+              )}
             </div>
           </div>
         )}
@@ -146,6 +145,47 @@ export default function Lightbox({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// The photo half of a post. One image is the common case and renders as it
+// always did; several turn the pane into a set you flip through, with the
+// thumbnails under the image rather than arrows over it — a map series is
+// read by comparing sheets, which needs them all visible at once.
+function PostImages({ images }: { images: { src: string; alt: string }[] }) {
+  const [index, setIndex] = useState(0);
+  const current = images[Math.min(index, images.length - 1)];
+
+  return (
+    <div className="flex shrink-0 flex-col items-center justify-center gap-3 bg-black p-2 md:w-1/2">
+      <Image
+        key={current.src}
+        src={current.src}
+        alt={current.alt}
+        width={1600}
+        height={1200}
+        sizes="(min-width: 768px) 45vw, 90vw"
+        className="max-h-[38vh] w-full object-contain md:max-h-[75vh]"
+      />
+      {images.length > 1 && (
+        <div className="flex w-full flex-wrap items-center justify-center gap-2 pb-1">
+          {images.map((image, i) => (
+            <button
+              key={image.src}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={image.alt}
+              aria-current={i === index}
+              className={`relative h-12 w-16 overflow-hidden border-2 transition-colors ${
+                i === index ? "border-white" : "border-white/25 hover:border-white/60"
+              }`}
+            >
+              <Image src={image.src} alt="" fill sizes="64px" className="object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

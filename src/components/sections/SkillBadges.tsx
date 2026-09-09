@@ -7,7 +7,10 @@ import { skills, type Skill } from "@/content/skills";
 // somewhere to navigate to.
 export default function SkillBadges() {
   return (
-    <ul className="mt-6 grid grid-cols-3 gap-3">
+    // Three across on a phone; wider as the panel gets wider, so the badges
+    // stay badge-sized instead of stretching into buttons now that the panel
+    // is two-thirds of the section rather than a third of it.
+    <ul className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
       {skills.map((skill) => (
         <li
           key={skill.name}
