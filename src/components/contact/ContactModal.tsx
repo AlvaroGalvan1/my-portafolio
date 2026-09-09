@@ -107,7 +107,7 @@ export default function ContactModal() {
         aria-modal="true"
         aria-labelledby="contact-heading"
         tabIndex={-1}
-        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-4 border-brand-maroon bg-brand-cream p-10 font-sans focus:outline-none sm:p-12"
+        className="relative max-h-[90svh] w-full max-w-2xl overflow-y-auto border-4 border-brand-maroon bg-brand-cream p-10 font-sans focus:outline-none sm:p-12"
         onClick={(e) => e.stopPropagation()}
       >
         <button

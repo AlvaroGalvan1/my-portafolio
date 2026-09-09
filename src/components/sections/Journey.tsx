@@ -31,7 +31,7 @@ export default function Journey() {
           the map two zoom levels in and opened on about 60 degrees of
           longitude, two pins out of nine. Landscape-ish is also just the
           right shape for a world map. */}
-      <div className="mt-8 h-[55vh] w-full border-4 border-brand-maroon sm:h-[85vh]">
+      <div className="mt-8 h-[55svh] w-full border-4 border-brand-maroon sm:h-[85svh]">
         <BaseMap />
       </div>
     </section>

@@ -24,6 +24,12 @@ export type { FrameData } from "./frames/registry";
 //      advertises the interaction before the visitor commits to it.
 //   4. A real scrollbar, styled rather than hidden — hiding it is a common
 //      mistake that removes the one native signal people already read.
+// Row height, in svh rather than vh. Mobile browsers measure `vh` against
+// the viewport with the URL bar *hidden*, so a vh-sized element is taller
+// than the screen on arrival and resizes the moment the bar collapses —
+// which, on a page whose grid rows are sized this way, reflows the whole
+// Wall mid-scroll. `svh` is the small viewport: the one that is actually
+// visible on load, and which never changes.
 const ROW_H_VH = 34;
 // Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
 // (see globals.css) rather than here, because it has to change with the
@@ -46,7 +52,7 @@ function tileWidth(item: FrameData) {
   const heightVh = ROW_H_VH * item.rowSpan;
   const innerGaps = item.rowSpan - 1;
   if (item.aspectRatio) {
-    return `calc((${heightVh}vh + ${innerGaps * GAP_REM}rem) * ${item.aspectRatio})`;
+    return `calc((${heightVh}svh + ${innerGaps * GAP_REM}rem) * ${item.aspectRatio})`;
   }
   return `min(calc(${item.colSpan} * var(--wall-col) + ${
     (item.colSpan - 1) * GAP_REM
@@ -232,7 +238,7 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
         aria-label="My Wall — scroll sideways to browse"
         className="wall-scroller grid cursor-grab grid-flow-col-dense gap-8 overflow-x-auto px-6 pb-4 will-change-scroll active:cursor-grabbing sm:px-16"
         style={{
-          gridTemplateRows: `repeat(2, ${ROW_H_VH}vh)`,
+          gridTemplateRows: `repeat(2, ${ROW_H_VH}svh)`,
           // Columns size to their content rather than to a fixed width, so
           // a tile carrying its own real-world proportions gets exactly the
           // width that shape needs — no clipping, no leftover track. Every

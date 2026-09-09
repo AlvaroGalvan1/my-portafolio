@@ -15,7 +15,7 @@ export default function Hero() {
     // space above gives the display type room to be loud.
     <section
       id="home"
-      className="relative flex min-h-[90vh] flex-col justify-end overflow-hidden bg-brand-orange px-6 py-20 sm:px-16"
+      className="relative flex min-h-[90svh] flex-col justify-end overflow-hidden bg-brand-orange px-6 py-20 sm:px-16"
     >
       <div style={{ zIndex: Z.CARD_CONTENT }}>
         {/* Sized off the viewport rather than a fixed scale, so the name

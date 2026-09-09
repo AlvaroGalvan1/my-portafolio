@@ -94,7 +94,7 @@ export default function Lightbox({
             controls
             autoPlay
             playsInline
-            className="max-h-[80vh] w-full rounded-lg"
+            className="max-h-[80svh] w-full rounded-lg"
           >
             <track kind="captions" />
           </video>
@@ -105,7 +105,7 @@ export default function Lightbox({
             `-nocookie` is YouTube's no-tracking-until-play host, and `rel=0`
             keeps the end screen's suggestions to this channel. */}
         {content.kind === "youtube" && (
-          <div className="aspect-video max-h-[80vh] w-full">
+          <div className="aspect-video max-h-[80svh] w-full">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${content.videoId}?autoplay=1&rel=0`}
               title={content.title}
@@ -120,7 +120,7 @@ export default function Lightbox({
             The text column scrolls on its own rather than the whole
             overlay, so the photo stays put while you read past it. */}
         {content.kind === "post" && (
-          <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg bg-neutral-950 md:flex-row">
+          <div className="flex max-h-[85svh] w-full flex-col overflow-hidden rounded-lg bg-neutral-950 md:flex-row">
             <PostImages images={content.images} />
             <div className="flex flex-col gap-4 overflow-y-auto p-6 sm:p-8 md:w-1/2">
               <h3 className="font-[family-name:var(--font-display)] text-2xl text-white">
@@ -184,7 +184,7 @@ function PostImages({ images }: { images: { src: string; alt: string }[] }) {
         width={1600}
         height={1200}
         sizes="(min-width: 768px) 45vw, 90vw"
-        className="max-h-[38vh] w-full object-contain md:max-h-[75vh]"
+        className="max-h-[38svh] w-full object-contain md:max-h-[75svh]"
       />
       {images.length > 1 && (
         <div className="flex w-full flex-wrap items-center justify-center gap-2 pb-1">
@@ -238,7 +238,7 @@ function LightboxImage({ src, alt }: { src: string; alt: string }) {
 
   if (failed) {
     return (
-      <div className="flex h-[50vh] w-full items-center justify-center rounded-lg bg-neutral-950 text-white/40">
+      <div className="flex h-[50svh] w-full items-center justify-center rounded-lg bg-neutral-950 text-white/40">
         {alt}
       </div>
     );
@@ -251,7 +251,7 @@ function LightboxImage({ src, alt }: { src: string; alt: string }) {
       width={1600}
       height={1200}
       sizes="90vw"
-      className="max-h-[80vh] w-full rounded-lg object-contain"
+      className="max-h-[80svh] w-full rounded-lg object-contain"
       onError={() => setFailed(true)}
     />
   );
