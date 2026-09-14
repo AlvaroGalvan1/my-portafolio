@@ -11,7 +11,7 @@ import { SITE_DESCRIPTION } from "@/content/site";
 // being 300px wide in a chat window.
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Álvaro Emilio Galván Sandoval — GeoAI and wildfire modelling";
+export const alt = "Álvaro Galván — GeoAI and wildfire modelling";
 
 export default function Image() {
   return new ImageResponse(
@@ -38,8 +38,8 @@ export default function Image() {
             letterSpacing: "-0.02em",
           }}
         >
-          <span>Álvaro Emilio</span>
-          <span>Galván Sandoval</span>
+          <span>Álvaro</span>
+          <span>Galván</span>
         </div>
         <div
           style={{

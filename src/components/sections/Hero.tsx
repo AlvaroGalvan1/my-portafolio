@@ -25,9 +25,10 @@ export default function Hero() {
             type strained to fit; the 7.5rem cap stops it growing past that
             on a wide monitor.
             Below `sm` the same fit would shrink the name to ~22px, so the
-            rule flips: the lines wrap to one word each and the type stays
-            large. Two lines desktop, four stacked on a phone — both
-            deliberate, which is why the nowrap is scoped to `sm`. */}
+            rule flips to a floor of 2rem and the type stays large. Two
+            lines at every width now that each line is a single word — the
+            `sm` nowrap is what guarantees it stays that way if a longer
+            line is ever put back. */}
         <h1
           className="text-signpainted font-[family-name:var(--font-display)] text-[clamp(2rem,10.5vw,2.75rem)] leading-[0.95] text-white sm:text-[clamp(1rem,5.2vw,7.5rem)]"
           style={{

@@ -1,5 +1,10 @@
 export const profile = {
-  nameLines: ["Álvaro Emilio", "Galván Sandoval"],
+  // Two given names and two surnames is the full legal form, and it was
+  // the thing the hero shouted. The short form is what I introduce myself
+  // as, what the bio's first line already says, and what SITE_NAME has
+  // carried all along — the hero was the one place disagreeing with it.
+  // Still two lines: the stack is the poster, not a consequence of length.
+  nameLines: ["Álvaro", "Galván"],
   // The only line under the name. Add an `href` here and Hero will need a
   // link element again — left off deliberately, see the note there.
   location: { label: "Mission District, San Francisco" },
