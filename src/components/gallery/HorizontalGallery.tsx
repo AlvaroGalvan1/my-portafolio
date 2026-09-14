@@ -285,15 +285,19 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
 }
 
 // A pressure-sensitive strip along one edge of the Wall. Resting state is
-// just the fade that says "there's more this way"; entering it warms the
-// strip orange and starts the drift, and pushing toward the outer edge
-// deepens the tint and accelerates. Nothing to click or aim at — the input
-// is where the pointer is.
+// just the fade that says "there's more this way"; entering it starts the
+// drift, and pushing toward the outer edge accelerates. Nothing to click or
+// aim at — the input is where the pointer is.
 //
-// Tint and glyph are written straight to the DOM (refs, not state) because
-// this updates on every pointermove and a re-render per frame would be
-// wasteful. Hidden below `sm` — touch has no hover, and swiping is already
-// the natural gesture there.
+// The arrow carries the feedback on its own. A red wash used to come up
+// under it, deepening with pointer depth, which read as the Wall flagging
+// something rather than as a speed control — and it was a second signal for
+// the one thing the arrow already says.
+//
+// The glyph is written straight to the DOM (a ref, not state) because this
+// updates on every pointermove and a re-render per frame would be wasteful.
+// Hidden below `sm` — touch has no hover, and swiping is already the
+// natural gesture there.
 function EdgeZone({
   side,
   onPan,
@@ -304,7 +308,6 @@ function EdgeZone({
   onLeave: () => void;
 }) {
   const zoneRef = useRef<HTMLDivElement>(null);
-  const tintRef = useRef<HTMLDivElement>(null);
   const glyphRef = useRef<HTMLSpanElement>(null);
 
   const handleMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -319,7 +322,6 @@ function EdgeZone({
     // like it does nothing.
     const intensity = clamped ** 1.6;
 
-    if (tintRef.current) tintRef.current.style.opacity = String(0.1 + intensity * 0.65);
     if (glyphRef.current) {
       glyphRef.current.style.opacity = String(0.35 + intensity * 0.65);
       glyphRef.current.style.transform = `translateX(${
@@ -330,7 +332,6 @@ function EdgeZone({
   };
 
   const handleLeave = () => {
-    if (tintRef.current) tintRef.current.style.opacity = "0";
     if (glyphRef.current) {
       glyphRef.current.style.opacity = "0";
       glyphRef.current.style.transform = "translateX(0) scale(1)";
@@ -355,16 +356,6 @@ function EdgeZone({
           side === "left"
             ? "bg-gradient-to-r from-brand-brick to-transparent"
             : "bg-gradient-to-l from-brand-brick to-transparent"
-        }`}
-      />
-      {/* Warm-up tint — opacity driven by how deep the pointer is. */}
-      <div
-        ref={tintRef}
-        style={{ opacity: 0 }}
-        className={`pointer-events-none absolute inset-0 transition-opacity duration-100 ${
-          side === "left"
-            ? "bg-gradient-to-r from-brand-red to-transparent"
-            : "bg-gradient-to-l from-brand-red to-transparent"
         }`}
       />
       <span
