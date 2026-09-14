@@ -159,11 +159,16 @@ const allItems: FrameData[] = [
     id: "map-soils",
     title: "The Soils of Oaxaca",
     type: "post",
-    src: "/gallery/maps/soil_mexico.jpeg",
-    alt: "A map of Mexico's soil profiles, shaded by soil type.",
+    // Oaxaca leads the set. The piece is titled "The Soils of Oaxaca" and
+    // the words below are about Oaxaca, but the sheet on the tile — and the
+    // first one the lightbox opened on — was the national map, so the tile
+    // introduced itself with the wrong one of its two sheets. Mexico still
+    // follows as the context for it.
+    src: "/gallery/maps/soil_oaxaca.jpeg",
+    alt: "A map of Oaxaca's soil profiles, shaded by soil type.",
     images: [
-      { src: "/gallery/maps/soil_mexico.jpeg", alt: "Soil type profiles across Mexico." },
       { src: "/gallery/maps/soil_oaxaca.jpeg", alt: "Soil type profiles across Oaxaca." },
+      { src: "/gallery/maps/soil_mexico.jpeg", alt: "Soil type profiles across Mexico." },
     ],
     credit: { who: "Álvaro Galván", relation: "mine" },
     body: [
