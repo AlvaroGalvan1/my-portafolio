@@ -22,7 +22,7 @@ const filesToScan = [
   "src/components/sections/About.tsx",
 ];
 
-const pathPattern = /["'](\/(?:gallery|papers)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;
+const pathPattern = /["'](\/(?:gallery|papers|hero)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;
 
 const missing = [];
 for (const file of filesToScan) {

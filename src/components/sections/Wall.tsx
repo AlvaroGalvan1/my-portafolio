@@ -13,11 +13,17 @@ export default function Wall() {
     <section id="wall" className="relative">
       {/* The Wall renders its items three times over for the loop, so a
           keyboard visitor who tabs into it has 48 tiles to get through
-          before reaching About. This is the way out: invisible until it
-          takes focus, which happens exactly once — on the tab that would
-          otherwise have started that walk. */}
+          before reaching what follows. This is the way out: invisible until
+          it takes focus, which happens exactly once — on the tab that would
+          otherwise have started that walk.
+
+          The target is whatever section follows the Wall — `#journey` now
+          that the map sits directly after it. Not `#about`, which is the bio
+          *above* the Wall and would send them back up the page, and not
+          `#skills` either, which would vault them over the whole map. A skip
+          link goes forward, and no further than it has to. */}
       <a
-        href="#about"
+        href="#journey"
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
         className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:border-2 focus:border-brand-yellow focus:bg-brand-maroon focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:normal-case focus:text-brand-cream sm:focus:left-16"
       >
@@ -29,7 +35,7 @@ export default function Wall() {
           explanation is there for whoever wonders. CSS-only — the button
           exists to give keyboard and touch users a focus target, since
           hover alone would strand both. */}
-      <h2 className="flex items-center gap-3 bg-brand-brick px-6 pt-16 pb-6 font-[family-name:var(--font-display)] text-4xl text-white sm:px-16">
+      <h2 className="flex items-center gap-3 bg-brand-brick px-6 pt-16 font-[family-name:var(--font-display)] text-4xl text-white sm:px-16">
         My Wall
         <span className="group relative inline-flex">
           <button

@@ -9,8 +9,14 @@ export default function Journey() {
   const { campuses, countries } = journeyStats;
 
   return (
-    <section id="journey" className="bg-brand-cream px-6 py-20 sm:px-16">
-      <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-red">
+    // Orange, where this was cream. That change forces the type: on orange,
+    // brand-red falls to 1.88:1 and white to 2.59:1, both unreadable, and
+    // maroon is the only colour in the palette that survives it at 4.14:1.
+    // So the heading is maroon rather than the red every other section
+    // heading uses — at display size that clears the 3:1 large-text bar
+    // comfortably.
+    <section id="journey" className="bg-brand-orange px-6 py-20 sm:px-16">
+      <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-maroon">
         My Journey
       </h2>
 
@@ -18,9 +24,15 @@ export default function Journey() {
           display-size stats above the map. They were the least interesting
           thing in the section — the pins are the content — and at that size
           they competed with the map for the eye. Still counted from
-          places.ts, so they cannot drift out of date. */}
-      <p className="mt-4 max-w-2xl font-sans text-base text-brand-maroon/80">
-        <span className="font-semibold text-brand-maroon">
+          places.ts, so they cannot drift out of date.
+
+          Full maroon, not the 80% it was on cream: the tint read fine
+          against cream at 6.13:1 and drops to 3.10:1 on orange. Solid
+          maroon brings it to 4.14:1 — the best this pairing allows, and
+          still a little short of the 4.5:1 that body text at this size
+          wants. Cream is the background that made this line comfortable. */}
+      <p className="mt-4 max-w-2xl font-sans text-base text-brand-maroon">
+        <span className="font-semibold">
           {campuses} campuses, {countries} countries, one degree.
         </span>{" "}
         Where the studying happened — tap a mark to read the entry.

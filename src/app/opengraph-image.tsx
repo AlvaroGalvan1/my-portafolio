@@ -11,7 +11,10 @@ import { SITE_DESCRIPTION } from "@/content/site";
 // being 300px wide in a chat window.
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Álvaro Galván — GeoAI and wildfire modelling";
+// Describes the generated card for anyone who gets the alt text instead of
+// the image. Kept in step with SITE_TITLE by hand — `alt` has to be a
+// static export, so it can't be built from the constant.
+export const alt = "Álvaro Galván Portafolio";
 
 export default function Image() {
   return new ImageResponse(

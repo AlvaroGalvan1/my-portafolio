@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/content/site";
+import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION } from "@/content/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,10 +29,13 @@ const bungee = Bungee({
 // ones in the rendered tags; without it Next warns and social crawlers get
 // paths they can't fetch. The origin lives in content/site.ts so the custom
 // domain is a one-line change.
+// One string, three places: the browser tab, the OG card and the Twitter
+// card. It used to be the same template literal written out three times,
+// which is how a title gets changed in two of them and not the third.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    default: SITE_TITLE,
     // Any future route can set a bare title and still be attributed.
     template: `%s — ${SITE_NAME}`,
   },
@@ -41,14 +44,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     url: "/",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — GeoAI & wildfire modelling`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
 };

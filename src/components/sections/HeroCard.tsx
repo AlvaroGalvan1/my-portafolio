@@ -1,0 +1,207 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import ContactTrigger from "@/components/contact/ContactTrigger";
+import { profile } from "@/content/profile";
+
+// The card that opens as you scroll. See the `.hero-card` block in
+// globals.css for the half of this that animates — everything here is
+// measurement, written out as two custom properties:
+//
+//   --p        0 → 1, how far through the scroll track we are
+//   --extra-h  the natural height of the content being revealed
+//
+// Nothing in this component re-renders on scroll. Writing to a custom
+// property on one element is a style mutation, not a React update, so the
+// whole effect costs one rAF-throttled read of getBoundingClientRect.
+export default function HeroCard() {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const extraRef = useRef<HTMLDivElement>(null);
+
+  // The revealed content's height, measured rather than guessed. A fixed
+  // max-height would either clip the bio on a narrow screen (where it wraps
+  // to more lines) or, if set generously, finish the reveal early and leave
+  // the last stretch of scrolling doing nothing.
+  //
+  // It has to be measured at the width the card ENDS at, not the one it
+  // starts at. Measuring it closed gave 706px, because at 320px wide the
+  // bio wraps to twice the lines it needs; the content is 307px once the
+  // card is open. Clipping to 706 meant the reveal was complete at 44% and
+  // the rest of the scroll moved nothing — the exact failure this measuring
+  // was meant to avoid. So: force the card open, read, put it back. No
+  // paint happens in between, and this runs on mount and resize rather than
+  // per frame.
+  useEffect(() => {
+    const card = cardRef.current;
+    const extra = extraRef.current;
+    if (!card || !extra) return;
+
+    const measure = () => {
+      const held = card.style.getPropertyValue("--p");
+      card.style.setProperty("--p", "1");
+      extra.style.maxHeight = "none";
+
+      const height = extra.scrollHeight;
+
+      extra.style.maxHeight = "";
+      if (held) card.style.setProperty("--p", held);
+      else card.style.removeProperty("--p");
+      card.style.setProperty("--extra-h", `${height}px`);
+    };
+
+    measure();
+    // The display face loads after first paint, and it sets the name's
+    // height — so the first measurement is taken against a fallback metric.
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    // Deliberately window resize and not a ResizeObserver on the card: the
+    // card's own size is driven by --p, so observing it would re-enter this
+    // every frame of the scroll.
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const track = card.closest<HTMLElement>("[data-hero-track]");
+    if (!track) return;
+
+    // The same query as the fallback block in globals.css, which un-sticks
+    // the stage and leaves the card open: a phone, where the open card is
+    // taller than the screen, or a stated preference for less motion. When
+    // it matches there is no effect to drive, so the scroll handler comes
+    // off entirely rather than computing a value the CSS then overrides.
+    const fallback = window.matchMedia("(max-width: 639px), (prefers-reduced-motion: reduce)");
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      // How far the track has travelled past the top of the viewport, over
+      // the distance it can travel before its last screen is in view.
+      //
+      // Measured off the track's own rect rather than window.scrollY: the
+      // nav is `sticky top-0` and still takes its ~68px of flow above this
+      // section, so scroll position and track progress are offset by the
+      // height of the bar.
+      const range = track.offsetHeight - window.innerHeight;
+      const p = range <= 0 ? 1 : Math.min(1, Math.max(0, -track.getBoundingClientRect().top / range));
+      card.style.setProperty("--p", p.toFixed(4));
+    };
+
+    const onScroll = () => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+
+    const attach = () => {
+      if (fallback.matches) {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+        if (frame !== 0) {
+          cancelAnimationFrame(frame);
+          frame = 0;
+        }
+        card.style.setProperty("--p", "1");
+        return;
+      }
+      update();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+    };
+
+    attach();
+    fallback.addEventListener("change", attach);
+    return () => {
+      fallback.removeEventListener("change", attach);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame !== 0) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const [lede] = profile.bio;
+
+  return (
+    // Bottom-aligned inside the sticky screen, with the page's own gutters.
+    // `100%` in the card's width calc resolves against this box, so the
+    // card opens to the text column and never to the bleeding edge.
+    <div className="hero-card-slot pointer-events-none px-6 pb-6 sm:px-16 sm:pb-16">
+      <div
+        ref={cardRef}
+        className="hero-card pointer-events-auto bg-brand-yellow p-6 sm:p-10"
+      >
+        {/* Maroon, not the white this was over the video: white on yellow is
+            1.54:1, which is no text at all. Maroon is 6.98:1. The offset
+            shadow stays — it's the one piece of the sign-painted treatment
+            worth keeping in here — but flips to cream, since a maroon
+            shadow under maroon letters is just a smudge. */}
+        <h1
+          className="text-signpainted font-[family-name:var(--font-display)] text-[clamp(2rem,10.5vw,2.75rem)] leading-[0.95] text-brand-maroon sm:text-[clamp(1rem,5.2vw,5.5rem)]"
+          style={{ ["--shadow-color" as string]: "var(--color-brand-cream)" }}
+        >
+          {profile.nameLines.map((line) => (
+            <span key={line} className="block sm:whitespace-nowrap">
+              {line}
+            </span>
+          ))}
+        </h1>
+
+        <div ref={extraRef} className="hero-card-extra">
+          {/* Everything below the name. Laid out at full size always — the
+              clip above is what hides it — so the measured height is
+              correct before the first scroll. */}
+          <p className="mt-6 inline-flex items-center gap-3 font-sans text-sm font-semibold uppercase tracking-[0.3em] text-brand-maroon">
+            <span className="location-dot" aria-hidden />
+            {profile.location.label}
+          </p>
+
+          <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-start md:gap-10">
+            <div className="flex-1">
+              <h2 className="font-[family-name:var(--font-display)] text-3xl text-brand-maroon">
+                About
+              </h2>
+              <div aria-hidden className="mt-4 h-1 w-24 bg-brand-red" />
+              {lede && (
+                <p className="mt-6 max-w-[38ch] font-sans text-lg leading-snug text-brand-maroon sm:text-xl">
+                  {lede}
+                </p>
+              )}
+
+              {/* Stacked full-width on a phone: side by side, the two labels
+                  are different lengths and wrap at 375px, which left them
+                  ragged. */}
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+                <a
+                  href="/cv.pdf"
+                  className="border-2 border-brand-maroon bg-brand-maroon px-6 py-3 text-center font-sans font-semibold text-brand-cream hover:bg-transparent hover:text-brand-maroon sm:w-auto"
+                >
+                  Download CV
+                </a>
+                <ContactTrigger className="border-2 border-brand-maroon bg-white px-6 py-3 text-center font-sans font-semibold text-brand-maroon hover:bg-transparent hover:border-brand-maroon sm:w-auto">
+                  Contact Me
+                </ContactTrigger>
+              </div>
+            </div>
+
+            {/* The empty frame, waiting for the real portrait. 4:5 because
+                that's the shape a portrait is usually shot in — the frame
+                commits to it so the card's measured height doesn't change
+                when the photo lands. To fill it: drop the file in `public/`,
+                point `profile.photoSrc` at it, and replace the dashed div
+                with `<Image fill className="object-cover" />` inside this
+                same white mount. */}
+            <div className="shrink-0 md:w-[13rem]">
+              <div className="border-4 border-brand-red bg-white p-2.5">
+                <div className="flex aspect-[4/5] w-full items-center justify-center border-2 border-dashed border-brand-red/45">
+                  <span className="font-sans text-[0.6rem] uppercase tracking-[0.3em] text-brand-red/80">
+                    Portrait
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

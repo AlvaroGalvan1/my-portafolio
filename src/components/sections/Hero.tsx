@@ -1,72 +1,64 @@
-import ContactTrigger from "@/components/contact/ContactTrigger";
+import HeroBackdrop from "./HeroBackdrop";
+import HeroCard from "./HeroCard";
+import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
 import { Z } from "@/lib/layers";
 
-// Name first and big — it's the only thing here that has to land. The one
-// line under it is the place, which doubles as the jump to the map where
-// that place is pinned. The credential lines that used to sit here (tagline
-// + subtitle) are gone: the About section already says all of it, and
-// stacked qualifiers directly under a name read as a résumé header rather
-// than an entrance.
+// The opening stage: the Coral loop held still behind a card that opens as
+// you scroll. At the top of the page the card is just the name, in the
+// bottom-left corner; by the bottom of the track it holds the About text,
+// the portrait and the buttons. See HeroCard.tsx and the `.hero-card` block
+// in globals.css.
+//
+// This absorbed what used to be a separate yellow About section below the
+// hero. Two sections meant the name scrolled away before the bio arrived;
+// one card that grows keeps them on screen together, which is the point —
+// a visitor reaching the Wall now knows whose work it is.
 export default function Hero() {
+  // Null for `relation: "mine"` — work that shouldn't carry a byline. The
+  // plate hides entirely in that case rather than rendering "Backdrop —"
+  // with nothing after it.
+  const backdropCredit = creditLine(profile.heroBackdrop.credit);
+
   return (
-    // Bottom-left, not centred: the name sits on a baseline like painted
-    // signage rather than floating in the middle of the field, and the open
-    // space above gives the display type room to be loud.
-    <section
-      id="home"
-      className="relative flex min-h-[90svh] flex-col justify-end overflow-hidden bg-brand-orange px-6 py-20 sm:px-16"
-    >
-      <div style={{ zIndex: Z.CARD_CONTENT }}>
-        {/* Sized off the viewport rather than a fixed scale, so the name
-            tracks the column at any width — poster behaviour, held back
-            from filling it. 5.2vw leaves the two lines ending well short of
-            the right edge, which reads as a deliberate measure rather than
-            type strained to fit; the 7.5rem cap stops it growing past that
-            on a wide monitor.
-            Below `sm` the same fit would shrink the name to ~22px, so the
-            rule flips to a floor of 2rem and the type stays large. Two
-            lines at every width now that each line is a single word — the
-            `sm` nowrap is what guarantees it stays that way if a longer
-            line is ever put back. */}
-        <h1
-          className="text-signpainted font-[family-name:var(--font-display)] text-[clamp(2rem,10.5vw,2.75rem)] leading-[0.95] text-white sm:text-[clamp(1rem,5.2vw,7.5rem)]"
-          style={{
-            ["--shadow-color" as string]: "var(--color-brand-maroon)",
-            WebkitTextStroke: "1.5px var(--color-brand-maroon)",
-          }}
-        >
-          {profile.nameLines.map((line) => (
-            <span key={line} className="block sm:whitespace-nowrap">
-              {line}
-            </span>
-          ))}
-        </h1>
+    <section className="relative bg-brand-orange">
+      {/* Two screens tall: the first is the card closed, the second is the
+          distance over which it opens. Collapses to one screen under
+          prefers-reduced-motion — see globals.css. */}
+      <div data-hero-track className="hero-track relative">
+        {/* The nav's two anchors into this stage, as bare markers rather
+            than ids on the section itself.
+            
+            The section spans the whole track, so an id on it would sit in
+            the observer's band the entire way down and "Home" — being first
+            in Nav's LINKS — would win over "About" for the whole stage,
+            leaving that link unable to ever highlight. One marker per screen
+            gives each link a distinct band and a scroll target that lands
+            where it should: #home at the closed card, #about at the open
+            one. */}
+        <div id="home" aria-hidden className="absolute top-0 h-svh w-px" />
+        <div id="about" aria-hidden className="absolute bottom-0 h-svh w-px" />
 
-        {/* Set below the name at the scale the tagline used to run at, so the
-            hero keeps its typographic rhythm — big display line, small
-            letterspaced line — with the place in the slot the credentials
-            vacated. Plain text for now: the map section is a world map, not
-            a view of the Mission, so pointing this at it would promise
-            something it doesn't deliver. Give it a destination and it
-            becomes a link. */}
-        <p className="mt-8 inline-flex items-center gap-3 font-sans text-sm font-semibold uppercase tracking-[0.3em] text-brand-maroon">
-          <span className="location-dot" aria-hidden />
-          {profile.location.label}
-        </p>
+        <div className="hero-stage">
+          {/* The orange underneath is what shows for the moment before the
+              video paints, and if the file ever fails to load the stage is
+              an orange field rather than a black rectangle. */}
+          <HeroBackdrop src={profile.heroBackdrop.src} />
 
-        {/* Stacked full-width on a phone: side by side, the two labels are
-            different lengths and wrap at 375px, which left them ragged. */}
-        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-          <a
-            href="#wall"
-            className="border-2 border-brand-maroon bg-brand-maroon px-6 py-3 text-center font-sans font-semibold text-brand-cream hover:bg-transparent hover:text-brand-maroon sm:w-auto"
-          >
-            View My Wall
-          </a>
-          <ContactTrigger className="border-2 border-white bg-white px-6 py-3 text-center font-sans font-semibold text-brand-maroon hover:bg-transparent hover:text-white sm:w-auto">
-            Contact Me
-          </ContactTrigger>
+          <HeroCard />
+
+          {/* The backdrop isn't mine, so it gets a name on it. Bottom-right
+              and small — the treatment a print would get. `creditLine` is
+              the Wall's own helper, so the wording can't drift from how
+              every tile credits its maker. */}
+          {backdropCredit && (
+            <p
+              className="pointer-events-none absolute bottom-6 right-6 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-white/90 [text-shadow:0_1px_3px_rgb(122_23_16_/_0.9)] sm:right-16"
+              style={{ zIndex: Z.CARD_CONTENT }}
+            >
+              Backdrop — {backdropCredit}
+            </p>
+          )}
         </div>
       </div>
     </section>

@@ -30,7 +30,7 @@ export type { FrameData } from "./frames/registry";
 // which, on a page whose grid rows are sized this way, reflows the whole
 // Wall mid-scroll. `svh` is the small viewport: the one that is actually
 // visible on load, and which never changes.
-const ROW_H_VH = 34;
+const ROW_H_VH = 36;
 // Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
 // (see globals.css) rather than here, because it has to change with the
 // viewport: a single 26vw track is 97px on a 375px phone, which turned every
@@ -39,7 +39,11 @@ const ROW_H_VH = 34;
 // other half of that: widening the track makes a 3-span tile 138vw, so
 // every tile is also capped to just under the viewport, which leaves a
 // sliver of the next one showing and says "this continues" for free.
-const GAP_REM = 2;
+// Must match the `gap-*` class on the scroller below — `gap-10` is 2.5rem.
+// `tileWidth` adds this back in for every track and row a tile spans, so a
+// gap class changed without this number (or the reverse) leaves multi-span
+// tiles over- or under-wide by exactly the difference.
+const GAP_REM = 2.5;
 
 // How wide one tile is. Two cases:
 //   - A piece with a real-world shape (a map print, a book cover) states an
@@ -196,7 +200,7 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
   };
 
   return (
-    <div className="relative bg-brand-brick py-10">
+    <div className="relative bg-brand-brick pt-6 pb-12">
       {/* Set bold in the sans face rather than in the display one: it has to
           carry across a red field at small size, and Bungee — the display
           face — only ships at one weight and reads as a second heading
@@ -231,12 +235,23 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
       <EdgeZone side="left" onPan={setPan} onLeave={stopLoop} />
       <EdgeZone side="right" onPan={setPan} onLeave={stopLoop} />
 
+      {/* No side padding, unlike the heading and the hint above it: the row
+          runs the full width of the screen and the tiles are cut off by the
+          window rather than by a margin, which is what makes the brick read
+          as a wall that continues past the frame instead of a panel inset
+          on the page.
+
+          It also makes the loop arithmetic exact. `setWidth` below is
+          `scrollWidth / 3`, and a scroll container's scrollWidth includes
+          its padding — so with px-6/sm:px-16 the measured copy width was
+          one-third of a padding wider than a real copy, and every rewind
+          drifted by that much. */}
       <div
         ref={rowRef}
         tabIndex={0}
         role="region"
         aria-label="My Wall — scroll sideways to browse"
-        className="wall-scroller grid cursor-grab grid-flow-col-dense gap-8 overflow-x-auto px-6 pb-4 will-change-scroll active:cursor-grabbing sm:px-16"
+        className="wall-scroller grid cursor-grab grid-flow-col-dense gap-10 overflow-x-auto pb-4 will-change-scroll active:cursor-grabbing"
         style={{
           gridTemplateRows: `repeat(2, ${ROW_H_VH}svh)`,
           // Columns size to their content rather than to a fixed width, so

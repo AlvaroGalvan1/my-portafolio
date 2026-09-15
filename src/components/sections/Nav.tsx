@@ -4,16 +4,20 @@ import { useEffect, useState } from "react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { Z } from "@/lib/layers";
 
-// In page order, deliberately. The bar used to read Home / My Wall / My
-// Journey / About while the page runs Hero, Wall, About, Journey — a
-// mismatch nobody would notice on a static bar, and one that makes the
-// highlight below jog backwards and then forwards again as you scroll.
-// Either the page or the bar had to move; the bar was the cheaper of the
-// two and the page's own order is the one the visitor actually experiences.
+// In page order, deliberately — the highlight below picks the first match
+// in *this* array, so an order that disagrees with the page makes it jog
+// backwards and then forwards again as you scroll. About moved ahead of My
+// Wall here because the bio moved above the Wall on the page (see
+// Intro.tsx); this list has to be re-ordered with it, not just left to
+// drift.
+//
+// The skills panel below the Wall (`#skills`) is deliberately absent: it's
+// the back half of About rather than a destination of its own, and adding
+// it would put two About-ish labels in a four-item bar.
 const LINKS = [
   { id: "home", label: "Home" },
-  { id: "wall", label: "My Wall" },
   { id: "about", label: "About" },
+  { id: "wall", label: "My Wall" },
   { id: "journey", label: "My Journey" },
 ] as const;
 

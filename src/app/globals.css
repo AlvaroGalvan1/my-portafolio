@@ -1,30 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  /* This site is one fixed palette painted onto every section — orange
-     hero, brick Wall, white About, cream Journey, maroon footer. There is
-     no dark version of it, and `color-scheme: light` is what says so to
-     the browser. Without it, native chrome follows the OS instead: the
-     contact form's four inputs render with dark backgrounds and light
-     text inside a cream panel, and the Wall's scrollbar loses the styling
-     it was given. */
+  /* ── THE PALETTE ───────────────────────────────────────────────────────
+     Three hues, one warm sweep: ORANGE → YELLOW → RED. Everything else
+     below is one of those three taken lighter or darker for a job the pure
+     hue can't do. Nothing on this site is blue, green, grey or black by
+     choice; if a new colour seems necessary, it's a sign a contrast problem
+     is being solved with a hue instead of with a tint.
+
+     There is no dark version of any of it, and `color-scheme: light` is
+     what says so to the browser. Without it, native chrome follows the OS
+     instead: the contact form's four inputs render with dark backgrounds
+     and light text inside a cream panel, and the Wall's scrollbar loses the
+     styling it was given. */
   color-scheme: light;
 
   --background: #ffffff;
   --foreground: #171717;
 
-  /* Brand palette: red / orange / yellow */
-  --color-brand-red: #d92b1c;
-  --color-brand-maroon: #7a1710;
+  /* ── The three ─────────────────────────────────────────────────────── */
+  /* Orange — the field the page opens and closes its content on: the hero
+     behind the Coral loop, and the map section. */
   --color-brand-orange: #f5821f;
+  /* Yellow — the About band between the hero and the Wall. The lightest of
+     the three, so it's the one that can carry white on top of it. */
   --color-brand-yellow: #ffc93c;
-  --color-brand-cream: #fff4de;
-  /* The Wall's field — between red and maroon, darker than the section
-     headings so the tiles read as hung on it rather than printed on it.
-     It was written as a literal in four separate class strings, which is
-     how a sixth and seventh near-identical red get added later without
-     anyone noticing. */
+  /* Red — accents, never a field: headings on white, rules, buttons. It is
+     unreadable on orange (1.88:1) and on yellow it vibrates, so it belongs
+     on white or cream and nowhere else. */
+  --color-brand-red: #d92b1c;
+
+  /* ── Red, taken darker ─────────────────────────────────────────────── */
+  /* Maroon — the dark end of red, and the one piece of load-bearing colour
+     here. It is the ONLY value in the palette that stays readable on
+     orange (4.14:1, where red is 1.88 and white is 2.59), so every word
+     set on an orange field is this. Also the nav and the footer. */
+  --color-brand-maroon: #7a1710;
+  /* Brick — between red and maroon, and darker than the section headings so
+     the Wall's tiles read as hung on it rather than printed on it. It was
+     written as a literal in four separate class strings, which is how a
+     sixth and seventh near-identical red get added later without anyone
+     noticing. */
   --color-brand-brick: #8f1c14;
+
+  /* ── Yellow, taken lighter ─────────────────────────────────────────── */
+  /* Cream — yellow at paper strength. Panels that have to hold small body
+     copy, which neither orange nor yellow can do: red on cream is 4.46:1
+     and maroon on cream is 6.13:1. */
+  --color-brand-cream: #fff4de;
 
   /* Height of the sticky nav, so anchor targets can clear it. Two values
      because the bar grows at `sm`: py-4 either side plus the Contact
@@ -159,6 +182,100 @@ footer :focus-visible,
   outline-color: var(--color-brand-yellow);
 }
 
+/* ── The hero card ─────────────────────────────────────────────────────
+   One card that opens as you scroll. At the top of the page only the name
+   shows, sitting in the bottom-left corner over the Coral loop; scrolling
+   grows the card up and to the right until it holds the About text, the
+   portrait and the two buttons, filling the lower part of the screen.
+
+   The mechanics are split between here and HeroCard.tsx on purpose. JS does
+   nothing but measure — it writes a scroll position into `--p` (0 → 1) and
+   the content's natural height into `--extra-h`, both as custom properties
+   on the card. Every value that actually animates is interpolated in CSS
+   below, so there is no React render per frame and no second copy of the
+   layout in JavaScript.
+
+   `--p` is unitless, which is what lets it multiply a length: the card's
+   width is its collapsed 20rem plus the remaining distance to full width,
+   scaled by progress. The name sits at the top of the card, so as the card
+   grows the name rises with its top edge — which is the whole effect,
+   falling out of the layout rather than being animated separately. */
+.hero-track {
+  height: 200svh;
+}
+
+/* The pinned screen the card opens inside. Here rather than in Tailwind
+   utilities because the fallback below has to be able to un-stick it. */
+.hero-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.hero-card-slot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-card {
+  --p: 0;
+  width: calc(20rem + (100% - 20rem) * var(--p));
+  max-width: 100%;
+}
+
+/* Clipped to nothing at the top of the page and to its measured height at
+   the bottom. It stays in the DOM throughout — a screen reader gets the bio
+   whatever the scroll position, and there is nothing focusable inside it to
+   trap a keyboard in the clipped region. */
+.hero-card-extra {
+  max-height: calc(var(--extra-h, 0px) * var(--p));
+  opacity: var(--p);
+  overflow: hidden;
+}
+
+/* The fallback: card open from the start, nothing pinned, section scrolls
+   like any other. Two conditions want it, for different reasons.
+   
+   `prefers-reduced-motion` — a two-screen-tall section whose only purpose
+   is to give a scroll effect somewhere to happen is exactly what that
+   setting is asking us not to build.
+
+   `max-width: 639px` — the effect needs a screen taller than the card it
+   grows into, and a phone isn't. Measured at 390x844: the bio wraps to
+   ~820px, the open card came to 945px, and `overflow: hidden` on the stage
+   clipped the name 125px above the top edge. The name disappearing is a
+   worse outcome than the animation not happening.
+
+   HeroCard.tsx watches the same query and stops writing `--p` when it
+   matches, so no scroll work happens for an effect that isn't running. */
+@media (max-width: 639px), (prefers-reduced-motion: reduce) {
+  .hero-track {
+    height: auto;
+  }
+  .hero-stage {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+  .hero-card-slot {
+    position: static;
+    /* The nav is sticky over this section, so in flow the card needs to
+       clear it the way the old top-aligned hero did. */
+    padding-top: calc(var(--nav-h) + 1.5rem);
+  }
+  .hero-card {
+    width: 100%;
+  }
+  .hero-card-extra {
+    max-height: none;
+    opacity: 1;
+  }
+}
+
 /* The Wall's column track and its per-tile ceiling. Read with `tileWidth`
    in HorizontalGallery.tsx, which builds every tile's width from these.
 
@@ -168,14 +285,18 @@ footer :focus-visible,
    was getting. Wide track on a phone, narrow on a desktop — the tile ends
    up roughly the same physical size either way.
 
-   The ceiling is what makes that safe. Widening the track to 46vw would
-   make the 3-span LANDFIRE tile 138vw, so nothing may exceed 86vw — which
-   also leaves a slice of the next tile showing at the edge, doing the
-   "there's more this way" job for free. Above `lg` the widest tile is
-   ~82vw, so the 90vw ceiling there never actually binds; it's a guard for
-   the tablet range, where a 3-span would otherwise run past the viewport. */
+   The ceiling is what makes that safe. A 50vw track would make a 2-span
+   tile 102vw, so nothing may exceed 86vw — which also leaves a slice of the
+   next tile showing at the edge, doing the "there's more this way" job for
+   free. It only binds on a phone now: nothing on the Wall spans 3 tracks
+   any more (LANDFIRE, the only piece that did, is 2x2), so the widest tile
+   above `sm` comes to ~53vw and the 90vw guard there never fires.
+
+   Read with ROW_H_VH (36) in HorizontalGallery.tsx, which sets the height
+   these widths are judged against. Those two numbers are the whole scale of
+   the Wall — raise or lower them together. */
 .wall-scroller {
-  --wall-col: 46vw;
+  --wall-col: 50vw;
   --wall-tile-max: 86vw;
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-yellow) rgba(0, 0, 0, 0.25);
@@ -183,14 +304,14 @@ footer :focus-visible,
 
 @media (min-width: 640px) {
   .wall-scroller {
-    --wall-col: 32vw;
+    --wall-col: 33vw;
     --wall-tile-max: 90vw;
   }
 }
 
 @media (min-width: 1024px) {
   .wall-scroller {
-    --wall-col: 26vw;
+    --wall-col: 25vw;
   }
 }
 

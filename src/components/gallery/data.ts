@@ -13,7 +13,10 @@ export const SHAPE = {
   landscape: { colSpan: 2, rowSpan: 1 },
   /** Statement piece — two columns, full height. Use sparingly. */
   statement: { colSpan: 2, rowSpan: 2 },
-  /** The big one — three columns, full height. One or two on the whole Wall. */
+  /** The big one — three columns, full height. Unused as of the pass that
+   *  settled the Wall at two uniform rows plus a single 2x2 accent: at the
+   *  current scale a 3-track tile is most of the viewport wide. Kept as
+   *  vocabulary, not as a recommendation. */
   hero: { colSpan: 3, rowSpan: 2 },
 } as const;
 
@@ -287,7 +290,20 @@ const allItems: FrameData[] = [
     id: "landfire-viewer",
     title: "LANDFIRE Vegetation Cover, 2024 (live)",
     type: "landfire",
-    ...SHAPE.hero,
+    // The one full-height piece on the Wall, and 2 tracks rather than 3.
+    //
+    // Everything else is half-height, so the two rows read as two clean
+    // bands and this is the single break in them — which is what makes it a
+    // focal point instead of one more size in the mix. It briefly had
+    // company: Conway's Life was given full height too, on the theory that
+    // interlocking rows look less like a grid. They don't look less like a
+    // grid, they look unsorted, and with tiles this size that reads as
+    // clutter. One accent, deliberately placed, is the version that reads
+    // as arranged.
+    //
+    // At 3 tracks it also came to ~1160px on a laptop — a slab across four
+    // fifths of the screen rather than a piece hung on a wall.
+    ...SHAPE.statement,
     credit: {
       who: "LANDFIRE",
       relation: "data",
