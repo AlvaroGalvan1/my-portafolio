@@ -124,6 +124,65 @@ const allItems: FrameData[] = [
     credit: { who: "John Conway", relation: "after", context: "Game of Life, 1970" },
     ...SHAPE.small,
   },
+  // Three more automata, all running the same frame kind — see
+  // CellularAutomataFrame.tsx, where each rule is a record rather than a
+  // file. They are here as a set on purpose: one automaton on a wall reads
+  // as a novelty, and four reads as an interest. Each is a different answer
+  // to the same question, which is how much has to be specified before a
+  // thing organises itself.
+  //
+  // Sizes are deliberately unlike: Brain is quick and small, the cyclic one
+  // needs width to get its spirals round, and an elementary rule grows
+  // downward so it gets the tall tile.
+  // The tile that is about the visitor rather than about me. Two columns
+  // wide and one row tall: it carries a readout of four figures and a
+  // sentence, which at one column wraps to five lines and at two rows
+  // leaves half the tile empty.
+  //
+  // The fallback is the Mission, which is where the hero says I live — so
+  // declining the permission still demonstrates the piece, on an address
+  // the page has already given you.
+  {
+    id: "where-you-are",
+    title: "Where you are",
+    type: "geolocate",
+    fallback: { label: "my street", lat: 37.7599, lon: -122.4148 },
+    credit: { who: "Álvaro Galván", relation: "mine" },
+    ...SHAPE.landscape,
+  },
+  {
+    id: "brain",
+    title: "Cellular Automaton (Brian's Brain)",
+    type: "cellularAutomata",
+    rule: "brain",
+    credit: { who: "Brian Silverman", relation: "after", context: "Brian's Brain" },
+    ...SHAPE.small,
+  },
+  {
+    id: "cyclic",
+    title: "Cellular Automaton (Cyclic)",
+    type: "cellularAutomata",
+    rule: "cyclic",
+    credit: {
+      who: "David Griffeath",
+      relation: "after",
+      context: "Cyclic cellular automaton, 1988",
+    },
+    ...SHAPE.landscape,
+  },
+  {
+    id: "rule-30",
+    title: "Cellular Automaton (Rule 30)",
+    type: "cellularAutomata",
+    rule: "elementary",
+    elementaryRule: 30,
+    credit: {
+      who: "Stephen Wolfram",
+      relation: "after",
+      context: "Elementary rule 30, 1983",
+    },
+    ...SHAPE.portrait,
+  },
   // The QGIS map series — two pieces, not four tiles. Each was published as
   // one post with one piece of writing covering a national sheet and an
   // Oaxaca sheet, so they hang as one framed piece each: the Wall shows the

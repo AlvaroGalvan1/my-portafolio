@@ -7,27 +7,14 @@ export const profile = {
   // carried all along — the hero was the one place disagreeing with it.
   // Still two lines: the stack is the poster, not a consequence of length.
   nameLines: ["Álvaro", "Galván"],
-  // The live line at the top of the hero, and the page's one piece of
-  // status. It replaced a second "get in touch" button: four ways to start
-  // the same conversation were in view at once (two in the bar, two in the
-  // card), and of the ways to cut that down, a status indicator is the only
-  // one that ADDS information rather than removing a route. "Available" and
-  // "select" are both doing work — it says yes without saying yes to
-  // everything.
-  //
-  // Change `open` to false when the answer is no, and the pill states that
-  // plainly rather than disappearing: a portfolio that only ever says
-  // "available" is a portfolio nobody believes.
-  availability: {
-    open: true,
-    label: "Available for select projects",
-    closedLabel: "Booked through the season",
-    detail: "SF & remote",
-  },
   // The only line under the name. Add an `href` here and Hero will need a
   // link element again — left off deliberately, see the note there.
   location: { label: "Mission District, San Francisco" },
-  // The portrait in the hero card, in the white mount the card opens to.
+  // The portrait. Nothing renders it today: it sat across the seam of the
+  // hero split until that composition turned out to work better as two
+  // things rather than three. Kept because the file is in the repo and the
+  // alt text is written — a `post` tile on the Wall is where it goes if it
+  // comes back, not the hero.
   //
   // Not a headshot, and the layout follows from that: three of us at the
   // Minerva commencement, shot at 960×1280. The frame runs at the photo's

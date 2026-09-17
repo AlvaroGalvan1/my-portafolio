@@ -552,34 +552,21 @@ footer :focus-visible,
      The hero is a half-and-half spread on screen. On paper it is the
      masthead: one column, no artwork panel, and the portrait reduced to the
      headshot a CV carries. */
-  /* Still two columns on paper, but at CV proportions: the words take the
-     measure and the artwork column narrows to the width of a headshot.
-
-     A block layout was the first attempt and it put the portrait halfway
-     down the page — the plate comes after the words in source order, so
-     floated, it started below them and landed across the next section's
-     heading. Keeping the row is what puts the photograph where a CV puts
-     one, at the top, beside the name. */
+  /* One column. The artwork panel holds nothing printable — the video is
+     hidden by the `video` rule above and the portrait that used to sit
+     across the seam is gone — so the whole panel comes out rather than
+     printing as an empty orange block at the top of a CV. */
   .hero-split {
-    display: flex !important;
-    gap: 6mm;
+    display: block !important;
     min-height: 0 !important;
-    align-items: flex-start;
   }
 
   .hero-words {
-    flex: 1 1 auto;
     padding: 0 !important;
   }
 
-  /* The video inside this is already hidden by the `video` rule above, so
-     what's left is the plate. Without a width the empty panel would still
-     claim half the masthead. */
   .hero-art {
-    position: static !important;
-    flex: 0 0 34mm;
-    min-height: 0 !important;
-    background: none !important;
+    display: none !important;
   }
 
   /* Sections set their own generous screen padding; on paper the @page
@@ -604,17 +591,6 @@ footer :focus-visible,
      page boundary is normal in a CV; a page two-thirds blank is not. */
   .print-keep {
     break-inside: avoid;
-  }
-
-  /* The portrait is positioned across the seam on screen and a headshot on
-     paper. Taken out of position first: an absolutely-positioned figure
-     prints where it was pinned, which on a page with no artwork panel is
-     on top of the name. */
-  .hero-plate {
-    position: static !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0;
   }
 
   /* Education and Experience sit side by side on screen at `lg`. Paper is
