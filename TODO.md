@@ -1,6 +1,8 @@
 # Portfolio TODO
 
-See `GLOSSARY.md` for what the words mean (Wall, Frame, Loop, Guardrail…).
+See `PURPOSE.md` for what the site is FOR — three northstars, and the test
+to run before adding anything to this list. See `GLOSSARY.md` for what the
+words mean (Wall, Frame, Loop, Guardrail…).
 For what's already shipped, see `git log` — this file is only what's left.
 
 ## How to use this list

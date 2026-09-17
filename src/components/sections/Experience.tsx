@@ -1,8 +1,9 @@
 import OrgLogo from "./OrgLogo";
 import { experience, type Job } from "@/content/experience";
 
-// The right half of Background: where I've worked, as four entries rather
-// than sixteen bullets.
+// The Experience panel's contents: where I've worked, as four entries
+// rather than sixteen bullets. The heading and the card around it belong to
+// Background, which owns the panel shape every section of it shares.
 //
 // Three things carry a row, in this order of size: the mark, the takeaway,
 // the scope line. That order is the argument. A reader skimming a CV sees
@@ -22,12 +23,12 @@ import { experience, type Job } from "@/content/experience";
 export default function Experience() {
   return (
     <div>
-      <h3 className="font-[family-name:var(--font-display)] text-3xl text-brand-maroon">
-        Experience
-      </h3>
-      <div aria-hidden className="mt-4 h-1 w-24 bg-brand-red" />
-
-      <ol className="mt-8 space-y-9">
+      {/* Two up from `sm`. This was one narrow column beside the map, where
+          four roles read as a long list; across the full measure a single
+          column would run to a 140-character line, which is twice what body
+          copy can hold. Two columns of two is the same four roles at a
+          readable width. */}
+      <ol className="mt-8 grid gap-x-12 gap-y-10 sm:grid-cols-2">
         {experience.map((job) => (
           <li key={`${job.org}-${job.dates}`} className="print-keep flex gap-5">
             <Plate job={job} />

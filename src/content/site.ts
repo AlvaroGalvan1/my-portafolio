@@ -33,5 +33,32 @@ export const SITE_TITLE = `${SITE_NAME} Portafolio`;
 // search result and the subtitle printed on the card, so leaving the term
 // here would have kept it in exactly the places it was meant to leave.
 // What's left says the same thing in words that aren't a field's name.
+// What this site is FOR, in its own words.
+//
+// Three purposes, and they're the northstars the whole thing is built
+// against — see PURPOSE.md at the repo root, which is the longer version
+// and the one to read before deciding whether something belongs here. If a
+// new section serves none of these three, that is the argument against
+// building it.
+//
+// Rendered in the footer, which is where a statement about a site belongs:
+// a colophon is read by someone who has been through the thing and is
+// deciding what to do about it, not by someone still deciding whether to
+// scroll.
+export const SITE_PURPOSE = [
+  {
+    title: "To be known",
+    body: "Who I am and what I have actually built, in one place that is neither a PDF nor a profile on someone else's platform.",
+  },
+  {
+    title: "To keep the work",
+    body: "Maps, models, decks and experiments live here rather than scattered across drives and feeds, with whoever made each one named on it.",
+  },
+  {
+    title: "To start things",
+    body: "If you work on climate or geospatial problems, this is the front door. Collaborations, commissions and conversations all begin the same way.",
+  },
+];
+
 export const SITE_DESCRIPTION =
   "Wildfire modelling, satellite data, and tools that help people adapt to a changing planet.";

@@ -1,18 +1,54 @@
 import { socials } from "@/content/socials";
+import { SITE_PURPOSE } from "@/content/site";
 
-// Just the marks, in white, at the very bottom — no boxes, no labels, no
-// copyright line. At the end of the page there's nothing left to say, so
-// the three glyphs carry it alone; anything framing them would be louder
-// than what it framed. They dim to 70% at rest and come up to full white
-// on hover, which is the whole interaction.
+// The colophon: what this site is for, then the three marks.
+//
+// The marks used to stand here alone, on the argument that at the end of a
+// page there is nothing left to say. There was one thing: what the page is
+// FOR. A portfolio states that nowhere by default — a reader is left to
+// infer it from the fact that a portfolio exists — and inferring gets it
+// wrong, because the usual inference is "he wants a job" and two of the
+// three purposes here aren't that.
+//
+// It goes at the bottom rather than the top on purpose. A statement of
+// intent is read by someone who has been through the thing and is deciding
+// what to do about it; at the top it would be a claim made before any of
+// the evidence, which is the one place it can't earn anything.
 export default function Footer() {
   return (
     // Screen only. The three addresses are already set out in full under
     // the name on a printed page, and a second copy of them at the end —
     // as glyphs, each followed by its own URL — is the least useful square
     // inch on the CV.
-    <footer className="bg-brand-maroon px-6 py-12 print:hidden sm:px-16">
-      <div className="flex items-center justify-center gap-8">
+    <footer className="bg-brand-maroon px-6 py-14 print:hidden sm:px-16">
+      <h2 className="text-center font-sans text-xs font-semibold uppercase tracking-[0.3em] text-brand-yellow">
+        What this site is for
+      </h2>
+
+      {/* Three across from `sm`, stacked below. Cream on maroon is 6.4:1,
+          so this is the one place on the page where body copy can sit on
+          the dark field without a panel under it. */}
+      <div className="mx-auto mt-8 grid max-w-5xl gap-8 sm:grid-cols-3 sm:gap-10">
+        {SITE_PURPOSE.map((purpose) => (
+          <div key={purpose.title}>
+            <h3 className="font-[family-name:var(--font-display)] text-xl text-brand-yellow">
+              {purpose.title}
+            </h3>
+            <p className="mt-3 font-sans text-sm leading-relaxed text-brand-cream/85">
+              {purpose.body}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* A rule, then the marks. Without it the glyphs read as a fourth
+          column of the grid above rather than as the end of the page. */}
+      <div
+        aria-hidden
+        className="mx-auto mt-12 h-px max-w-5xl bg-brand-cream/25"
+      />
+
+      <div className="mt-10 flex items-center justify-center gap-8">
         {socials.map((s) => (
           <a
             key={s.name}
