@@ -24,9 +24,10 @@ const NAMED_GROUPS: PlaceGroup[] = ["minerva", "uwc", "uaa", "voyage"];
 // at. The map is still a half-width map and the roles are still one column
 // of four, which is what each of them was already sized for.
 //
-// Each column is a stack, so a second card goes under either one without
-// the layout being renegotiated. The next one belongs on the left, under
-// Education, which is where the empty slot sits.
+// Each column is a `space-y` stack rather than a single card, so a second
+// panel goes under either one without the layout being renegotiated. The
+// next one belongs on the left, under Education, where the shorter column
+// has the room.
 function Panel({ children }: { children: ReactNode }) {
   // Cream inside orange, which is what makes this much small type safe:
   // maroon on orange is 4.14:1 and fine for a heading, but body copy wants
@@ -51,11 +52,6 @@ export default function Background() {
       <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-maroon">
         Background
       </h2>
-      <p className="mt-4 max-w-2xl font-sans text-base text-brand-maroon">
-        Where I studied, including the term I spent at sea, and what
-        I&apos;ve been paid to work out since.
-      </p>
-
       {/* The stagger lives on `lg:mt-40` below and nowhere else. Under
           `lg` the columns collapse to one and the offset would be forty
           rems of orange between two cards, so it only applies where there
@@ -132,8 +128,6 @@ export default function Background() {
               .join(", ")}
           </p>
           </Panel>
-
-          <NextPanelSlot />
         </div>
 
         {/* Pushed down, so it reads as the next thing rather than the other
@@ -146,37 +140,5 @@ export default function Background() {
         </div>
       </div>
     </section>
-  );
-}
-
-// The empty panel, waiting for whatever goes in it next. It sits at the
-// foot of the left column, continuing the zigzag: Education, then
-// Experience opposite and lower, then this one back on the left.
-//
-// It renders in development ONLY, and that is deliberate rather than shy.
-// The slot is genuinely useful while building — it holds the shape, so the
-// spacing of a three-panel stack can be judged before there are three
-// panels — and it is exactly the thing this site's guardrails exist to keep
-// off a live page. The Wall made this mistake once already and the note in
-// data.ts records it: twenty dashed placeholders meant twenty empty boxes,
-// and empty boxes are the first thing a visitor counts.
-//
-// To ship a third panel: write it as another <Panel> above, and delete this.
-// `NODE_ENV` is statically replaced at build time, so nothing below reaches
-// the production bundle at all — it isn't hidden with CSS, it isn't there.
-function NextPanelSlot() {
-  if (process.env.NODE_ENV === "production") return null;
-
-  return (
-    <div className="flex min-h-[14rem] items-center justify-center border-4 border-dashed border-brand-cream/60 p-10">
-      <p className="max-w-sm text-center font-sans text-sm leading-relaxed text-brand-cream">
-        <span className="font-semibold uppercase tracking-[0.2em]">
-          Next panel
-        </span>
-        <br />
-        Visible in development only. Add a third <code>&lt;Panel&gt;</code> in
-        Background.tsx and delete <code>NextPanelSlot</code>.
-      </p>
-    </div>
   );
 }
