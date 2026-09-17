@@ -1,4 +1,5 @@
 import SkillBadges from "./SkillBadges";
+import PrintCvButton from "@/components/cv/PrintCvButton";
 
 // What I work with, and the way to the rest of the history. The bio that
 // used to open this section now sits above the Wall — see Intro.tsx — on
@@ -41,16 +42,29 @@ export default function About() {
             The rest of it
           </h3>
           <p className="mt-6 text-sm leading-relaxed text-neutral-700">
-            Roles, dates, and what each one actually involved — all of it is
-            in the CV, written out properly rather than squeezed into a
-            column here.
+            Roles, dates and what each one actually involved, written out
+            properly rather than squeezed into a column here. Two ways to
+            take it away.
           </p>
-          <a
-            href="/cv.pdf"
-            className="mt-6 inline-block border-2 border-brand-red bg-brand-red px-5 py-2.5 font-sans font-semibold text-white hover:bg-transparent hover:text-brand-red"
-          >
-            Download CV
-          </a>
+
+          {/* The page itself, printed, and the PDF. They are genuinely
+              different documents and both belong here: the printed page is
+              this site with the colour, the marks and the project index in
+              it, and the PDF is the plain one that survives being pasted
+              into an applicant tracking system.
+
+              This is where a download belongs — a reader in the skills
+              panel is deciding whether to keep me, not whether to open the
+              page. The hero's buttons start conversations instead. */}
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <PrintCvButton className="border-2 border-brand-red bg-brand-red px-5 py-2.5 text-center font-sans font-semibold text-white hover:bg-transparent hover:text-brand-red" />
+            <a
+              href="/cv.pdf"
+              className="border-2 border-brand-red bg-white px-5 py-2.5 text-center font-sans font-semibold text-brand-red hover:bg-brand-cream"
+            >
+              Download PDF
+            </a>
+          </div>
         </div>
       </div>
     </section>

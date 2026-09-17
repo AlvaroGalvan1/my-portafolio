@@ -52,6 +52,6 @@ export const profile = {
   // entries are unrendered today; a second paragraph needs a place in that
   // layout first, so add the markup with the string.
   bio: [
-    "Hey, I'm Álvaro from Oaxaca. I live in San Francisco and build geospatial software, mostly around wildfire and the energy transition, and I like every angle on climate action I haven't tried yet. If you're building toward a livable future, in any field, let's chat 🌸",
+    "Hey, I'm Álvaro from Oaxaca. I live in San Francisco and build geospatial software, mostly around wildfire and the energy transition. If you're building toward a livable future, in any field, let's chat 🌸",
   ],
 };

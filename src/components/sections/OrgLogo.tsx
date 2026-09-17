@@ -15,10 +15,14 @@ export default function OrgLogo({
   src,
   alt,
   fallback,
+  className = "h-6 w-auto max-w-[7rem] object-contain",
 }: {
   src: string;
   alt: string;
   fallback?: React.ReactNode;
+  /** Sized by the caller, because a mark in a 16px row and a mark on a
+   *  64px plate are the same component at very different scales. */
+  className?: string;
 }) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [failed, setFailed] = useState(false);
@@ -50,7 +54,7 @@ export default function OrgLogo({
       ref={imgRef}
       src={src}
       alt={alt}
-      className="h-6 w-auto max-w-[7rem] object-contain"
+      className={className}
     />
   );
 }

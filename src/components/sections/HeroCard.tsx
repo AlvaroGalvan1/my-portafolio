@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import PrintCvButton from "@/components/cv/PrintCvButton";
 import { profile } from "@/content/profile";
 import { socials, CONTACT_EMAIL } from "@/content/socials";
 
@@ -220,14 +219,27 @@ export default function HeroCard() {
                   are different lengths and wrap at 375px, which left them
                   ragged. */}
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                {/* The CV is this page, printed — see PrintCvButton.tsx
-                    and the @media print block in globals.css. The classic
-                    PDF hasn't gone anywhere; it's the second button in
-                    About, where a reader who wants the conventional
-                    document goes looking. */}
-                <PrintCvButton className="border-2 border-brand-maroon bg-brand-maroon px-6 py-3 text-center font-sans font-semibold text-brand-cream hover:bg-transparent hover:text-brand-maroon sm:w-auto" />
+                {/* Both buttons here now start something; neither hands
+                    over a file. A download is the end of a visit — the
+                    reader leaves with a PDF and reads it somewhere else, if
+                    at all — and putting it in the first screenful spends
+                    the most valuable click on the page on an exit.
+
+                    So the CV moved to About, where someone actually goes
+                    looking for a CV, in both forms (the printed page and
+                    the PDF). What's left here is the two ways to begin: the
+                    loud one goes to Work with me, where the booking link
+                    and the brief form are; the quiet one opens the contact
+                    form on the spot, for anyone not ready to book a call
+                    with a stranger. */}
+                <a
+                  href="#work"
+                  className="border-2 border-brand-maroon bg-brand-maroon px-6 py-3 text-center font-sans font-semibold text-brand-cream hover:bg-transparent hover:text-brand-maroon sm:w-auto"
+                >
+                  Let&apos;s work together
+                </a>
                 <ContactTrigger className="border-2 border-brand-maroon bg-white px-6 py-3 text-center font-sans font-semibold text-brand-maroon hover:bg-transparent hover:border-brand-maroon sm:w-auto">
-                  Contact Me
+                  Contact me
                 </ContactTrigger>
               </div>
             </div>

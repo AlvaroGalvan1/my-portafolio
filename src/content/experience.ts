@@ -19,10 +19,28 @@ export type Job = {
    *  as a list of tools. If it mentions a library it is a bullet, not a
    *  takeaway. */
   takeaway: string;
+  /** One line of scale or method under the takeaway. Where the takeaway
+   *  says what changed, this says how much or by what means — the numbers a
+   *  reader wants before they believe the sentence above it. */
+  scope?: string;
   /** Company mark. These aren't in any open icon set, so they're local
    *  files — drop each at the path below (SVG preferred, PNG fine) and it
-   *  appears; until then the row just shows the text, no broken image. */
+   *  appears. */
   logoSrc?: string;
+  /** Two or three letters, drawn in the display face, for an organisation
+   *  whose mark isn't here yet. Every row gets a plate either way: a column
+   *  where two of five entries have a logo and three have a blank square
+   *  looks broken, where five lettermarks look like a set. */
+  lettermark: string;
+  /** Somewhere to read more about the organisation. Rendered on the mark,
+   *  so the plate is the link — used where the place is worth looking up
+   *  and unfamiliar. */
+  href?: string;
+  /** What kind of entry this is. "role" is a job; "voyage" is a programme
+   *  lived rather than worked, and it is tagged as such on the page. A CV
+   *  that lets a term abroad sit unlabelled among four jobs is a CV that
+   *  gets caught, and the tag costs nothing. */
+  kind?: "role" | "voyage";
 };
 
 // Every job, including ones still being filled in.
@@ -33,8 +51,11 @@ const allJobs: Job[] = [
     logoSrc: "/logos/pano-ai.svg",
     dates: "Jun 2025 – Present",
     location: "San Francisco Bay Area · On-site",
+    lettermark: "PA",
     takeaway:
-      "Where a fire-detection camera should point, worked out from terrain instead of guessed at.",
+      "Where a wildfire camera should stand, and what it can actually see from up there, worked out from the terrain instead of guessed at.",
+    scope:
+      "Viewshed and coverage scoring in Python, wired into the ArcGIS workflows the siting calls are made in.",
     bullets: [
       "Built end-to-end Python tools (Shapely, GeoPandas, NumPy, SciPy) for viewshed analysis, coverage scoring, and site prioritization",
       "Integrated ArcGIS workflows with custom algorithms to analyze detection performance and camera placement",
@@ -50,8 +71,11 @@ const allJobs: Job[] = [
     logoSrc: "/logos/hyticos.svg",
     dates: "Feb 2026 – Jun 2026",
     location: "Hyderabad, India",
+    lettermark: "HY",
     takeaway:
-      "A team with no way to judge fire risk got one that updates itself, built with them rather than for them.",
+      "A team with no way to judge fire risk now has one that updates itself.",
+    scope:
+      "A fire-index map weighted by analytic hierarchy process, with the weights argued out with the people who rely on the result.",
     // Prose rather than bullets: this role was one sustained piece of work,
     // and splitting it into three achievement lines would pad it.
     summary:
@@ -64,8 +88,11 @@ const allJobs: Job[] = [
     logoSrc: "/logos/fuego-earth.svg",
     dates: "2025 – 2026",
     location: "San Francisco, CA",
+    lettermark: "FE",
     takeaway:
       "Physics-grade fire simulation, made legible to people who will never read the physics.",
+    scope:
+      "A public React and D3 frontend over 1,000+ spread simulations a day, with the simulated perimeters checked against what the satellites saw.",
     bullets: [
       "Built the public frontend (React, D3) for a wildfire-spread simulation platform, making physics-based fire modeling and multi-source satellite imagery (Copernicus, Sentinel, LANDFIRE) usable by non-specialist audiences",
       "Redesigned fire-progression visuals from static maps to color-graded, isochronic views and video sequences, applying cartographic best practices to make risk legible at a glance",
@@ -79,13 +106,35 @@ const allJobs: Job[] = [
     logoSrc: "/logos/gridware.svg",
     dates: "May 2023 – Dec 2024",
     location: "San Francisco, California · Hybrid",
+    lettermark: "GW",
     takeaway:
-      "Faults on the grid found in the data before they were found in the field.",
+      "Faults on the electrical grid found in the data before they were found in the field.",
+    scope:
+      "Live monitoring of distribution-grid streams, with the diagnosis in the hands of the crews the same day.",
     bullets: [
       "Real-time monitoring and analysis of electrical distribution grid data streams",
       "Investigated and diagnosed faults using statistical analysis to reduce response times",
       "Generated real-time and daily reports for utility management and preventive maintenance",
     ],
+  },
+  {
+    // Not a job, and tagged `voyage` so the page says so. It sits in this
+    // list rather than with the campuses because it isn't a campus either:
+    // the point of it is the 106 days and the eleven ports, which is the
+    // same point every role above makes about working on other people's
+    // ground — the earliest instance of it, and the reason for the rest.
+    kind: "voyage",
+    role: "Spring 2022 voyage",
+    org: "Semester at Sea",
+    lettermark: "SAS",
+    href: "https://www.semesteratsea.org/spring-2022-voyage-itinerary-update/",
+    dates: "Jan – Apr 2022",
+    location: "Naples to Bremerhaven · 11 ports",
+    takeaway:
+      "A term of coursework carried between eleven ports instead of taught in one place. Everything above it is that habit, paid.",
+    scope:
+      "106 days at sea, embarking at Naples and disembarking at Bremerhaven by way of Greece, Israel, Croatia, Malta, Spain, Morocco, Portugal, France, Ireland, Poland and Sweden.",
+    bullets: [],
   },
 ];
 

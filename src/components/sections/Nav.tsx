@@ -9,11 +9,13 @@ import { Z } from "@/lib/layers";
 // backwards and then forwards again as you scroll. Re-order this list with
 // the page, every time, rather than letting it drift.
 //
-// Four labels for six sections, because the bar has to fit a phone. What's
-// left out and why: `#capabilities` names the same organisations as
-// Background directly above it; `#skills` is the back half of About; and
-// `#work` is the ask, which the Contact button to the right of these is
-// already making, permanently on screen.
+// Four labels for five sections, because the bar has to fit a phone.
+// `#skills` is the one left out: it's the back half of About rather than a
+// destination of its own, and a five-item bar wraps at 390px.
+//
+// `#work` isn't in this list either, but for the opposite reason — it's the
+// yellow button at the other end of the bar, which is a louder thing than a
+// label in a row of labels, and deliberately so.
 const LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -92,9 +94,29 @@ export default function Nav() {
           );
         })}
       </div>
-      <ContactTrigger className="shrink-0 border-2 border-white bg-white px-3 py-1 text-brand-maroon hover:bg-transparent hover:text-white sm:px-4 sm:py-1.5">
-        Contact
-      </ContactTrigger>
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        {/* Yellow, where everything else in this bar is white on maroon.
+            It's the only element on the page allowed to interrupt that, and
+            it earns it by being the one thing the bar is actually for: the
+            visitor who has decided to hire me and doesn't want to scroll
+            five sections to find out how.
+
+            An anchor, not a button — it goes to a place on this page, so it
+            has to behave like a link (middle-click, open in new tab, and a
+            visible target in the status bar). */}
+        <a
+          href="#work"
+          className="border-2 border-brand-yellow bg-brand-yellow px-3 py-1 text-brand-maroon hover:bg-transparent hover:text-brand-yellow sm:px-4 sm:py-1.5"
+        >
+          Work with me
+        </a>
+        {/* Room for both only above `sm`. On a phone the yellow button wins:
+            the Work section it lands on has "Send a brief", which opens this
+            same contact form, so nothing is lost but a tap. */}
+        <ContactTrigger className="hidden shrink-0 border-2 border-white bg-white px-3 py-1 text-brand-maroon hover:bg-transparent hover:text-white sm:inline-block sm:px-4 sm:py-1.5">
+          Contact
+        </ContactTrigger>
+      </div>
     </nav>
   );
 }

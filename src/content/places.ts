@@ -184,6 +184,12 @@ export const places: Place[] = [
 
 // The headline numbers under the section title. Derived rather than typed
 // out, so adding a pin can never leave the summary saying something false.
+// Nothing renders these today: the line that read "9 campuses, 8 countries,
+// one degree" came off the Education column, and the map and the printed
+// campus list each say it without counting out loud. Kept rather than
+// deleted because it is derived, not written — it costs nothing, it cannot
+// go stale, and the next thing that wants a headline number wants exactly
+// this.
 export const journeyStats = {
   campuses: places.filter((p) => p.group !== "friends").length,
   countries: new Set(

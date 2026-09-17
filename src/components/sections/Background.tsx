@@ -1,7 +1,7 @@
 import Image from "next/image";
 import BaseMap from "@/components/map/BaseMap";
 import Experience from "./Experience";
-import { journeyStats, places, GROUPS, type PlaceGroup } from "@/content/places";
+import { places, GROUPS, type PlaceGroup } from "@/content/places";
 
 // The CV's top half, laid out as a CV is: education on one side, work on
 // the other, read together rather than one after the other.
@@ -19,8 +19,6 @@ import { journeyStats, places, GROUPS, type PlaceGroup } from "@/content/places"
 const INSTITUTIONS: PlaceGroup[] = ["minerva", "uwc", "uaa"];
 
 export default function Background() {
-  const { campuses, countries } = journeyStats;
-
   return (
     // Orange, as this section has always been. The panel inside it is what
     // makes that safe for this much small type: maroon on orange is 4.14:1
@@ -45,21 +43,12 @@ export default function Background() {
             </h3>
             <div aria-hidden className="mt-4 h-1 w-24 bg-brand-red" />
 
-            {/* Counted from places.ts rather than typed, so the sentence
-                can't drift from the pins drawing it. */}
-            <p className="mt-6 font-sans text-base text-neutral-700">
-              <span className="font-semibold text-brand-maroon">
-                {campuses} campuses, {countries} countries, one degree.
-              </span>{" "}
-              <span className="print:hidden">Tap a mark to read the entry.</span>
-            </p>
-
             {/* The marks with the institutions spelled out. The map's own
                 legend already carries these logos, but only as "UWC" and
                 "UAA" — abbreviations a reader outside this world has no way
                 to expand. This row is where the names live; the legend is
                 where the counts and the toggles do. */}
-            <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-4">
               {INSTITUTIONS.map((key) => (
                 <div key={key} className="flex items-center gap-3">
                   <Image
