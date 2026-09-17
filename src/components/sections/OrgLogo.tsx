@@ -6,11 +6,11 @@ import { useEffect, useRef, useState } from "react";
 // what isn't there" rule the gallery follows, so a missing logo costs
 // nothing visually.
 //
-// `fallback` is for the one place where nothing is the wrong answer: the
-// "Worked with" banner, where the organisation has to be named whether or
-// not its mark has been dropped in. Callers that only ever wanted a mark
-// (the Experience rows, which print the org name in their heading anyway)
-// leave it off and get the old behaviour.
+// `fallback` is for the places where nothing is the wrong answer. The
+// Experience rows pass a lettermark: every entry there sits on a plate of
+// the same size, so an absent file has to leave two letters behind rather
+// than an empty square. Callers that genuinely want a mark or nothing at
+// all leave it off and get the old behaviour.
 export default function OrgLogo({
   src,
   alt,
