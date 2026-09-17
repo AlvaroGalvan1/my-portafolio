@@ -23,12 +23,11 @@ import { experience, type Job } from "@/content/experience";
 export default function Experience() {
   return (
     <div>
-      {/* Two up from `sm`. This was one narrow column beside the map, where
-          four roles read as a long list; across the full measure a single
-          column would run to a 140-character line, which is twice what body
-          copy can hold. Two columns of two is the same four roles at a
-          readable width. */}
-      <ol className="mt-8 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+      {/* One column. The panel is half the page wide, and splitting half a
+          page into two columns of roles gives each a thirty-character
+          measure — narrower than the takeaway sentences that are the point
+          of the entries. */}
+      <ol className="mt-8 space-y-9">
         {experience.map((job) => (
           <li key={`${job.org}-${job.dates}`} className="print-keep flex gap-5">
             <Plate job={job} />

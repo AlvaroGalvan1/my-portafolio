@@ -16,17 +16,17 @@ const NAMED_GROUPS: PlaceGroup[] = ["minerva", "uwc", "uaa", "voyage"];
 
 // The CV's top half: education, then work, then whatever comes next.
 //
-// These were two columns inside one card, and the card is now one card per
-// thing, stacked. Side by side, each half was squeezed into a column it
-// didn't want: the map is a world map and half a screen of it is mostly
-// ocean, and the roles were a single narrow list of four when the same four
-// sit comfortably two-up. Stacked, each panel gets the full measure and the
-// page scrolls through them one at a time rather than asking the eye to
-// read two things in parallel.
+// Two columns, one card each, and the right column starts lower than the
+// left. That offset is the whole layout. Level with each other, the two
+// cards ask to be read in parallel and neither wins; staggered, the page
+// hands them over one at a time — Education arrives, you scroll, Experience
+// comes up beside it — while both keep the half-measure they were designed
+// at. The map is still a half-width map and the roles are still one column
+// of four, which is what each of them was already sized for.
 //
-// Panels are a list on purpose. A third — and a fourth — is meant to go in
-// below, so this is built as a stack that accepts one rather than a layout
-// that has to be renegotiated when one arrives.
+// Each column is a stack, so a second card goes under either one without
+// the layout being renegotiated. The next one belongs on the left, under
+// Education, which is where the empty slot sits.
 function Panel({ children }: { children: ReactNode }) {
   // Cream inside orange, which is what makes this much small type safe:
   // maroon on orange is 4.14:1 and fine for a heading, but body copy wants
@@ -56,8 +56,13 @@ export default function Background() {
         I&apos;ve been paid to work out since.
       </p>
 
-      <div className="mt-10 space-y-6">
-        <Panel>
+      {/* The stagger lives on `lg:mt-40` below and nowhere else. Under
+          `lg` the columns collapse to one and the offset would be forty
+          rems of orange between two cards, so it only applies where there
+          are two columns to stagger. */}
+      <div className="mt-10 grid gap-6 lg:grid-cols-2 lg:gap-14">
+        <div className="space-y-6">
+          <Panel>
           <PanelHeading>Education</PanelHeading>
 
           {/* The marks with the institutions spelled out. The map's own
@@ -82,13 +87,12 @@ export default function Background() {
             ))}
           </div>
 
-          {/* Taller now that it has the full measure: at half width this was
-              a column of ocean at any height, and the fix was to keep it
-              short. A world map across the whole panel can afford to be a
-              world map. The no-repeat zoom floor is derived from the
-              container's larger side, so a wide box is also what keeps
-              every pin in the opening view. */}
-          <div className="mt-7 h-[55svh] w-full border-4 border-brand-maroon print:hidden sm:h-[65svh]">
+          {/* Landscape-ish rather than tall. The no-repeat zoom floor is
+              derived from the container's larger side, so a box this shape
+              is what keeps every pin in the opening view; an 85vh-tall,
+              half-width box forced the map two zoom levels in and opened on
+              about sixty degrees of longitude. */}
+          <div className="mt-7 h-[45svh] w-full border-4 border-brand-maroon print:hidden lg:h-[52svh]">
             <BaseMap />
           </div>
 
@@ -127,20 +131,27 @@ export default function Background() {
               .map((place) => place.name)
               .join(", ")}
           </p>
-        </Panel>
+          </Panel>
 
-        <Panel>
-          <PanelHeading>Experience</PanelHeading>
-          <Experience />
-        </Panel>
+          <NextPanelSlot />
+        </div>
 
-        <NextPanelSlot />
+        {/* Pushed down, so it reads as the next thing rather than the other
+            half of the same thing. */}
+        <div className="space-y-6 lg:mt-40">
+          <Panel>
+            <PanelHeading>Experience</PanelHeading>
+            <Experience />
+          </Panel>
+        </div>
       </div>
     </section>
   );
 }
 
-// The empty panel, waiting for whatever goes in it next.
+// The empty panel, waiting for whatever goes in it next. It sits at the
+// foot of the left column, continuing the zigzag: Education, then
+// Experience opposite and lower, then this one back on the left.
 //
 // It renders in development ONLY, and that is deliberate rather than shy.
 // The slot is genuinely useful while building — it holds the shape, so the
