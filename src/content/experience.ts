@@ -1,6 +1,14 @@
 export type Job = {
   role: string;
+  /** The organisation, and only the organisation. The engagement type used
+   *  to be glued on here ("Gridware · Contract") because one line rendered
+   *  both; they are separate fields now, because the layout shows company,
+   *  role and dates as three separate things. */
   org: string;
+  /** What the company does, in one line, for a reader who has never heard
+   *  of it. Four org names that mean nothing are four rows of nothing: the
+   *  role says what I did, this says what it was for. */
+  what: string;
   dates: string;
   location: string;
   /** Achievement lines. Some roles read better as prose — those set
@@ -32,11 +40,14 @@ export type Job = {
    *  where two of five entries have a logo and three have a blank square
    *  looks broken, where five lettermarks look like a set. */
   lettermark: string;
-  /** Somewhere to read more about the organisation. Rendered on the mark,
-   *  so the plate is the link. Nothing sets it today — Semester at Sea did,
-   *  before the voyage moved to the map in places.ts, which is where a
-   *  thing whose point is thirteen ports belongs. Kept because an org worth
-   *  linking is a normal thing for this list to acquire. */
+  /** The company's own site. The company NAME is the link, not the mark:
+   *  one link per row, on the words, where a reader expects it.
+   *
+   *  Only set where the address has actually been checked. Two of these
+   *  four are missing for that reason rather than by oversight — see the
+   *  entries — and a row without one simply renders its name as text. A
+   *  dead link on a CV is worse than no link, because the reader finds out
+   *  by clicking. */
   href?: string;
 };
 
@@ -45,6 +56,8 @@ const allJobs: Job[] = [
   {
     role: "Geospatial Analyst",
     org: "Pano AI",
+    what: "Early wildfire detection, from a network of mountaintop cameras watching for smoke.",
+    href: "https://www.pano.ai",
     logoSrc: "/logos/pano-ai.svg",
     dates: "Jun 2025 – Present",
     location: "San Francisco Bay Area · On-site",
@@ -60,11 +73,13 @@ const allJobs: Job[] = [
     ],
   },
   {
-    // Volunteer sits in `org` rather than in the role title, matching
-    // "Gridware · Contract" — the engagement type is a fact about the
-    // relationship, not part of what the job was called.
     role: "Geospatial Data Engineer",
-    org: "Hyticos · Volunteer",
+    org: "Hyticos",
+    // Written from my own summary of the work rather than from the
+    // company's own description. Worth replacing with their line.
+    what: "A team in Hyderabad working on fire potential without the resources to assess it themselves.",
+    // TODO: no address found. hyticos.com does not resolve; if there is a
+    // site, a LinkedIn page or a repo, put it here and the name links.
     logoSrc: "/logos/hyticos.svg",
     dates: "Feb 2026 – Jun 2026",
     location: "Hyderabad, India",
@@ -82,6 +97,9 @@ const allJobs: Job[] = [
   {
     role: "Geospatial Frontend Engineer",
     org: "Fuego.Earth",
+    what: "A public wildfire-spread simulation platform, physics-based, running on satellite imagery.",
+    // TODO: fuego.earth returns 404 at the root, with or without www. Put
+    // the live address here and the name links.
     logoSrc: "/logos/fuego-earth.svg",
     dates: "2025 – 2026",
     location: "San Francisco, CA",
@@ -99,7 +117,9 @@ const allJobs: Job[] = [
   },
   {
     role: "Data Analyst",
-    org: "Gridware · Contract",
+    org: "Gridware",
+    what: "Monitoring hardware for electrical distribution grids, watching the lines for faults in real time.",
+    href: "https://www.gridware.io",
     logoSrc: "/logos/gridware.svg",
     dates: "May 2023 – Dec 2024",
     location: "San Francisco, California · Hybrid",

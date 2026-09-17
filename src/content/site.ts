@@ -33,6 +33,23 @@ export const SITE_TITLE = `${SITE_NAME} Portafolio`;
 // search result and the subtitle printed on the card, so leaving the term
 // here would have kept it in exactly the places it was meant to leave.
 // What's left says the same thing in words that aren't a field's name.
+// The greeting. One line, and it does a job no other line on the page can:
+// it says what kind of thing this is before the reader has to work it out.
+// A portfolio that opens on a name and a paragraph asks them to infer it.
+export const SITE_WELCOME = "Welcome to my portfolio.";
+
+// The mission, in one line, under the name in the hero.
+//
+// It is the three purposes below compressed into a sentence, and it has to
+// stay that: if this line and SITE_PURPOSE ever say different things, the
+// site has two missions and therefore none. Change them together.
+//
+// Under the name rather than in the footer with the long version, because
+// the first thing a stranger wants after a name is what the person is for.
+// The bio under it says who I am; this says what this is.
+export const SITE_MISSION =
+  "Somewhere to know the work, somewhere to keep it, and somewhere a climate or geospatial project can begin.";
+
 // What this site is FOR, in its own words.
 //
 // Three purposes, and they're the northstars the whole thing is built

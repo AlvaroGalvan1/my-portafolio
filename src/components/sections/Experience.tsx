@@ -5,17 +5,18 @@ import { experience, type Job } from "@/content/experience";
 // rather than sixteen bullets. The heading and the card around it belong to
 // Background, which owns the panel shape every section of it shares.
 //
-// Three things carry a row, in this order of size: the mark, the takeaway,
-// the scope line. That order is the argument. A reader skimming a CV sees
-// logos first whether or not you designed for it, so every entry gets a
-// plate of the same size — the real mark where the file exists and two
-// letters in the display face where it doesn't, which is what makes a
-// column of four read as a set instead of two gaps and two logos.
+// Each entry is two blocks, and the split is the point. First the company:
+// its mark, its name, and one line saying what it does, because three of
+// these four names mean nothing to a reader who hasn't met them. Then, hung
+// off a rule and indented under it, what I did there: role, dates, and one
+// sentence on what the job was FOR.
 //
-// Then one sentence saying what the job was FOR, and one saying at what
-// scale or by what method. `experience.ts` still holds every bullet and
-// print brings them back (see the @media print block in globals.css), so
-// the screen can stay at four sentences without the CV losing anything.
+// Everything else prints. The entries carried a second paragraph of scope
+// on screen as well, which across four roles is eight paragraphs of body
+// copy in a half-width column, and the section's problem was never that it
+// said too little. `experience.ts` still holds every bullet and the @media
+// print block in globals.css brings them all back, so the screen can run at
+// one sentence each without the CV losing a word.
 //
 // It also answers the tuned-CV problem: a takeaway written as "what changed
 // because I was there" reads as true against a GIS CV and a climate CV
@@ -27,36 +28,74 @@ export default function Experience() {
           page into two columns of roles gives each a thirty-character
           measure — narrower than the takeaway sentences that are the point
           of the entries. */}
-      <ol className="mt-8 space-y-9">
+      <ol className="mt-2 space-y-12">
         {experience.map((job) => (
-          <li key={`${job.org}-${job.dates}`} className="print-keep flex gap-5">
-            <Plate job={job} />
+          <li key={`${job.org}-${job.dates}`} className="print-keep">
+            {/* Block one: the company. Its mark, its name, and what it
+                actually does — which was missing, and without it three of
+                these four names tell a reader nothing at all. */}
+            <div className="flex items-start gap-4">
+              <Plate job={job} />
+              <div className="min-w-0 flex-1">
+                <h4 className="font-[family-name:var(--font-display)] text-2xl leading-none text-brand-maroon">
+                  {job.href ? (
+                    <a
+                      href={job.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-brand-red"
+                    >
+                      {job.org}
+                      {/* The mark, not an underline. A display face at this
+                          size underlines badly, and the arrow says the
+                          extra thing an underline cannot: that this leaves
+                          the page. */}
+                      <span aria-hidden className="ml-1.5 text-base align-top">
+                        ↗
+                      </span>
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    job.org
+                  )}
+                </h4>
+                <p className="mt-2 font-sans text-sm leading-relaxed text-neutral-600">
+                  {job.what}
+                </p>
+              </div>
+            </div>
 
-            <div className="min-w-0 flex-1">
-              <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-brand-maroon/75">
-                {job.dates}
-              </span>
-
-              <h4 className="mt-2 font-sans text-lg font-semibold leading-tight text-brand-maroon">
+            {/* Block two: what I did there, hung off a rule and indented to
+                clear the mark above it. The rule is what divides the role
+                from the company rather than a blank line doing it, so the
+                two read as two things at a glance. */}
+            <div className="mt-5 border-l-2 border-brand-red/30 pl-5 sm:ml-20">
+              <p className="font-sans font-semibold leading-tight text-brand-maroon">
                 {job.role}
-                <span className="font-normal text-brand-maroon/70"> · {job.org}</span>
-              </h4>
-
-              <p className="mt-2 font-sans text-base leading-relaxed text-neutral-700">
-                {job.takeaway}
+              </p>
+              <p className="mt-1 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-brand-maroon/60">
+                {job.dates}
               </p>
 
-              {job.scope && (
-                <p className="mt-2 font-sans text-sm leading-relaxed text-neutral-600">
-                  {job.scope}
-                </p>
-              )}
+              {/* One line on screen. The scope line that used to sit under
+                  this said something true and made every entry two
+                  paragraphs, which across four roles is eight paragraphs of
+                  body copy in a half-width column. It prints instead, with
+                  the bullets. */}
+              <p className="mt-3 font-sans text-base leading-relaxed text-neutral-700">
+                {job.takeaway}
+              </p>
 
               {/* Paper gets the detail the screen refuses. This is the whole
                   bargain of printing the site as the CV: on a page the
                   reader skims four takeaways in ten seconds, and in a PDF
-                  that lands in an inbox they need the bullets a recruiter is
-                  searching for. Same data, both times. */}
+                  that lands in an inbox they need the bullets a recruiter
+                  is searching for. Same data, both times. */}
+              {job.scope && (
+                <p className="mt-2 hidden font-sans text-sm leading-relaxed text-neutral-700 print:block">
+                  {job.scope}
+                </p>
+              )}
               {job.summary && (
                 <p className="mt-2 hidden font-sans text-sm leading-relaxed text-neutral-700 print:block">
                   {job.summary}
@@ -108,27 +147,10 @@ function Plate({ job }: { job: Job }) {
     <Lettermark text={job.lettermark} />
   );
 
-  const plate = (
+  return (
     <div className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-brand-red/40 bg-white p-2">
       {mark}
     </div>
-  );
-
-  // The plate becomes the link where there's somewhere worth going. No
-  // underline and no colour change: the mark IS the affordance, and a lift
-  // on hover says so without decorating a logo.
-  return job.href ? (
-    <a
-      href={job.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${job.org} (opens in a new tab)`}
-      className="shrink-0 transition-transform hover:-translate-y-0.5"
-    >
-      {plate}
-    </a>
-  ) : (
-    plate
   );
 }
 

@@ -4,10 +4,13 @@ Three purposes. They are the northstars: when something is proposed for
 this site, it earns its place by serving one of them, and the honest answer
 to "which one?" is sometimes "none", which is what this file is for.
 
-The same three are stated on the page itself, in the footer, from
-`SITE_PURPOSE` in `src/content/site.ts`. Change them there and here
-together — a site whose stated purpose and working purpose differ is worse
-than one that states nothing.
+The same three are stated on the page itself, twice, both from
+`src/content/site.ts`: compressed to one sentence as `SITE_MISSION`, which
+sits under the name in the hero, and in full as `SITE_PURPOSE` in the
+footer. Change all three — this file, the line and the list — together. A
+site whose stated purpose and working purpose differ is worse than one that
+states nothing, and one that states two different purposes on the same page
+is worse again.
 
 ---
 

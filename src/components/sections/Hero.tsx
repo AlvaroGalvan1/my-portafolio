@@ -2,6 +2,7 @@ import HeroArt from "./HeroArt";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
 import { socials, CONTACT_EMAIL } from "@/content/socials";
+import { SITE_MISSION, SITE_WELCOME } from "@/content/site";
 
 // An editorial split, and the two halves are two subjects: me on the left,
 // you on the right. The words and the bio stand in the cream column; the
@@ -67,10 +68,32 @@ export default function Hero() {
             only section not using it. */}
         <div aria-hidden className="mt-8 h-1 w-24 bg-brand-red" />
 
+        {/* Three beats, in the order a stranger needs them. What this is,
+            what it is for, and only then who is behind it — because a
+            reader who has just met a name wants to know what they have
+            arrived at before they are told about the author.
+
+            The bio gets a label rather than running on from the mission:
+            "About me" here and "About you" on the artwork opposite are the
+            same kind of thing on either side of the seam, and the pair is
+            what makes the split read as deliberate. */}
+        <p className="mt-8 font-sans text-xl font-semibold leading-snug text-brand-maroon sm:text-2xl">
+          {SITE_WELCOME}
+        </p>
+
+        <p className="mt-3 max-w-[46ch] font-sans text-base leading-relaxed text-brand-maroon sm:text-lg">
+          {SITE_MISSION}
+        </p>
+
         {lede && (
-          <p className="mt-8 max-w-[46ch] font-sans text-lg leading-snug text-brand-maroon sm:text-xl">
-            {lede}
-          </p>
+          <div className="mt-8">
+            <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.25em] text-brand-red">
+              About me
+            </h2>
+            <p className="mt-3 max-w-[46ch] font-sans text-base leading-relaxed text-brand-maroon sm:text-lg">
+              {lede}
+            </p>
+          </div>
         )}
 
         {/* One action, and it points into the work rather than at another
