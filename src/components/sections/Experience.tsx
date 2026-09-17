@@ -46,13 +46,11 @@ export default function Experience() {
                       className="hover:text-brand-red"
                     >
                       {job.org}
-                      {/* The mark, not an underline. A display face at this
-                          size underlines badly, and the arrow says the
-                          extra thing an underline cannot: that this leaves
-                          the page. */}
-                      <span aria-hidden className="ml-1.5 text-base align-top">
-                        ↗
-                      </span>
+                      {/* No mark and no underline. A display face at this
+                          size underlines badly, and an arrow after every
+                          company name put four of them down one column. The
+                          colour shift on hover is the affordance; the note
+                          below is the one for anyone not seeing it. */}
                       <span className="sr-only"> (opens in a new tab)</span>
                     </a>
                   ) : (

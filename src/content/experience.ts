@@ -43,11 +43,10 @@ export type Job = {
   /** The company's own site. The company NAME is the link, not the mark:
    *  one link per row, on the words, where a reader expects it.
    *
-   *  Only set where the address has actually been checked. Two of these
-   *  four are missing for that reason rather than by oversight — see the
-   *  entries — and a row without one simply renders its name as text. A
-   *  dead link on a CV is worse than no link, because the reader finds out
-   *  by clicking. */
+   *  Only set where the address has actually been checked. Fuego.Earth is
+   *  missing for that reason rather than by oversight — see its entry — and
+   *  a row without one simply renders its name as text. A dead link on a CV
+   *  is worse than no link, because the reader finds out by clicking. */
   href?: string;
 };
 
@@ -75,11 +74,14 @@ const allJobs: Job[] = [
   {
     role: "Geospatial Data Engineer",
     org: "Hyticos",
-    // Written from my own summary of the work rather than from the
-    // company's own description. Worth replacing with their line.
-    what: "A team in Hyderabad working on fire potential without the resources to assess it themselves.",
-    // TODO: no address found. hyticos.com does not resolve; if there is a
-    // site, a LinkedIn page or a repo, put it here and the name links.
+    // The first version of this line said "a team in Hyderabad working on
+    // fire potential", which described the project rather than the
+    // organisation, because the organisation could not be checked. It can
+    // now: HYTICOS is the Hyderabad Tiger Conservation Society, and the
+    // fire-index work is legible the moment that is on the page. Forest
+    // fire is a threat to the habitat they exist to protect.
+    what: "A grassroots non-profit conserving tigers and the forests they live in, across Telangana's reserves.",
+    href: "https://www.hyticos.in/",
     logoSrc: "/logos/hyticos.svg",
     dates: "Feb 2026 – Jun 2026",
     location: "Hyderabad, India",
