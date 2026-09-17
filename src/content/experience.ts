@@ -10,6 +10,15 @@ export type Job = {
    *  is one piece of work rather than a list of them. Rendered before the
    *  bullets when both are present. */
   summary?: string;
+  /** The one line the page shows. Not a compressed bullet — a different
+   *  register entirely: what the job was FOR, in language someone outside
+   *  the field can picture. The bullets stay in the CV, where a reader has
+   *  already decided they want the detail; this is what earns that.
+   *
+   *  Write it as the answer to "what changed because you were there", never
+   *  as a list of tools. If it mentions a library it is a bullet, not a
+   *  takeaway. */
+  takeaway: string;
   /** Company mark. These aren't in any open icon set, so they're local
    *  files — drop each at the path below (SVG preferred, PNG fine) and it
    *  appears; until then the row just shows the text, no broken image. */
@@ -24,6 +33,8 @@ const allJobs: Job[] = [
     logoSrc: "/logos/pano-ai.svg",
     dates: "Jun 2025 – Present",
     location: "San Francisco Bay Area · On-site",
+    takeaway:
+      "Where a fire-detection camera should point, worked out from terrain instead of guessed at.",
     bullets: [
       "Built end-to-end Python tools (Shapely, GeoPandas, NumPy, SciPy) for viewshed analysis, coverage scoring, and site prioritization",
       "Integrated ArcGIS workflows with custom algorithms to analyze detection performance and camera placement",
@@ -39,6 +50,8 @@ const allJobs: Job[] = [
     logoSrc: "/logos/hyticos.svg",
     dates: "Feb 2026 – Jun 2026",
     location: "Hyderabad, India",
+    takeaway:
+      "A team with no way to judge fire risk got one that updates itself, built with them rather than for them.",
     // Prose rather than bullets: this role was one sustained piece of work,
     // and splitting it into three achievement lines would pad it.
     summary:
@@ -51,6 +64,8 @@ const allJobs: Job[] = [
     logoSrc: "/logos/fuego-earth.svg",
     dates: "2025 – 2026",
     location: "San Francisco, CA",
+    takeaway:
+      "Physics-grade fire simulation, made legible to people who will never read the physics.",
     bullets: [
       "Built the public frontend (React, D3) for a wildfire-spread simulation platform, making physics-based fire modeling and multi-source satellite imagery (Copernicus, Sentinel, LANDFIRE) usable by non-specialist audiences",
       "Redesigned fire-progression visuals from static maps to color-graded, isochronic views and video sequences, applying cartographic best practices to make risk legible at a glance",
@@ -64,6 +79,8 @@ const allJobs: Job[] = [
     logoSrc: "/logos/gridware.svg",
     dates: "May 2023 – Dec 2024",
     location: "San Francisco, California · Hybrid",
+    takeaway:
+      "Faults on the grid found in the data before they were found in the field.",
     bullets: [
       "Real-time monitoring and analysis of electrical distribution grid data streams",
       "Investigated and diagnosed faults using statistical analysis to reduce response times",
@@ -72,7 +89,7 @@ const allJobs: Job[] = [
   },
 ];
 
-// What About actually renders. Same "never show what isn't there" rule the
+// What the Experience column renders. Same "never show what isn't there" rule the
 // gallery and OrgLogo follow: a job whose fields are still TODO placeholders
 // would otherwise publish the word "TODO" to anyone reading the site, which
 // is worse than the row simply not being there yet. Fill the entry in and it

@@ -30,6 +30,13 @@ export const socials: Social[] = [
   },
 ];
 
+// Public contact address. Lives here rather than inside ContactModal
+// because the printed CV needs it too: a CV with no way to reply to it is
+// not a CV. A personal address on purpose — the Minerva .edu one won't
+// outlive enrollment, and this page should keep working after it stops
+// resolving.
+export const CONTACT_EMAIL = "alvaroemiliogalvansandoval@gmail.com";
+
 // Booking link — the low-friction path for anyone who'd rather grab time
 // than compose an email.
 export const CALENDLY_URL = "https://calendly.com/alvagalv/30min";

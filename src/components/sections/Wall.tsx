@@ -1,5 +1,6 @@
 import HorizontalGallery from "@/components/gallery/HorizontalGallery";
 import { galleryItems } from "@/components/gallery/data";
+import { creditLine } from "@/components/gallery/credit";
 import { Z } from "@/lib/layers";
 
 const WALL_NOTE =
@@ -17,13 +18,13 @@ export default function Wall() {
           it takes focus, which happens exactly once — on the tab that would
           otherwise have started that walk.
 
-          The target is whatever section follows the Wall — `#journey` now
-          that the map sits directly after it. Not `#about`, which is the bio
-          *above* the Wall and would send them back up the page, and not
-          `#skills` either, which would vault them over the whole map. A skip
-          link goes forward, and no further than it has to. */}
+          The target is whatever section follows the Wall, which is now
+          `#skills` — the map moved above the Wall into Background, and a
+          link pointing at it would send a keyboard visitor back up the
+          page, which is worse than no skip link at all. A skip link goes
+          forward, and no further than it has to. */}
       <a
-        href="#journey"
+        href="#skills"
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
         className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:border-2 focus:border-brand-yellow focus:bg-brand-maroon focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:normal-case focus:text-brand-cream sm:focus:left-16"
       >
@@ -56,7 +57,29 @@ export default function Wall() {
           </span>
         </span>
       </h2>
-      <HorizontalGallery items={galleryItems} />
+      <div className="print:hidden">
+        <HorizontalGallery items={galleryItems} />
+      </div>
+
+      {/* The Wall, printed. A horizontal scroller that renders its items
+          three times over for the loop is the single most unprintable thing
+          on this site — on paper it is one frozen tile and two-thirds of
+          another. So print gets the index instead: every piece by name, with
+          whose work it is, which is what a CV's "selected work" section is
+          anyway. Same array, no second list to maintain. */}
+      <div className="hidden bg-white px-6 py-8 font-sans sm:px-16 print:block">
+        <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-neutral-700">
+          {galleryItems.map((item) => {
+            const credit = creditLine(item.credit);
+            return (
+              <li key={item.id}>
+                <span className="font-semibold text-brand-maroon">{item.title}</span>
+                {credit && <> · {credit}</>}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </section>
   );
 }

@@ -2,10 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Company mark next to a job title. Renders nothing until the file exists —
-// same "never show what isn't there" rule the gallery follows, so a missing
-// logo costs nothing visually.
-export default function OrgLogo({ src, alt }: { src: string; alt: string }) {
+// Company mark. Renders nothing until the file exists — same "never show
+// what isn't there" rule the gallery follows, so a missing logo costs
+// nothing visually.
+//
+// `fallback` is for the one place where nothing is the wrong answer: the
+// "Worked with" banner, where the organisation has to be named whether or
+// not its mark has been dropped in. Callers that only ever wanted a mark
+// (the Experience rows, which print the org name in their heading anyway)
+// leave it off and get the old behaviour.
+export default function OrgLogo({
+  src,
+  alt,
+  fallback,
+}: {
+  src: string;
+  alt: string;
+  fallback?: React.ReactNode;
+}) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -26,7 +40,7 @@ export default function OrgLogo({ src, alt }: { src: string; alt: string }) {
     return () => img.removeEventListener("error", onError);
   }, [src]);
 
-  if (failed) return null;
+  if (failed) return <>{fallback ?? null}</>;
 
   // Plain <img>: these are small brand marks of unknown intrinsic size, and
   // next/image wants explicit dimensions or a fill container for each.

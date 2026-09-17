@@ -220,9 +220,36 @@ footer :focus-visible,
   align-items: flex-end;
 }
 
+/* Closed, the card is the name and nothing else, so it is sized to the name
+   — HeroCard.tsx measures it and writes `--closed-w`. The 20rem here is only
+   what stands until that runs.
+
+   It can't stay a constant: the name is set in vw and never wraps above
+   `sm`, so a width that fits it at 640px is ~100px too narrow by 1440px and
+   the letters hang off the plate — at the top of the page, which is the one
+   moment the closed card is the whole composition. */
+/* Open, it stops at a box rather than running to the full column. `100%`
+   here is the slot, which on a 1440px screen is 1312px — a band of yellow
+   with the bio at one end and the photo at the other, and 500px of nothing
+   between them. 50rem is about where the two halves still read as one card.
+   The `min` keeps it honest below that: on anything narrower than ~53rem
+   the slot is the smaller number and the card opens to the gutters. */
 .hero-card {
   --p: 0;
-  width: calc(20rem + (100% - 20rem) * var(--p));
+  /* The closed width, estimated in CSS and then measured in JS — and the
+     estimate has to be close, or the card visibly resizes once on load.
+
+     28vw is not a guess: the name is set at 5.2vw and never wraps above
+     `sm`, so its width is a fixed multiple of the viewport, and 28vw is
+     that multiple with the card's padding in it. The `min` is where the
+     name stops growing — `clamp` caps the face at 5.5rem, which it reaches
+     at about 1692px, and past there the plate shouldn't keep widening.
+
+     HeroCard.tsx overwrites this with the real measurement once the display
+     face has loaded. Until then this is what renders, and it is right. */
+  --closed-w: min(28vw, 29.6rem);
+  --open-w: min(100%, 50rem);
+  width: calc(var(--closed-w) + (var(--open-w) - var(--closed-w)) * var(--p));
   max-width: 100%;
 }
 
@@ -262,13 +289,26 @@ footer :focus-visible,
     overflow: visible;
   }
   .hero-card-slot {
-    position: static;
+    /* `relative`, not `static`, and this is load-bearing: HeroBackdrop is
+       `absolute inset-0`, so a static card paints UNDERNEATH the video and
+       the whole thing disappears — on every phone, and for anyone who has
+       asked for less motion. Only the portrait survived it, because
+       next/image `fill` is absolute and so painted above the video on its
+       own. Positioning the slot puts it back in front, and the z-index is
+       Z.CARD_CONTENT from src/lib/layers.ts, spelled out because a
+       stylesheet can't import it. */
+    position: relative;
+    z-index: 10;
     /* The nav is sticky over this section, so in flow the card needs to
        clear it the way the old top-aligned hero did. */
     padding-top: calc(var(--nav-h) + 1.5rem);
   }
   .hero-card {
-    width: 100%;
+    /* Open from the start, at the same box the scroll would have opened it
+       to. `100%` here would undo the cap above for anyone on a desktop who
+       has asked for less motion — on a phone the two are the same number,
+       because the slot is far narrower than 50rem. */
+    width: var(--open-w);
   }
   .hero-card-extra {
     max-height: none;
@@ -533,4 +573,155 @@ footer :focus-visible,
   font-size: 0.8125rem;
   line-height: 1.5;
   color: #44403c;
+}
+
+/* ── THE PAGE, PRINTED ──────────────────────────────────────────────────
+   The other half of PrintCvButton.tsx. There is no separate CV document
+   and no PDF generated anywhere: this block is what turns the site into
+   one, so the CV cannot drift from the page the way a hand-maintained PDF
+   does. "Download fun CV" calls window.print(), the browser offers Save as
+   PDF, and what comes out is this.
+
+   The rules are in three groups: what comes off the page, what changes
+   shape, and what has to be spelled out because paper has no pointer.
+
+   Note on colour: browsers print background fills only if the reader ticks
+   "Background graphics", so nothing here may depend on a field to be
+   legible. Every brand colour below is applied to TYPE and RULES, which
+   always print. The page reads the same whether that box is ticked or not.
+*/
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  html {
+    /* The card's scroll effect measures against the viewport; there is no
+       viewport here. Un-stick everything and let the content flow. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background: #fff;
+    /* 10.5pt: the size a CV is set at. The screen's 16px base would run
+       this to six pages. */
+    font-size: 10.5pt;
+    line-height: 1.4;
+  }
+
+  /* ── Comes off entirely ──────────────────────────────────────────────
+     The nav (a CV has no navigation), the backdrop video, the Wall's
+     scroller and the map — each replaced by print-only markup in its own
+     component — and the two overlays, which can only be open by accident
+     at print time. */
+  nav,
+  video,
+  .wall-scroller,
+  .hint-arrow,
+  .leaflet-container,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Buttons are the other thing paper can't use. The contact details they
+     stand in for are printed by HeroCard's print-only line instead. */
+  button {
+    display: none !important;
+  }
+
+  /* ── Changes shape ───────────────────────────────────────────────────
+     The hero is two screens tall and pinned so a card can grow inside it.
+     On paper it is the masthead: no track, no stage, no sticky, and the
+     card open at full width. */
+  .hero-track,
+  .hero-stage {
+    height: auto !important;
+    min-height: 0 !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
+  .hero-card-slot {
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  .hero-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .hero-card-extra {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  /* Sections set their own generous screen padding; on paper the @page
+     margin is the only one wanted. */
+  section {
+    padding: 0 0 8mm 0 !important;
+    break-inside: auto;
+  }
+
+  /* A heading at the foot of a page with its content overleaf is the one
+     layout failure a printed CV can't afford. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  /* Deliberately NOT `li { break-inside: avoid }`: the experience rows are
+     list items a full third of a page tall, and refusing to break one
+     leaves that much of the previous page empty. A role splitting across a
+     page boundary is normal in a CV; a page two-thirds blank is not. */
+  .print-keep {
+    break-inside: avoid;
+  }
+
+  /* The portrait is a full-width plate on screen and a headshot on paper.
+     The row has to stop being a flex container first, or the float has
+     nothing to do. */
+  .hero-columns {
+    display: block !important;
+  }
+
+  .hero-portrait {
+    float: right;
+    width: 34mm !important;
+    margin: 0 0 4mm 6mm;
+  }
+
+  .hero-portrait .aspect-\[3\/4\],
+  .hero-portrait > div {
+    height: auto !important;
+  }
+
+  /* Education and Experience sit side by side on screen at `lg`. Paper is
+     narrower than `lg`, so they'd stack anyway — this makes it explicit
+     rather than relying on a breakpoint that print doesn't evaluate the
+     way a viewport does. */
+  #background .grid {
+    display: block !important;
+  }
+
+  /* ── Spelled out ─────────────────────────────────────────────────────
+     A printed link that says "Read on LinkedIn" is a dead end. Print the
+     address after the words — but only for external links: the in-page
+     anchors ("See the map above") would print as a page full of "(#wall)". */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    font-weight: 400;
+    word-break: break-all;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 }

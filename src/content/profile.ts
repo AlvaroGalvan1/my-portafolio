@@ -10,12 +10,21 @@ export const profile = {
   // The only line under the name. Add an `href` here and Hero will need a
   // link element again — left off deliberately, see the note there.
   location: { label: "Mission District, San Francisco" },
-  // The portrait. Not rendered anywhere at the moment: Intro.tsx shows an
-  // empty frame instead, because this file is 293×220 — a real
-  // background-removed shot, but too small to run at the size the layout
-  // gives it. Point this at a larger export and fill the frame; the comment
-  // in Intro.tsx says how.
-  photoSrc: "/profile.png",
+  // The portrait in the hero card, in the white mount the card opens to.
+  //
+  // Not a headshot, and the layout follows from that: three of us at the
+  // Minerva commencement, shot at 960×1280. The frame runs at the photo's
+  // own 3:4 so nothing is cropped out of it, and larger than a head-and
+  // -shoulders would need — at the 13rem the empty frame used to be, three
+  // faces came out about the size of the body copy beside them.
+  //
+  // `/profile.png`, which this used to point at, is a background-removed
+  // cutout and only 293×220 — too small for any size this frame runs at.
+  // It stays in `public/` for whenever a real cutout replaces it.
+  photo: {
+    src: "/gallery/portraits/graduation-friends.jpeg",
+    alt: "Álvaro with two friends at their Minerva University commencement, in graduation stoles.",
+  },
   // The loop playing behind the name. A 16:9 generative piece — 36 captured
   // variations of a sea-fan textile, played in sequence — so the hero's flat
   // orange field becomes something that moves without anything competing
@@ -31,16 +40,18 @@ export const profile = {
     src: "/hero/coral-loop.mp4",
     credit: { who: "Dahlia", relation: "author" } satisfies Credit,
   },
-  // One paragraph, not three. The two that followed it — the wildfire-model
-  // detail and the calisthenics/raves line — said things the About section
-  // doesn't have to carry: the model is on the Wall as a working tile, and
-  // the CV panel below covers the history. Kept as one line so the section
-  // reads as an introduction rather than a statement.
+  // One paragraph, and it ends in an invitation rather than a summary: it
+  // is the only thing on the page that asks the reader for anything, and
+  // the ask is deliberately not addressed to one industry. "In any field"
+  // is doing that work, so don't narrow it to hiring managers later.
   //
-  // About.tsx takes bio[0] as the lede and lays any remaining entries out
-  // in two columns; with one entry that block doesn't render at all. Add a
-  // second string here and it comes back on its own.
+  // No em dashes here, on purpose. The rest of this file is full of them
+  // and this is the one string a visitor reads as a voice.
+  //
+  // HeroCard.tsx takes bio[0] as the lede of the opened card. Any further
+  // entries are unrendered today; a second paragraph needs a place in that
+  // layout first, so add the markup with the string.
   bio: [
-    "Hola! Soy Álvaro de Oaxaca 🌍 I work where GeoAI, satellite data, and people meet — mostly wildfire, and the energy transition.",
+    "Hey, I'm Álvaro from Oaxaca. I live in San Francisco and build geospatial software, mostly around wildfire and the energy transition, and I like every angle on climate action I haven't tried yet. If you're building toward a livable future, in any field, let's chat 🌸",
   ],
 };

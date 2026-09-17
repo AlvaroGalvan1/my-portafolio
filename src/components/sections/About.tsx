@@ -34,7 +34,9 @@ export default function About() {
           <SkillBadges />
         </div>
 
-        <div className="lg:col-span-1">
+        {/* Screen only. Printed, this panel is inside the document it is
+            offering to hand the reader. */}
+        <div className="lg:col-span-1 print:hidden">
           <h3 className="font-[family-name:var(--font-display)] text-2xl text-brand-red">
             The rest of it
           </h3>

@@ -20,6 +20,9 @@ const filesToScan = [
   "src/components/gallery/data.ts",
   "src/content/profile.ts",
   "src/components/sections/About.tsx",
+  // The hero card holds the only link to the CV now that the About section
+  // no longer does, so a renamed PDF would otherwise go unnoticed here.
+  "src/components/sections/HeroCard.tsx",
 ];
 
 const pathPattern = /["'](\/(?:gallery|papers|hero)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;

@@ -6,19 +6,19 @@ import { Z } from "@/lib/layers";
 
 // In page order, deliberately — the highlight below picks the first match
 // in *this* array, so an order that disagrees with the page makes it jog
-// backwards and then forwards again as you scroll. About moved ahead of My
-// Wall here because the bio moved above the Wall on the page (see
-// Intro.tsx); this list has to be re-ordered with it, not just left to
-// drift.
+// backwards and then forwards again as you scroll. Re-order this list with
+// the page, every time, rather than letting it drift.
 //
-// The skills panel below the Wall (`#skills`) is deliberately absent: it's
-// the back half of About rather than a destination of its own, and adding
-// it would put two About-ish labels in a four-item bar.
+// Four labels for six sections, because the bar has to fit a phone. What's
+// left out and why: `#capabilities` names the same organisations as
+// Background directly above it; `#skills` is the back half of About; and
+// `#work` is the ask, which the Contact button to the right of these is
+// already making, permanently on screen.
 const LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
+  { id: "background", label: "Background" },
   { id: "wall", label: "My Wall" },
-  { id: "journey", label: "My Journey" },
 ] as const;
 
 export default function Nav() {

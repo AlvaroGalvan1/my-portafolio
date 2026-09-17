@@ -53,7 +53,7 @@ export default function Hero() {
               every tile credits its maker. */}
           {backdropCredit && (
             <p
-              className="pointer-events-none absolute bottom-6 right-6 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-white/90 [text-shadow:0_1px_3px_rgb(122_23_16_/_0.9)] sm:right-16"
+              className="pointer-events-none absolute bottom-6 right-6 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-white/90 [text-shadow:0_1px_3px_rgb(122_23_16_/_0.9)] print:hidden sm:right-16"
               style={{ zIndex: Z.CARD_CONTENT }}
             >
               Backdrop — {backdropCredit}

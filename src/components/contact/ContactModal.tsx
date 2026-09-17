@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CONTACT_OPEN_EVENT } from "./ContactTrigger";
 import { Z } from "@/lib/layers";
 import { useDialog } from "@/lib/useDialog";
-import { socials, CALENDLY_URL } from "@/content/socials";
+import { socials, CALENDLY_URL, CONTACT_EMAIL } from "@/content/socials";
 
 // Where submissions go. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT (see .env.example
 // for how to get one) and messages land in your inbox without the visitor
@@ -20,12 +20,6 @@ import { socials, CALENDLY_URL } from "@/content/socials";
 // a Formspree form ID is a public endpoint by design, the same way a
 // mailto: address is.
 const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? "";
-
-// Public contact email — used for the "prefer to chat directly" link and
-// as the mailto fallback below. A personal address on purpose: the Minerva
-// .edu one won't outlive enrollment there, and this page should keep
-// working after it stops resolving.
-const CONTACT_EMAIL = "alvaroemiliogalvansandoval@gmail.com";
 
 type Status = "idle" | "sending" | "sent" | "opened-email-client" | "error";
 

@@ -7,7 +7,11 @@ import { socials } from "@/content/socials";
 // on hover, which is the whole interaction.
 export default function Footer() {
   return (
-    <footer className="bg-brand-maroon px-6 py-12 sm:px-16">
+    // Screen only. The three addresses are already set out in full under
+    // the name on a printed page, and a second copy of them at the end —
+    // as glyphs, each followed by its own URL — is the least useful square
+    // inch on the CV.
+    <footer className="bg-brand-maroon px-6 py-12 print:hidden sm:px-16">
       <div className="flex items-center justify-center gap-8">
         {socials.map((s) => (
           <a
