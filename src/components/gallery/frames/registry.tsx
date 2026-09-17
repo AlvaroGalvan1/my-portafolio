@@ -10,7 +10,6 @@ import {
   type CellularAutomataFrameData,
 } from "./CellularAutomataFrame";
 import { EmbedFrameCell, type EmbedFrameData } from "./EmbedFrame";
-import { GeolocateFrameCell, type GeolocateFrameData } from "./GeolocateFrame";
 import { LandfireFrameCell, type LandfireFrameData } from "./LandfireFrame";
 import { PlaceholderFrameCell, type PlaceholderFrameData } from "./PlaceholderFrame";
 import { FireFrameCell, type FireFrameData } from "./FireFrame";
@@ -32,7 +31,6 @@ export type FrameData =
   | PostFrameData
   | CellularAutomataFrameData
   | EmbedFrameData
-  | GeolocateFrameData
   | LandfireFrameData
   | PlaceholderFrameData
   | FireFrameData
@@ -48,7 +46,6 @@ export const FRAME_REGISTRY: {
   post: PostFrameCell,
   cellularAutomata: CellularAutomataFrameCell,
   embed: EmbedFrameCell,
-  geolocate: GeolocateFrameCell,
   landfire: LandfireFrameCell,
   placeholder: PlaceholderFrameCell,
   fire: FireFrameCell,

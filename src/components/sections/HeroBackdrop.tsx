@@ -16,12 +16,31 @@ import { useEffect, useRef } from "react";
 // effect decides. Starting it in markup and pausing on hydration would
 // show a reduced-motion visitor the exact flash of movement they asked
 // not to see. The still first frame loses nothing — the piece is a print.
+
+// Faster than it was shot. The loop is a twenty-two second capture of a
+// textile piece and at 1x it drifts, which behind a name reads as a video
+// someone forgot to pause. At 2x the movement registers as the surface
+// being alive without ever becoming the thing you are watching.
+//
+// Set on the element rather than baked into the file: it is one number to
+// change, it costs no bytes, and the source stays the artist's own cut.
+const PLAYBACK_RATE = 2;
+
 export default function HeroBackdrop({ src }: { src: string }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
+
+    // Applied on every load as well as on mount: several browsers reset
+    // playbackRate to 1 when the source is (re)loaded, so setting it once
+    // at mount silently stops working the moment that happens.
+    const applyRate = () => {
+      video.playbackRate = PLAYBACK_RATE;
+    };
+    applyRate();
+    video.addEventListener("loadedmetadata", applyRate);
 
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const apply = () => {
@@ -37,7 +56,10 @@ export default function HeroBackdrop({ src }: { src: string }) {
 
     apply();
     query.addEventListener("change", apply);
-    return () => query.removeEventListener("change", apply);
+    return () => {
+      query.removeEventListener("change", apply);
+      video.removeEventListener("loadedmetadata", applyRate);
+    };
   }, []);
 
   return (

@@ -134,22 +134,6 @@ const allItems: FrameData[] = [
   // Sizes are deliberately unlike: Brain is quick and small, the cyclic one
   // needs width to get its spirals round, and an elementary rule grows
   // downward so it gets the tall tile.
-  // The tile that is about the visitor rather than about me. Two columns
-  // wide and one row tall: it carries a readout of four figures and a
-  // sentence, which at one column wraps to five lines and at two rows
-  // leaves half the tile empty.
-  //
-  // The fallback is the Mission, which is where the hero says I live — so
-  // declining the permission still demonstrates the piece, on an address
-  // the page has already given you.
-  {
-    id: "where-you-are",
-    title: "Where you are",
-    type: "geolocate",
-    fallback: { label: "my street", lat: 37.7599, lon: -122.4148 },
-    credit: { who: "Álvaro Galván", relation: "mine" },
-    ...SHAPE.landscape,
-  },
   {
     id: "brain",
     title: "Cellular Automaton (Brian's Brain)",

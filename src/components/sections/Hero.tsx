@@ -1,11 +1,13 @@
-import HeroBackdrop from "./HeroBackdrop";
+import HeroArt from "./HeroArt";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
 import { socials, CONTACT_EMAIL } from "@/content/socials";
-import { Z } from "@/lib/layers";
 
-// An editorial split: the words on the left, the Coral loop on the right,
-// a hard maroon seam between them.
+// An editorial split, and the two halves are two subjects: me on the left,
+// you on the right. The words and the bio stand in the cream column; the
+// Coral loop takes the other, with a button on it that opens a readout of
+// wherever the reader happens to be standing. A hard maroon seam between
+// them.
 //
 // Two things came out of the first version of this and the layout is better
 // for both. The portrait went: a photograph floating across the seam gave
@@ -66,7 +68,7 @@ export default function Hero() {
         <div aria-hidden className="mt-8 h-1 w-24 bg-brand-red" />
 
         {lede && (
-          <p className="mt-8 max-w-[44ch] font-sans text-lg leading-snug text-brand-maroon sm:text-xl">
+          <p className="mt-8 max-w-[46ch] font-sans text-lg leading-snug text-brand-maroon sm:text-xl">
             {lede}
           </p>
         )}
@@ -99,26 +101,15 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* ── The artwork ─────────────────────────────────────────────────
-          The Coral loop, taking the right panel whole. The maroon edge is
-          what makes this a split rather than two things that happen to be
-          next to each other — the same 4px maroon the map is framed in.
+      {/* ── The artwork, and the visitor ───────────────────────────────
+          The Coral loop, taking the right panel whole, with the one piece
+          on this site that is about the reader rather than about me: a
+          button that opens a card over the artwork. See HeroArt.tsx.
 
           On a phone it becomes a band under the words rather than a
           background behind them: the piece has its own detail and its own
           movement, and type over it needed a scrim that made both worse. */}
-      <div className="hero-art relative min-h-[45svh] border-brand-maroon bg-brand-orange lg:min-h-0 lg:border-l-4">
-        <HeroBackdrop src={profile.heroBackdrop.src} />
-
-        {backdropCredit && (
-          <p
-            className="pointer-events-none absolute bottom-4 right-4 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-white/90 [text-shadow:0_1px_3px_rgb(122_23_16_/_0.9)] print:hidden sm:right-6"
-            style={{ zIndex: Z.CARD_CONTENT }}
-          >
-            Backdrop — {backdropCredit}
-          </p>
-        )}
-      </div>
+      <HeroArt src={profile.heroBackdrop.src} credit={backdropCredit} />
     </section>
   );
 }
