@@ -1,7 +1,11 @@
 import Image from "next/image";
 import BaseMap from "@/components/map/BaseMap";
 import Experience from "./Experience";
-import { places, GROUPS, type PlaceGroup } from "@/content/places";
+import { places, GROUPS, journeyStats, type PlaceGroup } from "@/content/places";
+
+// The groups that are schooling, as opposed to the voyage. Print lists
+// these as entries and the voyage as one line — see below.
+const STUDIED_GROUPS: PlaceGroup[] = ["minerva", "uwc", "uaa"];
 
 // The CV's top half, laid out as a CV is: education on one side, work on
 // the other, read together rather than one after the other.
@@ -16,7 +20,11 @@ import { places, GROUPS, type PlaceGroup } from "@/content/places";
 // but the map alone answered "where has he been" and left "and what has he
 // done" to a PDF. Side by side, each half is the other's context: the
 // countries explain the range, the roles explain the point.
-const INSTITUTIONS: PlaceGroup[] = ["minerva", "uwc", "uaa"];
+// The named row above the map. Every group that has a name worth spelling
+// out, in the order they read best — three institutions, then the voyage,
+// which is the one a reader is least likely to recognise and the one the
+// map draws as a line rather than a scatter.
+const NAMED_GROUPS: PlaceGroup[] = ["minerva", "uwc", "uaa", "voyage"];
 
 export default function Background() {
   return (
@@ -29,7 +37,8 @@ export default function Background() {
         Background
       </h2>
       <p className="mt-4 max-w-2xl font-sans text-base text-brand-maroon">
-        Where I studied, and what I&apos;ve been paid to work out since.
+        Where I studied, including the term I spent at sea, and what
+        I&apos;ve been paid to work out since.
       </p>
 
       <div className="mt-10 bg-brand-cream p-6 sm:p-10">
@@ -49,7 +58,7 @@ export default function Background() {
                 to expand. This row is where the names live; the legend is
                 where the counts and the toggles do. */}
             <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-4">
-              {INSTITUTIONS.map((key) => (
+              {NAMED_GROUPS.map((key) => (
                 <div key={key} className="flex items-center gap-3">
                   <Image
                     src={GROUPS[key].logo}
@@ -77,11 +86,11 @@ export default function Background() {
             {/* What replaces the map on paper. A Leaflet canvas prints as a
                 grey rectangle at best and nothing at all at worst, and the
                 education section of a CV is the one thing that cannot go
-                missing from it — so the same nine pins are set as a list,
-                from the same array that places them. */}
+                missing from it — so the campuses are set as a list, from the
+                same array that places them. */}
             <ul className="mt-4 hidden font-sans text-sm text-neutral-700 print:block">
               {places
-                .filter((place) => place.group !== "friends")
+                .filter((place) => STUDIED_GROUPS.includes(place.group))
                 .map((place) => (
                   <li key={place.id} className="mb-2">
                     <span className="font-semibold text-brand-maroon">
@@ -93,6 +102,22 @@ export default function Background() {
                   </li>
                 ))}
             </ul>
+
+            {/* The voyage as one line rather than thirteen. On the map its
+                thirteen ports are the whole point — a line drawn across
+                Europe is an argument no sentence makes — but thirteen list
+                items on paper would out-length the four degrees above them
+                and say less. So print gets the route, in order, as prose. */}
+            <p className="mt-4 hidden font-sans text-sm text-neutral-700 print:block">
+              <span className="font-semibold text-brand-maroon">
+                {GROUPS.voyage.label}
+              </span>{" "}
+              · {journeyStats.ports} ports · Jan – Apr 2022 ·{" "}
+              {places
+                .filter((place) => place.group === "voyage")
+                .map((place) => place.name)
+                .join(", ")}
+            </p>
           </div>
 
           <Experience />

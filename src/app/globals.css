@@ -575,6 +575,24 @@ footer :focus-visible,
   color: #44403c;
 }
 
+/* The way out of a popup, where its group has one. Its own line under the
+   note rather than a link inside the prose: the note is the same text on
+   every pin in the group, and a link buried in repeated copy gets read as
+   part of the repetition. */
+.leaflet-popup-content .map-popup__link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-brand-red);
+  text-decoration: none;
+}
+
+.leaflet-popup-content .map-popup__link:hover {
+  color: var(--color-brand-maroon);
+  text-decoration: underline;
+}
+
 /* ── THE PAGE, PRINTED ──────────────────────────────────────────────────
    The other half of PrintCvButton.tsx. There is no separate CV document
    and no PDF generated anywhere: this block is what turns the site into

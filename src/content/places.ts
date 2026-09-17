@@ -14,7 +14,7 @@
 // needs a third-party geocoder to draw itself is a map that breaks when
 // that service does.
 
-export type PlaceGroup = "uwc" | "minerva" | "uaa" | "friends";
+export type PlaceGroup = "uwc" | "minerva" | "uaa" | "voyage" | "friends";
 
 export type Place = {
   id: string;
@@ -46,6 +46,15 @@ export type GroupDef = {
   color: string;
   /** Shown once per institution at the foot of every one of its popups. */
   about?: string;
+  /** Somewhere to read more, linked from the foot of every popup in the
+   *  group. Used where the thing is unfamiliar enough that a reader would
+   *  want to look it up — the voyage, whose itinerary is published. */
+  href?: string;
+  /** Draw a line through this group's pins, in the order they appear in
+   *  `places`. A route rather than a scatter: true for the voyage, where
+   *  the sequence IS the fact, and false for campuses, which are places
+   *  attended rather than a path taken. */
+  route?: boolean;
 };
 
 export const GROUPS: Record<PlaceGroup, GroupDef> = {
@@ -70,6 +79,19 @@ export const GROUPS: Record<PlaceGroup, GroupDef> = {
     short: "UAA",
     logo: "/logos/uaa.png",
     color: "#f5821f",
+  },
+  voyage: {
+    label: "Semester at Sea",
+    short: "At sea",
+    logo: "/logos/voyage.svg",
+    // Maroon, the one value in the palette not already spent on a group.
+    // It also reads as the darkest ring of the four, which suits a line of
+    // pins that is meant to be seen as one object rather than four.
+    color: "#7a1710",
+    route: true,
+    href: "https://www.semesteratsea.org/spring-2022-voyage-itinerary-update/",
+    about:
+      "A shipboard study-abroad programme: one term of coursework taught between ports rather than on a campus. The Spring 2022 voyage ran 106 days, Naples to Bremerhaven.",
   },
   friends: {
     label: "Friends",
@@ -176,6 +198,35 @@ export const places: Place[] = [
     credential: "B.S. Computational Sciences",
   },
 
+  // ── Semester at Sea, Spring 2022 ────────────────────────────────────
+  // IN ITINERARY ORDER, and it has to stay that way: `route: true` on the
+  // group draws the line through these pins in exactly this sequence, so
+  // re-sorting this block re-routes the ship.
+  //
+  // Dates are the voyage's, not each port's — a port call is a day or
+  // three, and putting thirteen sets of two-day ranges on the map would be
+  // precision nobody asked for.
+  //
+  // Coordinates are the port cities, geocoded the same way as the campuses
+  // above. They locate the city rather than the berth, which is the right
+  // resolution for a pin at world zoom.
+  //
+  // The itinerary is the published one for this voyage, linked from every
+  // popup in the group (GROUPS.voyage.href).
+  { id: "sea-naples", name: "Naples", detail: "Embarkation", country: "Italy", group: "voyage", lat: 40.8518, lon: 14.2681, dates: "Jan – Apr 2022", note: "Where the voyage began: 106 days, thirteen ports, one term of coursework carried between them." },
+  { id: "sea-piraeus", name: "Piraeus", detail: "Port call", country: "Greece", group: "voyage", lat: 37.9470, lon: 23.6370, dates: "Jan – Apr 2022" },
+  { id: "sea-haifa", name: "Haifa", detail: "Port call", country: "Israel", group: "voyage", lat: 32.7940, lon: 34.9896, dates: "Jan – Apr 2022" },
+  { id: "sea-dubrovnik", name: "Dubrovnik", detail: "Port call", country: "Croatia", group: "voyage", lat: 42.6507, lon: 18.0944, dates: "Jan – Apr 2022" },
+  { id: "sea-valletta", name: "Valletta", detail: "Port call", country: "Malta", group: "voyage", lat: 35.8989, lon: 14.5146, dates: "Jan – Apr 2022" },
+  { id: "sea-barcelona", name: "Barcelona", detail: "Port call", country: "Spain", group: "voyage", lat: 41.3851, lon: 2.1734, dates: "Jan – Apr 2022" },
+  { id: "sea-casablanca", name: "Casablanca", detail: "Port call", country: "Morocco", group: "voyage", lat: 33.5731, lon: -7.5898, dates: "Jan – Apr 2022" },
+  { id: "sea-lisbon", name: "Lisbon", detail: "Port call", country: "Portugal", group: "voyage", lat: 38.7223, lon: -9.1393, dates: "Jan – Apr 2022" },
+  { id: "sea-brest", name: "Brest", detail: "Port call", country: "France", group: "voyage", lat: 48.3904, lon: -4.4861, dates: "Jan – Apr 2022" },
+  { id: "sea-dublin", name: "Dublin", detail: "Port call", country: "Ireland", group: "voyage", lat: 53.3498, lon: -6.2603, dates: "Jan – Apr 2022" },
+  { id: "sea-gdansk", name: "Gdańsk", detail: "Port call", country: "Poland", group: "voyage", lat: 54.3520, lon: 18.6466, dates: "Jan – Apr 2022" },
+  { id: "sea-stockholm", name: "Stockholm", detail: "Port call", country: "Sweden", group: "voyage", lat: 59.3293, lon: 18.0686, dates: "Jan – Apr 2022" },
+  { id: "sea-bremerhaven", name: "Bremerhaven", detail: "Disembarkation", country: "Germany", group: "voyage", lat: 53.5396, lon: 8.5809, dates: "Jan – Apr 2022", note: "Where it ended, 106 days after Naples." },
+
   // ── Friends ─────────────────────────────────────────────────────────
   // Nothing here yet. Add entries with group: "friends" and the legend row
   // appears on its own; until then the toggle stays hidden rather than
@@ -190,12 +241,16 @@ export const places: Place[] = [
 // deleted because it is derived, not written — it costs nothing, it cannot
 // go stale, and the next thing that wants a headline number wants exactly
 // this.
+const STUDIED: PlaceGroup[] = ["minerva", "uwc", "uaa"];
+const studied = places.filter((p) => STUDIED.includes(p.group));
+const atSea = places.filter((p) => p.group === "voyage");
+
 export const journeyStats = {
-  campuses: places.filter((p) => p.group !== "friends").length,
-  countries: new Set(
-    places.filter((p) => p.group !== "friends").map((p) => p.country),
-  ).size,
-  institutions: new Set(
-    places.filter((p) => p.group !== "friends").map((p) => p.group),
-  ).size,
+  campuses: studied.length,
+  countries: new Set(studied.map((p) => p.country)).size,
+  institutions: new Set(studied.map((p) => p.group)).size,
+  ports: atSea.length,
+  /** Countries touched either way, with the overlap counted once. This is
+   *  the number that is true of the map as a whole. */
+  countriesInAll: new Set([...studied, ...atSea].map((p) => p.country)).size,
 };

@@ -1,20 +1,20 @@
 import OrgLogo from "./OrgLogo";
 import { experience, type Job } from "@/content/experience";
 
-// The right half of Background: where I've worked, as five entries rather
-// than twenty bullets.
+// The right half of Background: where I've worked, as four entries rather
+// than sixteen bullets.
 //
 // Three things carry a row, in this order of size: the mark, the takeaway,
 // the scope line. That order is the argument. A reader skimming a CV sees
 // logos first whether or not you designed for it, so every entry gets a
 // plate of the same size — the real mark where the file exists and two
 // letters in the display face where it doesn't, which is what makes a
-// column of five read as a set instead of three gaps and two logos.
+// column of four read as a set instead of two gaps and two logos.
 //
 // Then one sentence saying what the job was FOR, and one saying at what
 // scale or by what method. `experience.ts` still holds every bullet and
 // print brings them back (see the @media print block in globals.css), so
-// the screen can stay at five sentences without the CV losing anything.
+// the screen can stay at four sentences without the CV losing anything.
 //
 // It also answers the tuned-CV problem: a takeaway written as "what changed
 // because I was there" reads as true against a GIS CV and a climate CV
@@ -33,19 +33,9 @@ export default function Experience() {
             <Plate job={job} />
 
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-brand-maroon/75">
-                  {job.dates}
-                </span>
-                {/* The tag only appears on entries that aren't jobs. A term
-                    abroad sitting unlabelled in a work history is the kind
-                    of thing that gets found out in an interview. */}
-                {job.kind === "voyage" && (
-                  <span className="border border-brand-red px-2 py-0.5 font-sans text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-brand-red">
-                    Voyage
-                  </span>
-                )}
-              </div>
+              <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-brand-maroon/75">
+                {job.dates}
+              </span>
 
               <h4 className="mt-2 font-sans text-lg font-semibold leading-tight text-brand-maroon">
                 {job.role}
@@ -64,7 +54,7 @@ export default function Experience() {
 
               {/* Paper gets the detail the screen refuses. This is the whole
                   bargain of printing the site as the CV: on a page the
-                  reader skims five takeaways in ten seconds, and in a PDF
+                  reader skims four takeaways in ten seconds, and in a PDF
                   that lands in an inbox they need the bullets a recruiter is
                   searching for. Same data, both times. */}
               {job.summary && (

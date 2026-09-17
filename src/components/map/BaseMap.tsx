@@ -83,6 +83,19 @@ function popupContent(place: Place) {
   const note = place.note ?? group.about;
   if (note) root.append(el("p", "map-popup__note", note));
 
+  // Where the group is unfamiliar enough that a reader would want to look
+  // it up — the voyage, whose itinerary is published — the popup ends with
+  // the way to do that.
+  if (group.href) {
+    const link = document.createElement("a");
+    link.className = "map-popup__link";
+    link.href = group.href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "The itinerary ↗";
+    root.append(link);
+  }
+
   return root;
 }
 
@@ -92,12 +105,14 @@ export default function BaseMap() {
   // One Leaflet layer group per pin group, so toggling a legend row is an
   // add/remove of a single layer rather than a rebuild of every marker.
   const layersRef = useRef<Partial<Record<PlaceGroup, import("leaflet").LayerGroup>>>({});
-  const [hidden, setHidden] = useState<Record<PlaceGroup, boolean>>({
-    uwc: false,
-    minerva: false,
-    uaa: false,
-    friends: false,
-  });
+  // Every group visible to begin with, built from GROUPS rather than
+  // spelled out: a hand-written record here is a second list that has to
+  // know every group, and it stopped compiling the day a fourth was added.
+  const [hidden, setHidden] = useState<Record<PlaceGroup, boolean>>(() =>
+    Object.fromEntries(
+      (Object.keys(GROUPS) as PlaceGroup[]).map((id) => [id, false]),
+    ) as Record<PlaceGroup, boolean>,
+  );
 
   // Only groups that actually have pins get a legend row — an empty layer
   // shouldn't offer a toggle that does nothing.
@@ -174,11 +189,20 @@ export default function BaseMap() {
               title: label,
               alt: label,
               riseOnHover: true,
+              // A route group gets the small dot, not the logo chip, even
+              // though it has a mark. Thirteen 30px chips along the
+              // Mediterranean touch each other, cover the line drawn
+              // between them, and turn a voyage into a smudge — the thing
+              // the route was added to show. The dots let the line through,
+              // and the group is identified by that line, by the legend and
+              // by the mark in every popup. Chips stay for the campuses,
+              // where there are few enough to read and no line to hide.
               icon: L.divIcon({
                 className: "map-pin-wrap",
-                html: def.logo
-                  ? `<span class="map-pin" style="--pin:${def.color}"><img src="${def.logo}" alt="" /></span>`
-                  : `<span class="map-pin map-pin--plain" style="--pin:${def.color}"></span>`,
+                html:
+                  def.logo && !def.route
+                    ? `<span class="map-pin" style="--pin:${def.color}"><img src="${def.logo}" alt="" /></span>`
+                    : `<span class="map-pin map-pin--plain" style="--pin:${def.color}"></span>`,
                 iconSize: [32, 32],
                 iconAnchor: [16, 16],
                 popupAnchor: [0, -18],
@@ -186,6 +210,43 @@ export default function BaseMap() {
             }).bindPopup(popupContent(place), { maxWidth: 320, minWidth: 240 });
           }),
         );
+
+        // A group whose sequence is the fact gets a line through it. Into
+        // the same layerGroup as the pins, so one legend toggle takes the
+        // route and its ports together rather than leaving a line hanging
+        // over a map with nothing on it.
+        //
+        // Dashed and behind the chips: it's the connective tissue between
+        // pins, not a border or a boundary, and a solid line at this weight
+        // reads as one.
+        if (def.route && inGroup.length > 1) {
+          const path = inGroup.map(
+            (place) => [place.lat, place.lon] as [number, number],
+          );
+
+          // Two lines, not one: a dark casing with a light dashed line on
+          // top of it. A single stroke in the group's own colour is what
+          // this was first, and it vanished — the basemap is satellite
+          // imagery, so a maroon line crosses navy ocean, brown Iberia and
+          // white cloud in the space of one voyage and loses contrast
+          // against at least one of them. The casing makes the pale line
+          // readable over all three, which is why every road on every
+          // imagery map is drawn this way.
+          L.polyline(path, {
+            color: def.color,
+            weight: 5,
+            opacity: 0.55,
+            interactive: false,
+          }).addTo(layer);
+
+          L.polyline(path, {
+            color: "#fff4de",
+            weight: 2,
+            opacity: 0.95,
+            dashArray: "6 7",
+            interactive: false,
+          }).addTo(layer);
+        }
 
         layer.addTo(map);
         layersRef.current[group] = layer;

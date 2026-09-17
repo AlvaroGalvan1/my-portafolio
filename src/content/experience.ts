@@ -33,14 +33,11 @@ export type Job = {
    *  looks broken, where five lettermarks look like a set. */
   lettermark: string;
   /** Somewhere to read more about the organisation. Rendered on the mark,
-   *  so the plate is the link — used where the place is worth looking up
-   *  and unfamiliar. */
+   *  so the plate is the link. Nothing sets it today — Semester at Sea did,
+   *  before the voyage moved to the map in places.ts, which is where a
+   *  thing whose point is thirteen ports belongs. Kept because an org worth
+   *  linking is a normal thing for this list to acquire. */
   href?: string;
-  /** What kind of entry this is. "role" is a job; "voyage" is a programme
-   *  lived rather than worked, and it is tagged as such on the page. A CV
-   *  that lets a term abroad sit unlabelled among four jobs is a CV that
-   *  gets caught, and the tag costs nothing. */
-  kind?: "role" | "voyage";
 };
 
 // Every job, including ones still being filled in.
@@ -116,25 +113,6 @@ const allJobs: Job[] = [
       "Investigated and diagnosed faults using statistical analysis to reduce response times",
       "Generated real-time and daily reports for utility management and preventive maintenance",
     ],
-  },
-  {
-    // Not a job, and tagged `voyage` so the page says so. It sits in this
-    // list rather than with the campuses because it isn't a campus either:
-    // the point of it is the 106 days and the eleven ports, which is the
-    // same point every role above makes about working on other people's
-    // ground — the earliest instance of it, and the reason for the rest.
-    kind: "voyage",
-    role: "Spring 2022 voyage",
-    org: "Semester at Sea",
-    lettermark: "SAS",
-    href: "https://www.semesteratsea.org/spring-2022-voyage-itinerary-update/",
-    dates: "Jan – Apr 2022",
-    location: "Naples to Bremerhaven · 11 ports",
-    takeaway:
-      "A term of coursework carried between eleven ports instead of taught in one place. Everything above it is that habit, paid.",
-    scope:
-      "106 days at sea, embarking at Naples and disembarking at Bremerhaven by way of Greece, Israel, Croatia, Malta, Spain, Morocco, Portugal, France, Ireland, Poland and Sweden.",
-    bullets: [],
   },
 ];
 
