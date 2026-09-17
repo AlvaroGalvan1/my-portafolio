@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ContactTrigger from "@/components/contact/ContactTrigger";
 import { Z } from "@/lib/layers";
 
 // In page order, deliberately — the highlight below picks the first match
@@ -9,16 +8,17 @@ import { Z } from "@/lib/layers";
 // backwards and then forwards again as you scroll. Re-order this list with
 // the page, every time, rather than letting it drift.
 //
-// Four labels for five sections, because the bar has to fit a phone.
-// `#skills` is the one left out: it's the back half of About rather than a
-// destination of its own, and a five-item bar wraps at 390px.
+// Three labels, and the bar is shorter than it was on purpose. `#about`
+// went when the hero stopped hiding the bio behind a scroll: the top of the
+// page IS the about now, so "Home" and "About" were two labels pointing at
+// one screen. `#skills` is the back half of About rather than a destination
+// of its own.
 //
 // `#work` isn't in this list either, but for the opposite reason — it's the
 // yellow button at the other end of the bar, which is a louder thing than a
 // label in a row of labels, and deliberately so.
 const LINKS = [
   { id: "home", label: "Home" },
-  { id: "about", label: "About" },
   { id: "background", label: "Background" },
   { id: "wall", label: "My Wall" },
 ] as const;
@@ -101,6 +101,14 @@ export default function Nav() {
             visitor who has decided to hire me and doesn't want to scroll
             five sections to find out how.
 
+            It is also, now, the ONLY contact route in the chrome. There
+            were four ways to start this same conversation in one screenful
+            — this button and a white "Contact" beside it, then two more in
+            the hero — which reads as eagerness rather than as an offer.
+            The hero keeps one button and it points the other way, into the
+            work; the Work section this lands on carries both the booking
+            link and the form.
+
             An anchor, not a button — it goes to a place on this page, so it
             has to behave like a link (middle-click, open in new tab, and a
             visible target in the status bar). */}
@@ -110,12 +118,6 @@ export default function Nav() {
         >
           Work with me
         </a>
-        {/* Room for both only above `sm`. On a phone the yellow button wins:
-            the Work section it lands on has "Send a brief", which opens this
-            same contact form, so nothing is lost but a tap. */}
-        <ContactTrigger className="hidden shrink-0 border-2 border-white bg-white px-3 py-1 text-brand-maroon hover:bg-transparent hover:text-white sm:inline-block sm:px-4 sm:py-1.5">
-          Contact
-        </ContactTrigger>
       </div>
     </nav>
   );

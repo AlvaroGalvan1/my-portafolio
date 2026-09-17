@@ -182,138 +182,38 @@ footer :focus-visible,
   outline-color: var(--color-brand-yellow);
 }
 
-/* ── The hero card ─────────────────────────────────────────────────────
-   One card that opens as you scroll. At the top of the page only the name
-   shows, sitting in the bottom-left corner over the Coral loop; scrolling
-   grows the card up and to the right until it holds the About text, the
-   portrait and the two buttons, filling the lower part of the screen.
+/* ── The hero ──────────────────────────────────────────────────────────
+   An editorial split: words left, artwork right, portrait across the seam.
+   Almost all of it is Tailwind in Hero.tsx — a two-column grid needs no
+   stylesheet. What lives here is the one thing the utilities can't say and
+   the hooks the print block needs by name.
 
-   The mechanics are split between here and HeroCard.tsx on purpose. JS does
-   nothing but measure — it writes a scroll position into `--p` (0 → 1) and
-   the content's natural height into `--extra-h`, both as custom properties
-   on the card. Every value that actually animates is interpolated in CSS
-   below, so there is no React render per frame and no second copy of the
-   layout in JavaScript.
+   What used to be here was the opening card: a 200svh track, a sticky
+   stage, a width interpolated from a scroll-progress custom property, a
+   measured `--closed-w` and `--extra-h`, and a media query that undid all
+   of it on phones and for reduced motion. Roughly 130 lines to reveal one
+   paragraph on scroll — a paragraph the reader now simply reads. The whole
+   block came out with it; if the effect is ever wanted back, it is in the
+   history rather than commented out here.
 
-   `--p` is unitless, which is what lets it multiply a length: the card's
-   width is its collapsed 20rem plus the remaining distance to full width,
-   scaled by progress. The name sits at the top of the card, so as the card
-   grows the name rises with its top edge — which is the whole effect,
-   falling out of the layout rather than being animated separately. */
-.hero-track {
-  height: 200svh;
+   The seam overlap (`lg:-left-16` on the portrait) is a Tailwind negative
+   offset, and it works because the art panel is `relative` while the grid
+   itself is not — the plate is positioned against its own half and hangs
+   out of it, over the cream. No z-index fight: the plate is the only
+   positioned thing in the row that asks for a layer. */
+
+/* The status pill's mark. Same dot as the location line was, moved to the
+   line where a pulse means something — a live availability light — and
+   given a stopped state for when the answer is no. Red reads as "on air"
+   here rather than as a warning; the palette has no green and inventing
+   one for a 11px dot is not worth a fourth hue. */
+.location-dot--static {
+  animation: none;
 }
 
-/* The pinned screen the card opens inside. Here rather than in Tailwind
-   utilities because the fallback below has to be able to un-stick it. */
-.hero-stage {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  overflow: hidden;
-}
-
-.hero-card-slot {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-}
-
-/* Closed, the card is the name and nothing else, so it is sized to the name
-   — HeroCard.tsx measures it and writes `--closed-w`. The 20rem here is only
-   what stands until that runs.
-
-   It can't stay a constant: the name is set in vw and never wraps above
-   `sm`, so a width that fits it at 640px is ~100px too narrow by 1440px and
-   the letters hang off the plate — at the top of the page, which is the one
-   moment the closed card is the whole composition. */
-/* Open, it stops at a box rather than running to the full column. `100%`
-   here is the slot, which on a 1440px screen is 1312px — a band of yellow
-   with the bio at one end and the photo at the other, and 500px of nothing
-   between them. 50rem is about where the two halves still read as one card.
-   The `min` keeps it honest below that: on anything narrower than ~53rem
-   the slot is the smaller number and the card opens to the gutters. */
-.hero-card {
-  --p: 0;
-  /* The closed width, estimated in CSS and then measured in JS — and the
-     estimate has to be close, or the card visibly resizes once on load.
-
-     28vw is not a guess: the name is set at 5.2vw and never wraps above
-     `sm`, so its width is a fixed multiple of the viewport, and 28vw is
-     that multiple with the card's padding in it. The `min` is where the
-     name stops growing — `clamp` caps the face at 5.5rem, which it reaches
-     at about 1692px, and past there the plate shouldn't keep widening.
-
-     HeroCard.tsx overwrites this with the real measurement once the display
-     face has loaded. Until then this is what renders, and it is right. */
-  --closed-w: min(28vw, 29.6rem);
-  --open-w: min(100%, 50rem);
-  width: calc(var(--closed-w) + (var(--open-w) - var(--closed-w)) * var(--p));
-  max-width: 100%;
-}
-
-/* Clipped to nothing at the top of the page and to its measured height at
-   the bottom. It stays in the DOM throughout — a screen reader gets the bio
-   whatever the scroll position, and there is nothing focusable inside it to
-   trap a keyboard in the clipped region. */
-.hero-card-extra {
-  max-height: calc(var(--extra-h, 0px) * var(--p));
-  opacity: var(--p);
-  overflow: hidden;
-}
-
-/* The fallback: card open from the start, nothing pinned, section scrolls
-   like any other. Two conditions want it, for different reasons.
-   
-   `prefers-reduced-motion` — a two-screen-tall section whose only purpose
-   is to give a scroll effect somewhere to happen is exactly what that
-   setting is asking us not to build.
-
-   `max-width: 639px` — the effect needs a screen taller than the card it
-   grows into, and a phone isn't. Measured at 390x844: the bio wraps to
-   ~820px, the open card came to 945px, and `overflow: hidden` on the stage
-   clipped the name 125px above the top edge. The name disappearing is a
-   worse outcome than the animation not happening.
-
-   HeroCard.tsx watches the same query and stops writing `--p` when it
-   matches, so no scroll work happens for an effect that isn't running. */
-@media (max-width: 639px), (prefers-reduced-motion: reduce) {
-  .hero-track {
-    height: auto;
-  }
-  .hero-stage {
-    position: static;
-    height: auto;
-    min-height: 100svh;
-    overflow: visible;
-  }
-  .hero-card-slot {
-    /* `relative`, not `static`, and this is load-bearing: HeroBackdrop is
-       `absolute inset-0`, so a static card paints UNDERNEATH the video and
-       the whole thing disappears — on every phone, and for anyone who has
-       asked for less motion. Only the portrait survived it, because
-       next/image `fill` is absolute and so painted above the video on its
-       own. Positioning the slot puts it back in front, and the z-index is
-       Z.CARD_CONTENT from src/lib/layers.ts, spelled out because a
-       stylesheet can't import it. */
-    position: relative;
-    z-index: 10;
-    /* The nav is sticky over this section, so in flow the card needs to
-       clear it the way the old top-aligned hero did. */
-    padding-top: calc(var(--nav-h) + 1.5rem);
-  }
-  .hero-card {
-    /* Open from the start, at the same box the scroll would have opened it
-       to. `100%` here would undo the cap above for anyone on a desktop who
-       has asked for less motion — on a phone the two are the same number,
-       because the slot is far narrower than 50rem. */
-    width: var(--open-w);
-  }
-  .hero-card-extra {
-    max-height: none;
-    opacity: 1;
-  }
+.location-dot--closed {
+  background: var(--color-brand-maroon);
+  opacity: 0.55;
 }
 
 /* The Wall's column track and its per-tile ceiling. Read with `tileWidth`
@@ -643,38 +543,43 @@ footer :focus-visible,
   }
 
   /* Buttons are the other thing paper can't use. The contact details they
-     stand in for are printed by HeroCard's print-only line instead. */
+     stand in for are printed by the hero's print-only line instead. */
   button {
     display: none !important;
   }
 
   /* ── Changes shape ───────────────────────────────────────────────────
-     The hero is two screens tall and pinned so a card can grow inside it.
-     On paper it is the masthead: no track, no stage, no sticky, and the
-     card open at full width. */
-  .hero-track,
-  .hero-stage {
-    height: auto !important;
+     The hero is a half-and-half spread on screen. On paper it is the
+     masthead: one column, no artwork panel, and the portrait reduced to the
+     headshot a CV carries. */
+  /* Still two columns on paper, but at CV proportions: the words take the
+     measure and the artwork column narrows to the width of a headshot.
+
+     A block layout was the first attempt and it put the portrait halfway
+     down the page — the plate comes after the words in source order, so
+     floated, it started below them and landed across the next section's
+     heading. Keeping the row is what puts the photograph where a CV puts
+     one, at the top, beside the name. */
+  .hero-split {
+    display: flex !important;
+    gap: 6mm;
     min-height: 0 !important;
-    position: static !important;
-    overflow: visible !important;
+    align-items: flex-start;
   }
 
-  .hero-card-slot {
-    position: static !important;
+  .hero-words {
+    flex: 1 1 auto;
     padding: 0 !important;
   }
 
-  .hero-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-  }
-
-  .hero-card-extra {
-    max-height: none !important;
-    opacity: 1 !important;
-    overflow: visible !important;
+  /* The video inside this is already hidden by the `video` rule above, so
+     what's left is the plate. Without a width the empty panel would still
+     claim half the masthead. */
+  .hero-art {
+    position: static !important;
+    flex: 0 0 34mm;
+    min-height: 0 !important;
+    background: none !important;
   }
 
   /* Sections set their own generous screen padding; on paper the @page
@@ -701,22 +606,15 @@ footer :focus-visible,
     break-inside: avoid;
   }
 
-  /* The portrait is a full-width plate on screen and a headshot on paper.
-     The row has to stop being a flex container first, or the float has
-     nothing to do. */
-  .hero-columns {
-    display: block !important;
-  }
-
-  .hero-portrait {
-    float: right;
-    width: 34mm !important;
-    margin: 0 0 4mm 6mm;
-  }
-
-  .hero-portrait .aspect-\[3\/4\],
-  .hero-portrait > div {
-    height: auto !important;
+  /* The portrait is positioned across the seam on screen and a headshot on
+     paper. Taken out of position first: an absolutely-positioned figure
+     prints where it was pinned, which on a page with no artwork panel is
+     on top of the name. */
+  .hero-plate {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0;
   }
 
   /* Education and Experience sit side by side on screen at `lg`. Paper is
