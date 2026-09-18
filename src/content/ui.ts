@@ -40,7 +40,6 @@ const en = {
     // made in words: the reader is already picturing me on their team.
     pitch:
       "Geospatial engineer working on wildfire and climate risk. I turn satellite, terrain and sensor data into tools people rely on: scrappy enough to start from scratch, structured enough to hand off clean, on my own or inside your team.",
-    openTo: "Open to volunteering to advance geospatial projects",
     aboutYou: "About you",
     // ── The invitation on the artwork ───────────────────────────────
     // The question is the button. Three versions were tried and the first
@@ -259,7 +258,6 @@ const es: UiStrings = {
   hero: {
     pitch:
       "Ingeniero geoespacial enfocado en incendios forestales y riesgo climático. Convierto datos satelitales, de terreno y de sensores en herramientas en las que la gente confía: lo bastante ágil para empezar de cero, lo bastante ordenado para entregarlo limpio, por mi cuenta o dentro de tu equipo.",
-    openTo: "Abierto a voluntariado para impulsar proyectos geoespaciales",
     aboutYou: "Sobre ti",
     aboutYouHook: "¿Dónde estás, en realidad?",
     aboutYouOpen: "Descúbrelo",

@@ -56,14 +56,26 @@ export const services: Service[] = [
 // The line beside the two actions at the top of the section: the rate,
 // how far it bends, why, and what kind of work I'm open to.
 //
-// ONE statement, on purpose, and it stays one. No tiers, no packages, no
-// pricing table: a single rate and a single sentence about when it drops
-// is simpler to read and more honest than a grid of options, and it says
-// the thing a grid can't, which is that the price is not the point for
-// the right project. It always names both kinds of work, consulting and
-// full-time, so neither kind of reader leaves thinking the other is all
-// that's on offer.
-export const RATES_NOTE: Phrase = {
-  en: "My rate is $85 USD/hour, flexible down to $0 (pro bono) for mission-aligned climate, environmental and field-conservation projects. We need to solve the climate crisis together. I'm open to both independent consulting contracts and full-time geospatial engineering roles.",
-  es: "Mi tarifa es de 85 USD/hora, flexible hasta 0 USD (pro bono) para proyectos climáticos, ambientales y de conservación en campo alineados con la misión. Tenemos que resolver la crisis climática juntos. Estoy abierto tanto a contratos de consultoría independiente como a puestos de tiempo completo en ingeniería geoespacial.",
+// ONE statement, on purpose, and it stays one — no tiers, no packages, no
+// pricing table. A single rate and a single reason it drops is simpler to
+// read and more honest than a grid of options, and it says the thing a
+// grid can't, which is that the price is not the point for the right
+// project. It always names both kinds of work, consulting and full-time,
+// so neither kind of reader leaves thinking the other is all that's on
+// offer.
+//
+// Split into a headline and a body rather than one run-on paragraph: the
+// number is the fact a skimming reader needs first, and the belief plus
+// the availability are the reasoning that only the reader who stops to
+// read gets. Still one statement — a lead sentence and its support, not
+// separate options.
+export const RATES_NOTE: { headline: Phrase; body: Phrase } = {
+  headline: {
+    en: "$85 USD/hour — flexible to $0 for mission-aligned work",
+    es: "85 USD/hora — flexible hasta 0 USD para proyectos alineados con la misión",
+  },
+  body: {
+    en: "Pro bono for climate, environmental and field-conservation projects. We need to solve the climate crisis together, so I'm open to both consulting contracts and full-time geospatial roles.",
+    es: "Pro bono para proyectos climáticos, ambientales y de conservación en campo. Tenemos que resolver la crisis climática juntos, así que estoy abierto tanto a contratos de consultoría como a puestos de tiempo completo en ingeniería geoespacial.",
+  },
 };

@@ -65,9 +65,14 @@ export default async function Services() {
           White panel so it separates from the yellow field without
           introducing a fourth colour. */}
       <div className="mt-[clamp(1.25rem,3vh,2rem)] flex flex-col gap-5 border-4 border-brand-maroon bg-white p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8 sm:py-[clamp(1.25rem,3vh,2rem)]">
-        <p className="max-w-xl font-sans text-base leading-relaxed text-neutral-700">
-          {say(RATES_NOTE, locale)}
-        </p>
+        <div className="max-w-xl">
+          <p className="font-sans text-lg font-semibold leading-snug text-brand-maroon">
+            {say(RATES_NOTE.headline, locale)}
+          </p>
+          <p className="mt-1.5 font-sans text-sm leading-relaxed text-neutral-700">
+            {say(RATES_NOTE.body, locale)}
+          </p>
+        </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
           <a

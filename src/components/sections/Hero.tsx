@@ -155,10 +155,6 @@ export default async function Hero() {
           <p className="max-w-[46ch] font-sans text-[clamp(0.95rem,1.8vh,1.1rem)] leading-relaxed text-brand-maroon">
             {ui.hero.pitch}
           </p>
-          <p className="eyebrow mt-3 flex items-center gap-2.5 text-brand-red">
-            <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-brand-red" />
-            {ui.hero.openTo}
-          </p>
         </div>
 
         {/* Two actions, side by side: talk to me (yellow, opens the
