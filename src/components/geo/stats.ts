@@ -1,3 +1,5 @@
+import type { Locale } from "@/content/i18n";
+
 // Everything the Where You Are panel can work out from a pair of
 // coordinates without asking anyone.
 //
@@ -121,11 +123,17 @@ export function solarNoon(lon: number, utcOffsetSeconds: number, now = new Date(
   return `${String(hours).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 }
 
-/** Seconds of daylight as hours and minutes. */
-export function formatDuration(seconds: number): string {
+/** Seconds of daylight as hours and minutes. The abbreviations differ by
+ *  language — "7h 42m" in English, "7 h 42 min" in Spanish — which is
+ *  small enough to be tempting to ignore and exactly the kind of thing
+ *  that makes a page read as translated rather than written. */
+export function formatDuration(seconds: number, locale: Locale = "en"): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.round((seconds % 3600) / 60);
-  return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+  const padded = String(minutes).padStart(2, "0");
+  return locale === "es"
+    ? `${hours} h ${padded} min`
+    : `${hours}h ${padded}m`;
 }
 
 /** An ISO timestamp as a clock time. Open-Meteo returns local times with
@@ -135,36 +143,60 @@ export function clockTime(isoLocal: string): string {
   return isoLocal.slice(11, 16);
 }
 
-/** US AQI, in the words the scale is actually defined in. The number alone
- *  means nothing to anyone who does not already work with it. */
-export function aqiLabel(aqi: number): string {
-  if (aqi <= 50) return "Good";
-  if (aqi <= 100) return "Moderate";
-  if (aqi <= 150) return "Unhealthy for sensitive groups";
-  if (aqi <= 200) return "Unhealthy";
-  if (aqi <= 300) return "Very unhealthy";
-  return "Hazardous";
+/** US AQI, as one of the six bands the scale is actually defined in. The
+ *  number alone means nothing to anyone who does not already work with it.
+ *
+ *  Returns a key rather than a sentence: this file computes, and the words
+ *  for what it computes live in content/ui.ts where both languages can be
+ *  read side by side. Every label in here used to be an English string,
+ *  which is how "Unhealthy for sensitive groups" ends up inside a Spanish
+ *  page. */
+export type AqiBand =
+  | "good"
+  | "moderate"
+  | "sensitive"
+  | "unhealthy"
+  | "veryUnhealthy"
+  | "hazardous";
+
+export function aqiBand(aqi: number): AqiBand {
+  if (aqi <= 50) return "good";
+  if (aqi <= 100) return "moderate";
+  if (aqi <= 150) return "sensitive";
+  if (aqi <= 200) return "unhealthy";
+  if (aqi <= 300) return "veryUnhealthy";
+  return "hazardous";
 }
 
 /** WMO weather codes, grouped rather than enumerated. The full table has
  *  twenty-eight entries distinguishing slight from moderate drizzle, which
- *  is more precision than one line can spend. */
-export function weatherLabel(code: number): string {
-  if (code === 0) return "Clear";
-  if (code <= 3) return "Cloud";
-  if (code <= 48) return "Fog";
-  if (code <= 57) return "Drizzle";
-  if (code <= 67) return "Rain";
-  if (code <= 77) return "Snow";
-  if (code <= 82) return "Showers";
-  if (code <= 86) return "Snow showers";
-  return "Thunderstorm";
+ *  is more precision than one line can spend. Keyed, not worded — see
+ *  `aqiBand` above. */
+export type SkyKind =
+  | "clear"
+  | "cloud"
+  | "fog"
+  | "drizzle"
+  | "rain"
+  | "snow"
+  | "showers"
+  | "snowShowers"
+  | "thunderstorm";
+
+export function skyKind(code: number): SkyKind {
+  if (code === 0) return "clear";
+  if (code <= 3) return "cloud";
+  if (code <= 48) return "fog";
+  if (code <= 57) return "drizzle";
+  if (code <= 67) return "rain";
+  if (code <= 77) return "snow";
+  if (code <= 82) return "showers";
+  if (code <= 86) return "snowShowers";
+  return "thunderstorm";
 }
 
-/** A distance, rounded the way a person would say it. Under ten kilometres
- *  the decimal matters; over a thousand it is noise. */
-export function formatKm(km: number): string {
-  if (km < 10) return `${km.toFixed(1)} km`;
-  if (km < 1000) return `${Math.round(km)} km`;
-  return `${Math.round(km).toLocaleString("en-US")} km`;
-}
+// `formatKm` lived here and no longer does. A distance the reader can
+// picture is a units question, not a geometry one — it depends on where
+// they are from rather than on where they are — so it moved to lib/units.ts
+// with the rest of the metric/imperial decision. This file computes
+// kilometres; that one decides whether to say so in miles.

@@ -115,7 +115,6 @@ body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Hand-painted sign lettering: hard offset drop shadow, no blur */
 /* The Wall's one-time hint points at the edge zone that starts the pan.
    A static arrow beside a sentence reads as punctuation; one that drifts
    toward the thing it names reads as a gesture, which is what makes anyone
@@ -141,18 +140,36 @@ body {
   }
 }
 
-.text-signpainted {
-  text-shadow:
-    2px 2px 0 var(--shadow-color, var(--color-brand-red)),
-    4px 4px 0 var(--shadow-color, var(--color-brand-red));
-}
+/* ── THE NAME ───────────────────────────────────────────────────────────
+   The hero's h1 and nothing else. Two hard offsets, no blur — the
+   hand-painted sign treatment the whole page borrows its colour logic
+   from.
 
-@media (min-width: 640px) {
-  .text-signpainted {
-    text-shadow:
-      3px 3px 0 var(--shadow-color, var(--color-brand-red)),
-      6px 6px 0 var(--shadow-color, var(--color-brand-red));
-  }
+   In `em`, not pixels, and that is the fix rather than a preference. The
+   name runs from 2.6rem on a phone to 6.75rem on a desktop, a factor of
+   2.6; a fixed 3px/6px shadow is a heavy slab welded under the small one
+   and a hairline under the large one. In `em` it is the same mark at every
+   size, which is what a painted shadow actually is.
+
+   ── The number that matters ──
+   0.04em is the outer offset, and it is not free: it is the budget the
+   line-height in Hero.tsx has to clear. Bungee draws the acute accent on Á
+   reaching 0.965em above the baseline (read off Bungee-Regular.ttf —
+   unitsPerEm 1000, Á yMax 965, cap height 720). Two accented lines stacked
+   at leading L collide when L < 0.965em, and collide WITH THE SHADOW when
+   L < 0.965 + 0.04 = 1.005em.
+
+   Which is exactly what was on the page: `leading-[0.9]` drove GALVÁN's
+   accent 0.065em into ÁLVARO's baseline and the shadow another 6px past
+   that. The two á's visibly overlapped.
+
+   So: raise this offset and the leading in Hero.tsx has to rise with it.
+   They are one decision in two files, and this is the half that is easy to
+   change without noticing the other. */
+.text-signpainted-display {
+  text-shadow:
+    0.02em 0.02em 0 var(--shadow-color, var(--color-brand-red)),
+    0.04em 0.04em 0 var(--shadow-color, var(--color-brand-red));
 }
 
 /* Keyboard focus, everywhere, in one place.
@@ -183,10 +200,12 @@ footer :focus-visible,
 }
 
 /* ── The hero ──────────────────────────────────────────────────────────
-   An editorial split: words left, artwork right, portrait across the seam.
-   Almost all of it is Tailwind in Hero.tsx — a two-column grid needs no
-   stylesheet. What lives here is the one thing the utilities can't say and
-   the hooks the print block needs by name.
+   An editorial split: words left, artwork right, and exactly one screen
+   tall. Almost all of it is Tailwind in Hero.tsx — a two-column grid needs
+   no stylesheet. What lives here is the one thing the utilities can't say
+   and the hooks the print block needs by name: `.hero-split`, `.hero-words`
+   and `.hero-art` exist purely so @media print can take the section apart,
+   and the height constraint is the main thing it has to undo.
 
    What used to be here was the opening card: a 200svh track, a sticky
    stage, a width interpolated from a scroll-progress custom property, a
@@ -202,19 +221,12 @@ footer :focus-visible,
    out of it, over the cream. No z-index fight: the plate is the only
    positioned thing in the row that asks for a layer. */
 
-/* The status pill's mark. Same dot as the location line was, moved to the
-   line where a pulse means something — a live availability light — and
-   given a stopped state for when the answer is no. Red reads as "on air"
-   here rather than as a warning; the palette has no green and inventing
-   one for a 11px dot is not worth a fourth hue. */
-.location-dot--static {
-  animation: none;
-}
-
-.location-dot--closed {
-  background: var(--color-brand-maroon);
-  opacity: 0.55;
-}
+/* The availability pill's two states lived here — a stopped dot and a
+   maroon one — and the pill itself came off the hero two passes ago. They
+   are deleted rather than kept "in case": an unused selector in a
+   stylesheet is indistinguishable from a selector whose markup broke, and
+   the next person to read this file has no way to tell which. The hero's
+   own dot is `.location-dot`, further down, and is still very much used. */
 
 /* The Wall's column track and its per-tile ceiling. Read with `tileWidth`
    in HorizontalGallery.tsx, which builds every tile's width from these.
@@ -225,18 +237,16 @@ footer :focus-visible,
    was getting. Wide track on a phone, narrow on a desktop — the tile ends
    up roughly the same physical size either way.
 
-   The ceiling is what makes that safe. A 50vw track would make a 2-span
-   tile 102vw, so nothing may exceed 86vw — which also leaves a slice of the
-   next tile showing at the edge, doing the "there's more this way" job for
-   free. It only binds on a phone now: nothing on the Wall spans 3 tracks
-   any more (LANDFIRE, the only piece that did, is 2x2), so the widest tile
-   above `sm` comes to ~53vw and the 90vw guard there never fires.
+   The ceiling is what makes that safe: nothing may exceed 86vw on a phone,
+   which also leaves a slice of the next piece showing at the edge, doing
+   the "there's more this way" job for free.
 
-   Read with ROW_H_VH (36) in HorizontalGallery.tsx, which sets the height
-   these widths are judged against. Those two numbers are the whole scale of
-   the Wall — raise or lower them together. */
+   Half of what these were before the Wall went from posters to postcards —
+   a quarter of the area, with ROW_H_VH (18) in HorizontalGallery.tsx
+   halved alongside. Those two numbers are the whole scale of the Wall —
+   raise or lower them together. */
 .wall-scroller {
-  --wall-col: 50vw;
+  --wall-col: 25vw;
   --wall-tile-max: 86vw;
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-yellow) rgba(0, 0, 0, 0.25);
@@ -244,14 +254,14 @@ footer :focus-visible,
 
 @media (min-width: 640px) {
   .wall-scroller {
-    --wall-col: 33vw;
+    --wall-col: 16.5vw;
     --wall-tile-max: 90vw;
   }
 }
 
 @media (min-width: 1024px) {
   .wall-scroller {
-    --wall-col: 25vw;
+    --wall-col: 12.5vw;
   }
 }
 
@@ -412,8 +422,12 @@ footer :focus-visible,
   border-bottom: 2px solid rgb(122 23 16 / 0.25);
 }
 
+/* Height-bound, not a square: the Semester at Sea mark is a wordmark
+   several times wider than it is tall, and a 22px square shrank it to a
+   hairline. Square marks come out 22px either way. */
 .leaflet-popup-content .map-popup__logo {
-  width: 22px;
+  width: auto;
+  max-width: 7rem;
   height: 22px;
   object-fit: contain;
   flex: none;
@@ -494,11 +508,12 @@ footer :focus-visible,
 }
 
 /* ── THE PAGE, PRINTED ──────────────────────────────────────────────────
-   The other half of PrintCvButton.tsx. There is no separate CV document
-   and no PDF generated anywhere: this block is what turns the site into
-   one, so the CV cannot drift from the page the way a hand-maintained PDF
-   does. "Download fun CV" calls window.print(), the browser offers Save as
-   PDF, and what comes out is this.
+   There is no separate CV document behind this: this block is what turns
+   the site into one when someone prints it (Cmd/Ctrl+P), so the paper
+   version cannot drift from the page. There used to be a button for it
+   beside the CV download; it went, because two ways to get "the CV" side
+   by side made the reader choose between them. The rules stay for whoever
+   prints anyway.
 
    The rules are in three groups: what comes off the page, what changes
    shape, and what has to be spelled out because paper has no pointer.
@@ -558,7 +573,14 @@ footer :focus-visible,
      printing as an empty orange block at the top of a CV. */
   .hero-split {
     display: block !important;
+    /* `h-[calc(100svh-var(--nav-h))]` is a screen constraint and there is
+       no viewport here: left in place it reserves a fixed slab of the
+       first printed page for a masthead that needs a third of it.
+       `overflow: hidden` has to go with it, or the words it cannot fit are
+       simply not printed. */
+    height: auto !important;
     min-height: 0 !important;
+    overflow: visible !important;
   }
 
   .hero-words {

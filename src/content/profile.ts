@@ -1,4 +1,5 @@
 import type { Credit } from "@/components/gallery/credit";
+import type { Phrase } from "./i18n";
 
 export const profile = {
   // Two given names and two surnames is the full legal form, and it was
@@ -44,10 +45,14 @@ export const profile = {
     src: "/hero/coral-loop.mp4",
     credit: { who: "Dahlia", relation: "author" } satisfies Credit,
   },
-  // One paragraph, and it ends in an invitation rather than a summary: it
-  // is the only thing on the page that asks the reader for anything, and
-  // the ask is deliberately not addressed to one industry. "In any field"
-  // is doing that work, so don't narrow it to hiring managers later.
+  // Three sentences, and it ends in an invitation rather than a summary:
+  // it is the only thing on the page that asks the reader for anything.
+  //
+  // It was five sentences and it was the longest thing in a hero that gets
+  // exactly one screen — "I live in San Francisco" repeats the location
+  // line directly above the name, and "in any field" was qualifying an
+  // invitation that is more generous without the qualifier. What is left
+  // is where I'm from, what I build, and the ask.
   //
   // No em dashes here, on purpose. The rest of this file is full of them
   // and this is the one string a visitor reads as a voice.
@@ -56,6 +61,9 @@ export const profile = {
   // entries are unrendered today; a second paragraph needs a place in that
   // layout first, so add the markup with the string.
   bio: [
-    "Hey, I'm Álvaro from Oaxaca. I live in San Francisco and build geospatial software, mostly around wildfire and the energy transition. If you're building toward a livable future, in any field, let's chat 🌸",
-  ],
+    {
+      en: "Hey, I'm Álvaro from Oaxaca. I build geospatial software for wildfire and the energy transition. If you're building toward a livable future, let's chat 🌸",
+      es: "Hola, soy Álvaro, de Oaxaca. Construyo software geoespacial para incendios forestales y la transición energética. Si estás construyendo hacia un futuro habitable, platiquemos 🌸",
+    },
+  ] satisfies Phrase[],
 };

@@ -1,3 +1,5 @@
+import type { Locale } from "./i18n";
+
 // Cities with a known height above sea level, for the "you are standing at
 // about the height of ___" line in the Where You Are tile.
 //
@@ -18,42 +20,78 @@ export type ElevationCity = {
   /** Metres above sea level, approximate. */
   metres: number;
   /** Where I've been, and in what capacity. Renders as the second half of
-   *  the sentence; omitted for cities that are here purely for coverage. */
-  mine?: string;
+   *  the sentence; omitted for cities that are here purely for coverage.
+   *
+   *  A key rather than the phrase itself. Six relationships cover all
+   *  twenty-odd entries, so writing them out per city was already three
+   *  dozen copies of six strings — and translating it that way would have
+   *  been seventy-two. Add a relationship here and both languages have to
+   *  answer for it, which is the point. */
+  mine?: MineRelation;
+};
+
+export type MineRelation =
+  | "studied"
+  | "port"
+  | "voyageStart"
+  | "voyageEnd"
+  | "live"
+  | "from";
+
+/** Reads as the second half of "…which is about the height of Maastricht,
+ *  where I studied." Lower case and no leading comma: the sentence in
+ *  WhereYouAre supplies both. */
+export const MINE_LABEL: Record<Locale, Record<MineRelation, string>> = {
+  en: {
+    studied: "where I studied",
+    port: "a port on the voyage",
+    voyageStart: "where the voyage began",
+    voyageEnd: "where the voyage ended",
+    live: "where I live",
+    from: "where I'm from",
+  },
+  es: {
+    studied: "donde estudié",
+    port: "un puerto del viaje",
+    voyageStart: "donde empezó el viaje",
+    voyageEnd: "donde terminó el viaje",
+    live: "donde vivo",
+    from: "de donde soy",
+  },
 };
 
 export const elevationCities: ElevationCity[] = [
   { name: "Rotterdam", metres: 0 },
-  { name: "Bremerhaven", metres: 2, mine: "where the voyage ended" },
-  { name: "Dubrovnik", metres: 3, mine: "a port on the voyage" },
-  { name: "Taipei", metres: 9, mine: "where I studied" },
-  { name: "Piraeus", metres: 10, mine: "a port on the voyage" },
+  { name: "Bremerhaven", metres: 2, mine: "voyageEnd" },
+  { name: "Dubrovnik", metres: 3, mine: "port" },
+  { name: "Taipei", metres: 9, mine: "studied" },
+  { name: "Piraeus", metres: 10, mine: "port" },
   { name: "London", metres: 11 },
-  { name: "Barcelona", metres: 12, mine: "a port on the voyage" },
-  { name: "Gdańsk", metres: 12, mine: "a port on the voyage" },
+  { name: "Barcelona", metres: 12, mine: "port" },
+  { name: "Gdańsk", metres: 12, mine: "port" },
   { name: "Copenhagen", metres: 14 },
-  { name: "San Francisco", metres: 16, mine: "where I live" },
-  { name: "Naples", metres: 17, mine: "where the voyage began" },
-  { name: "Dublin", metres: 20, mine: "a port on the voyage" },
-  { name: "Buenos Aires", metres: 25, mine: "where I studied" },
-  { name: "Stockholm", metres: 28, mine: "a port on the voyage" },
-  { name: "Brest", metres: 34, mine: "a port on the voyage" },
-  { name: "Berlin", metres: 34, mine: "where I studied" },
+  { name: "San Francisco", metres: 16, mine: "live" },
+  { name: "Naples", metres: 17, mine: "voyageStart" },
+  { name: "Dublin", metres: 20, mine: "port" },
+  { name: "Buenos Aires", metres: 25, mine: "studied" },
+  { name: "Stockholm", metres: 28, mine: "port" },
+  { name: "Brest", metres: 34, mine: "port" },
+  { name: "Berlin", metres: 34, mine: "studied" },
   { name: "Paris", metres: 35 },
-  { name: "Seoul", metres: 38, mine: "where I studied" },
+  { name: "Seoul", metres: 38, mine: "studied" },
   { name: "Lagos", metres: 41 },
-  { name: "Maastricht", metres: 49, mine: "where I studied" },
-  { name: "Casablanca", metres: 50, mine: "a port on the voyage" },
-  { name: "Valletta", metres: 56, mine: "a port on the voyage" },
-  { name: "Lisbon", metres: 100, mine: "a port on the voyage" },
-  { name: "Haifa", metres: 300, mine: "a port on the voyage" },
-  { name: "Hyderabad", metres: 542, mine: "where I studied" },
-  { name: "Pune", metres: 560, mine: "where I studied" },
+  { name: "Maastricht", metres: 49, mine: "studied" },
+  { name: "Casablanca", metres: 50, mine: "port" },
+  { name: "Valletta", metres: 56, mine: "port" },
+  { name: "Lisbon", metres: 100, mine: "port" },
+  { name: "Haifa", metres: 300, mine: "port" },
+  { name: "Hyderabad", metres: 542, mine: "studied" },
+  { name: "Pune", metres: 560, mine: "studied" },
   { name: "Kathmandu", metres: 1400 },
-  { name: "Oaxaca", metres: 1555, mine: "where I'm from" },
+  { name: "Oaxaca", metres: 1555, mine: "from" },
   { name: "Denver", metres: 1609 },
   { name: "Nairobi", metres: 1795 },
-  { name: "Aguascalientes", metres: 1888, mine: "where I studied" },
+  { name: "Aguascalientes", metres: 1888, mine: "studied" },
   { name: "Mexico City", metres: 2240 },
   { name: "Addis Ababa", metres: 2355 },
   { name: "Bogotá", metres: 2640 },

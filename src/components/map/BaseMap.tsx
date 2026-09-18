@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import { SATELLITE_LAYER } from "./baseLayers";
-import { GROUPS, places, type Place, type PlaceGroup } from "@/content/places";
-import MapLegend, { type LegendRow } from "./MapLegend";
+import { GROUPS, journey, places, type Place, type PlaceGroup } from "@/content/places";
+import { say, type Locale } from "@/content/i18n";
+import { Z } from "@/lib/layers";
+import JourneyControl from "./JourneyControl";
+import JourneyStory, { chaptersOf } from "./JourneyStory";
+import { JOURNEY_DURATION_MS, buildJourneyPath, journeyFrame } from "./journey";
 
 declare module "leaflet" {
   interface MapOptions {
@@ -47,7 +51,10 @@ function minZoomForContainer(el: HTMLElement) {
 // top, then city, then the credential and dates, then one line of
 // substance. Same shape for every pin, so nine popups read as one section
 // rather than nine unrelated notes.
-function popupContent(place: Place) {
+// The popup is built as DOM rather than JSX because Leaflet takes an
+// element, not a React tree. That means the locale has to be threaded in
+// by hand — there is no component here to read it from a prop.
+function popupContent(place: Place, locale: Locale, itineraryLabel: string) {
   const group = GROUPS[place.group];
 
   const el = (tag: string, className: string, text?: string) => {
@@ -67,21 +74,37 @@ function popupContent(place: Place) {
     img.className = "map-popup__logo";
     head.append(img);
   }
-  head.append(el("p", "map-popup__inst", group.label));
+  head.append(el("p", "map-popup__inst", say(group.label, locale)));
   root.append(head);
 
   root.append(el("p", "map-popup__city", place.name));
-  root.append(el("p", "map-popup__detail", `${place.detail}, ${place.country}`));
+  root.append(
+    el(
+      "p",
+      "map-popup__detail",
+      `${say(place.detail, locale)}, ${say(place.country, locale)}`,
+    ),
+  );
 
   if (place.credential || place.dates) {
     const meta = el("p", "map-popup__meta");
-    if (place.credential) meta.append(el("span", "map-popup__cred", place.credential));
-    if (place.dates) meta.append(el("span", "map-popup__dates", place.dates));
+    if (place.credential)
+      meta.append(el("span", "map-popup__cred", say(place.credential, locale)));
+    if (place.dates)
+      meta.append(el("span", "map-popup__dates", say(place.dates, locale)));
     root.append(meta);
   }
 
-  const note = place.note ?? group.about;
-  if (note) root.append(el("p", "map-popup__note", note));
+  // Only what is true of THIS pin. `group.about` used to render here too,
+  // and it is the same paragraph on every pin in its group — six identical
+  // three-sentence blurbs across the six Minerva cities, two across the two
+  // UWC campuses. Opening a second pin and reading the same text again
+  // teaches the reader that the popups are not worth opening, which costs
+  // more than the paragraph was ever worth.
+  //
+  // It is not deleted, it is moved: Background renders each institution's
+  // line once, under its mark, where saying it once is the whole point.
+  if (place.note) root.append(el("p", "map-popup__note", say(place.note, locale)));
 
   // Where the group is unfamiliar enough that a reader would want to look
   // it up — the voyage, whose itinerary is published — the popup ends with
@@ -92,43 +115,44 @@ function popupContent(place: Place) {
     link.href = group.href;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = "The itinerary ↗";
+    link.textContent = itineraryLabel;
     root.append(link);
   }
 
   return root;
 }
 
-export default function BaseMap() {
+export default function BaseMap({
+  locale,
+  itineraryLabel,
+  journeyStrings,
+}: {
+  locale: Locale;
+  itineraryLabel: string;
+  journeyStrings: { play: string; stop: string; ports: string; cities: string };
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   // One Leaflet layer group per pin group, so toggling a legend row is an
   // add/remove of a single layer rather than a rebuild of every marker.
   const layersRef = useRef<Partial<Record<PlaceGroup, import("leaflet").LayerGroup>>>({});
-  // Every group visible to begin with, built from GROUPS rather than
-  // spelled out: a hand-written record here is a second list that has to
-  // know every group, and it stopped compiling the day a fourth was added.
-  const [hidden, setHidden] = useState<Record<PlaceGroup, boolean>>(() =>
-    Object.fromEntries(
-      (Object.keys(GROUPS) as PlaceGroup[]).map((id) => [id, false]),
-    ) as Record<PlaceGroup, boolean>,
-  );
+  const staticRouteRef = useRef<import("leaflet").LayerGroup | null>(null);
+  /** Everything the player draws, so stopping is one `remove()`. */
+  const playbackRef = useRef<import("leaflet").LayerGroup | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const leafletRef = useRef<typeof import("leaflet") | null>(null);
 
-  // Only groups that actually have pins get a legend row — an empty layer
-  // shouldn't offer a toggle that does nothing.
-  const rows = useMemo<LegendRow[]>(
-    () =>
-      (Object.keys(GROUPS) as PlaceGroup[])
-        .map((id) => ({
-          id,
-          label: GROUPS[id].short,
-          color: GROUPS[id].color,
-          logo: GROUPS[id].logo,
-          count: places.filter((p) => p.group === id).length,
-        }))
-        .filter((row) => row.count > 0),
-    [],
-  );
+  const [playing, setPlaying] = useState(false);
+  /** The stop under the marker right now, for the toolbar readout. Null
+   *  while the marker is between two of them. */
+  const [atStop, setAtStop] = useState<string | null>(null);
+  /** Hidden until the map has actually built a route to play. */
+  const [canPlay, setCanPlay] = useState(false);
+  /** The furthest stop the marker has reached, while playing or after;
+   *  null before the first play. Drives which chapter of the story line
+   *  under the map is lit. */
+  const [reached, setReached] = useState<number | null>(null);
+  const chapters = useMemo(() => chaptersOf(journey), []);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -184,7 +208,7 @@ export default function BaseMap() {
         const def = GROUPS[group];
         const layer = L.layerGroup(
           inGroup.map((place) => {
-            const label = `${def.label}, ${place.name}`;
+            const label = `${say(def.label, locale)}, ${place.name}`;
             return L.marker([place.lat, place.lon], {
               title: label,
               alt: label,
@@ -207,7 +231,10 @@ export default function BaseMap() {
                 iconAnchor: [16, 16],
                 popupAnchor: [0, -18],
               }),
-            }).bindPopup(popupContent(place), { maxWidth: 320, minWidth: 240 });
+            }).bindPopup(popupContent(place, locale, itineraryLabel), {
+              maxWidth: 320,
+              minWidth: 240,
+            });
           }),
         );
 
@@ -232,12 +259,16 @@ export default function BaseMap() {
           // against at least one of them. The casing makes the pale line
           // readable over all three, which is why every road on every
           // imagery map is drawn this way.
+          // Into their own LayerGroup inside the group's layer, so the
+          // player can take the finished route off the map and put it back
+          // without touching the thirteen pins sitting on it.
+          const staticRoute = L.layerGroup();
           L.polyline(path, {
             color: def.color,
             weight: 5,
             opacity: 0.55,
             interactive: false,
-          }).addTo(layer);
+          }).addTo(staticRoute);
 
           L.polyline(path, {
             color: "#fff4de",
@@ -245,7 +276,9 @@ export default function BaseMap() {
             opacity: 0.95,
             dashArray: "6 7",
             interactive: false,
-          }).addTo(layer);
+          }).addTo(staticRoute);
+          staticRoute.addTo(layer);
+          staticRouteRef.current = staticRoute;
         }
 
         layer.addTo(map);
@@ -253,6 +286,8 @@ export default function BaseMap() {
       }
 
       mapRef.current = map;
+      leafletRef.current = L;
+      setCanPlay(journey.length > 1);
 
       // The initial fit waits for the first resize callback rather than
       // running here. The container is `flex-1` under the legend bar, so at
@@ -295,35 +330,176 @@ export default function BaseMap() {
 
     return () => {
       cancelled = true;
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
       observer?.disconnect();
       mapRef.current?.remove();
       mapRef.current = null;
       layersRef.current = {};
     };
+    // Rebuilt when the language changes, and it has to be. Every popup on
+    // this map is a DOM tree built once, at init, and handed to Leaflet —
+    // there is no re-render that would reach inside one. Switching to /es
+    // is a client-side navigation that reconciles this component in place
+    // rather than remounting it, so without `locale` here the map would
+    // keep thirteen English popups on a Spanish page.
+    //
+    // Safe because the cleanup above is complete: `map.remove()` takes the
+    // container back to empty. It costs one teardown per language switch,
+    // which is a thing that happens approximately never.
+  }, [locale, itineraryLabel]);
+
+  // ── Playing the journey ───────────────────────────────────────────
+  // See journey.ts for the pacing and for why the camera stays still. This
+  // is the Leaflet half: one layer group holding a trail polyline and a
+  // marker, redrawn each frame by setting coordinates on objects that
+  // already exist rather than rebuilding them — Leaflet re-projects on
+  // `setLatLngs`, which is cheap, where creating a polyline every frame
+  // for fourteen seconds is ~800 layers for the map to garbage collect.
+  const stopJourney = useCallback(() => {
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    frameRef.current = null;
+    playbackRef.current?.remove();
+    playbackRef.current = null;
+    // The voyage's own dashed route goes back, so stopping leaves the map
+    // as it was rather than blank where a line used to be.
+    const map = mapRef.current;
+    if (map && staticRouteRef.current && !map.hasLayer(staticRouteRef.current)) {
+      staticRouteRef.current.addTo(map);
+    }
+    setPlaying(false);
+    setAtStop(null);
+    setReached(null);
   }, []);
 
-  // Legend toggles. Runs after the map exists and on every change; a group
-  // whose layer hasn't been built yet is simply skipped, so this is safe
-  // during the async init above.
-  useEffect(() => {
+  const playJourney = useCallback(() => {
     const map = mapRef.current;
-    if (!map) return;
-    for (const [group, layer] of Object.entries(layersRef.current)) {
-      if (!layer) continue;
-      const isHidden = hidden[group as PlaceGroup];
-      if (isHidden && map.hasLayer(layer)) map.removeLayer(layer);
-      if (!isHidden && !map.hasLayer(layer)) layer.addTo(map);
+    const L = leafletRef.current;
+    if (!map || !L || journey.length < 2) return;
+
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    playbackRef.current?.remove();
+
+    const path = buildJourneyPath(journey);
+
+    // Fit everything first, so the whole story is in frame before it
+    // starts. `animate: false` because two motions at once — a zoom and a
+    // traveller — is one motion too many to follow.
+    map.fitBounds(
+      L.latLngBounds(journey.map((s) => [s.lat, s.lon] as [number, number])),
+      { padding: [56, 56], animate: false },
+    );
+
+    // The voyage's dashed line comes off while the animated one draws, or
+    // the trail is invisible against an identical line already there.
+    staticRouteRef.current?.remove();
+
+    const group = L.layerGroup().addTo(map);
+    playbackRef.current = group;
+
+    // Two strokes, same as the static route: a dark casing under a pale
+    // line. A single stroke crosses navy ocean, brown Iberia and white
+    // cloud in the space of one leg and loses contrast against at least
+    // one of them.
+    const casing = L.polyline([], {
+      color: "#7a1710",
+      weight: 6,
+      opacity: 0.75,
+      interactive: false,
+    }).addTo(group);
+    const trail = L.polyline([], {
+      color: "#fff4de",
+      weight: 2.5,
+      opacity: 1,
+      interactive: false,
+    }).addTo(group);
+    const traveller = L.circleMarker([journey[0].lat, journey[0].lon], {
+      radius: 6,
+      color: "#fff4de",
+      weight: 3,
+      fillColor: "#d92b1c",
+      fillOpacity: 1,
+      interactive: false,
+    }).addTo(group);
+
+    setPlaying(true);
+    setAtStop(journey[0].name);
+    setReached(0);
+
+    // A visitor who has asked their OS for less motion gets the answer
+    // rather than the animation: the whole route drawn at once, and the
+    // last stop named. The control still does something, and what it does
+    // is still the fact it was there to deliver.
+    const reduced =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      const whole = journey.map((s) => [s.lat, s.lon] as [number, number]);
+      casing.setLatLngs(whole);
+      trail.setLatLngs(whole);
+      traveller.setLatLng(whole[whole.length - 1]);
+      setPlaying(false);
+      setAtStop(journey[journey.length - 1].name);
+      setReached(journey.length - 1);
+      return;
     }
-  }, [hidden]);
+
+    const started = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - started) / JOURNEY_DURATION_MS);
+      const frame = journeyFrame(path, t);
+
+      casing.setLatLngs(frame.trail);
+      trail.setLatLngs(frame.trail);
+      traveller.setLatLng(frame.position);
+      setAtStop(frame.atStop ? journey[frame.stopIndex]?.name ?? null : null);
+      setReached(frame.stopIndex);
+
+      if (t < 1) {
+        frameRef.current = requestAnimationFrame(step);
+        return;
+      }
+      // Arrived. The trail stays on the map rather than snapping back to
+      // the dashed version — the reader just watched it being drawn, and
+      // replacing it the instant it finishes throws that away. Pressing
+      // the control again resets and replays.
+      frameRef.current = null;
+      setPlaying(false);
+      setAtStop(journey[journey.length - 1].name);
+      setReached(journey.length - 1);
+    };
+    frameRef.current = requestAnimationFrame(step);
+  }, []);
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <MapLegend
-        rows={rows}
-        hidden={hidden}
-        onToggle={(id) => setHidden((h) => ({ ...h, [id]: !h[id] }))}
+    <div className="flex flex-col gap-4">
+      {/* Landscape, and short. The no-repeat zoom floor is derived from
+          the container's larger side, so a wide box is what keeps every pin
+          in the opening view — and a tall one made the map the loudest
+          thing in the section, which it isn't meant to be. */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden border-4 border-brand-maroon sm:aspect-[2/1] lg:aspect-[16/10]">
+        <div ref={containerRef} className="h-full w-full" />
+        {/* Absent until the map has a route worth playing — a control that
+            plays nothing should not be on the map. Above Leaflet's panes,
+            which run to ~700 inside the container. */}
+        {canPlay && (
+          <div style={{ zIndex: Z.CARD_OVERLAY_CONTROL }} className="pointer-events-none absolute inset-0">
+            <JourneyControl
+              playing={playing}
+              atStop={atStop}
+              playLabel={journeyStrings.play}
+              stopLabel={journeyStrings.stop}
+              onToggle={() => (playing ? stopJourney() : playJourney())}
+            />
+          </div>
+        )}
+      </div>
+      <JourneyStory
+        chapters={chapters}
+        reached={reached}
+        locale={locale}
+        strings={{ ports: journeyStrings.ports, cities: journeyStrings.cities }}
       />
-      <div ref={containerRef} className="w-full flex-1" />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SITE_DESCRIPTION } from "@/content/site";
+import { DEFAULT_LOCALE, isLocale } from "@/content/i18n";
 
 // The card every link to this site unfurls as, in Slack, LinkedIn,
 // iMessage and search results. Generated rather than a checked-in PNG so
@@ -16,7 +17,22 @@ export const contentType = "image/png";
 // static export, so it can't be built from the constant.
 export const alt = "Álvaro Galván Portafolio";
 
-export default function Image() {
+// One card per language, generated from the same layout. The name is the
+// same in both — it's a name — so the only thing that changes is the
+// subtitle, which is the line a Spanish reader would otherwise get in
+// English in their own feed.
+// `params` typed by hand rather than through a route-aware helper: there
+// is no `ImageProps` in this version the way there is `PageProps` and
+// `LayoutProps`, and a metadata image file receives the segment's params
+// all the same.
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  const locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+
   return new ImageResponse(
     (
       <div
@@ -57,7 +73,7 @@ export default function Image() {
             maxWidth: 900,
           }}
         >
-          {SITE_DESCRIPTION}
+          {SITE_DESCRIPTION[locale]}
         </div>
       </div>
     ),

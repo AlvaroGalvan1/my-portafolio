@@ -1,0 +1,8 @@
+<!-- A mark for Fuego.Earth, drawn for this page: the company's own was not
+     available, and a flame in the site's own reds says what they do. Three
+     tongues, outer to inner, in brand red, orange and yellow. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fuego.Earth">
+  <path fill="#d92b1c" d="M32 3c3 9 12 14 16 24 5 12 1 25-9 31-2 1-5 2-7 2-12 0-21-8-21-20 0-8 4-14 9-19 0 5 2 9 6 11-1-11 3-20 6-29Z"/>
+  <path fill="#f5821f" d="M33 22c2 6 9 10 11 18 2 9-4 17-12 17s-13-6-13-13c0-5 3-9 6-12 1 4 3 6 5 7-1-6 1-12 3-17Z"/>
+  <path fill="#ffc93c" d="M32 37c2 4 6 7 6 12 0 4-3 7-6 7s-6-3-6-7c0-3 2-5 3-7 1 2 2 3 3 3 0-3 0-5 0-8Z"/>
+</svg>

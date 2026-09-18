@@ -1,5 +1,7 @@
 # Portfolio TODO
 
+See `DESIGN-IDEAS.md` for design directions that are proposed but not
+approved — the Background section's layout, and what to do about the map.
 See `PURPOSE.md` for what the site is FOR — three northstars, and the test
 to run before adding anything to this list. See `GLOSSARY.md` for what the
 words mean (Wall, Frame, Loop, Guardrail…).
@@ -527,3 +529,162 @@ Split by feature so pieces can be worked on without touching shared files:
   `experience.ts` is currently read by nothing — see [E4](#e4).
 - `src/app/api/landfire-tile/` — proxy for LANDFIRE map tiles (works around
   a browser block; see the file's comment).
+
+---
+
+# Two missing logos (found by the dev overlay's "2 Issues")
+
+`public/logos/hyticos.svg` and `public/logos/fuego-earth.svg` are
+referenced by `src/content/experience.ts` and are not on disk. They 404 on
+every page load. Nobody saw a broken box because `OrgLogo` falls back to a
+lettermark — which is why the two entries show "HY" and "FE" plates where
+Pano and Gridware show real marks.
+
+Drop the two SVGs into `public/logos/` and they appear on their own; no
+code change. If the marks cannot be obtained, delete `logoSrc` from those
+two entries instead and the lettermark becomes the deliberate choice rather
+than a fallback covering a 404.
+
+`scripts/check-assets.mjs` now catches this class of error at `npm run
+dev`/`build` — it was not scanning `/logos/` at all, and two of the four
+files on its scan list had been renamed or deleted, so it was reporting
+"all assets exist" while checking almost nothing.
+
+---
+
+# "About you" — the brainstorm (NOTHING HERE IS APPROVED)
+
+Everything in this section is a proposal waiting on a yes. None of it is
+built. Pick the ones you want and they become real tasks; strike the rest
+so nobody re-proposes them in six months.
+
+**What exists today.** The hero's right panel asks "Where are you, really?"
+and opens a full-screen panel. With the visitor's permission it reads
+Open-Meteo and shows four groups of figures: their ground (coordinates,
+DMS, UTM square), their air (temperature, wind, AQI), their day (sunrise,
+daylight, solar noon) and their planet (spin speed, distance to the
+equator, distance to Oaxaca, nearest place I have been). Decline and it
+runs on my street instead. Metric or imperial, guessed from the browser
+and overridable.
+
+**What it is already good at, and what to protect.** The best line in the
+whole panel is not a number, it is the relational one: *"you are standing
+at 41 m, which is about the height of Maastricht, where I studied."* That
+sentence does something no readout does — it says something about the
+visitor AND about me in one breath. Every idea below is ranked by how well
+it does that.
+
+## Prior art worth stealing from
+
+- **[neal.fun/life-stats](https://neal.fun/)** — you type your birthday and
+  it counts what has happened to you since: heartbeats, blinks, breaths,
+  alongside what happened to the world. The lesson: *live counters beat
+  static facts*, and a number that is visibly still moving is the thing
+  people screenshot.
+- **[webkay — What Every Browser Knows About You](https://webkay.robinlinus.com/)**
+  — shows a visitor their own location, hardware, battery, network, all
+  from one page load. The lesson: *the promise on the button is a question
+  the reader cannot answer themselves*. It never explains its mechanism up
+  front. Also the thing to be careful about — it is designed to unsettle,
+  and this site's panel is designed to delight. Same technique, opposite
+  intent, and the difference is entirely in asking permission first.
+- **[clickclickclick.click](https://clickclickclick.click/)** — narrates
+  what you are doing on the page, out loud, as you do it. The lesson:
+  *commentary beats a table*. Worth noting it is deliberately unnerving,
+  which is not this site's register.
+- **[The Pudding — Climate Zones](https://pudding.cool/)** — "New York in
+  2070 will feel like Barcelona today." The lesson, and the most important
+  one here: *people do not experience climate, they experience weather*, so
+  the way to make a climate fact land is to state it as a place the reader
+  already knows. This is the same move the elevation twin already makes, and
+  it is the reason the ideas below lean on it so hard.
+
+## The ideas, ranked
+
+Ranked by `(serves PURPOSE.md) x (a stranger would screenshot it)`, then by
+what it costs to build. Every API named is keyless and CORS-open from the
+browser unless the entry says otherwise.
+
+### Tier 1 — on-brand, and the site is about this
+
+**B1. Your weather, then and now.** Today's temperature at the visitor's
+coordinates against the 1950–1980 average for the same calendar date at the
+same place. "Today is 4.2 °C warmer than this date used to be where you are
+standing." Open-Meteo's archive API, keyless, one extra request.
+*Why it is first: it is the entire subject of this portfolio, made personal,
+in one sentence, about the reader. Nothing else on this list is as close to
+the point.* Watch: one year is weather, not climate — it has to be an
+average over a window or it is a lie, and the copy has to say so.
+
+**B2. Your weather twin.** One batched Open-Meteo call over ~100 world
+cities, matched on temperature, humidity and wind. "Right now, your air is
+closest to Lisbon." Pairs with the elevation twin that is already there and
+uses the same relational trick.
+
+**B3. Your city in 2070.** The Pudding's move, run for the visitor: which
+city today has the climate yours is projected to have. Needs a bundled
+lookup table rather than a live API — CMIP6 projections are not something to
+fetch per visit — so the cost is finding a citable dataset, not writing the
+code. **Highest payoff on this list and the most work.**
+
+**B4. The ground you are on has burned.** Whether the visitor's coordinates
+fall inside a historical fire perimeter, and when. NASA FIRMS for active
+fire (needs a free key) or a bundled perimeter set for the US. Deeply
+on-brand; only fires for a fraction of visitors, so it needs a graceful
+"not that we know of".
+
+### Tier 2 — genuinely delightful, not about climate
+
+**B5. Most-played songs where you are.** Apple Music's country charts RSS
+(`rss.marketingtools.apple.com`, keyless, CORS-open), country from a
+reverse geocode. "This week in Mexico, #1 is ___."
+*The one people screenshot.* Serves none of the three purposes in
+PURPOSE.md — which is the argument against it, and it is a real argument.
+Counter-argument: the panel's job is to make a stranger stay, and this is
+the best line on the list at doing that.
+
+**B6. The ground has moved.** Nearest earthquake in the last 30 days from
+USGS, with magnitude and distance. Keyless, CORS-open, works everywhere,
+and "there has been a magnitude 2.1 four miles from you since you woke up"
+is a genuinely startling sentence.
+
+**B7. What is nearest to you that has a Wikipedia article.** Wikipedia
+geosearch, keyless. Cheap, works globally, occasionally magical.
+
+**B8. Live counters, neal.fun style.** Since you opened this page: metres
+the planet has carried you east, litres of air you have breathed, times
+your heart has beaten. Pure arithmetic off the numbers already on screen,
+no request at all. *Cheapest thing on this list and the most alive.*
+
+### Tier 3 — ideas I am including so they can be said no to
+
+**B9. Your antipode, but useful.** Already shows the coordinates; could name
+the nearest town to them, or say "nothing, you are pointing at open ocean",
+which is true for most of the planet and a better sentence than a number.
+
+**B10. How far you are from me, in time.** Not kilometres — flight hours,
+or "we are 9 hours apart, you are having breakfast and I am asleep." Uses
+the timezone offset already fetched.
+
+**B11. Your sun, drawn.** A small SVG arc of the sun's path today at the
+visitor's latitude, with a dot for now. The panel has sunrise, sunset,
+daylight and solar noon as four numbers; this is all four as one picture.
+
+**B12. What the satellites see of you.** The most recent Sentinel-2 tile
+covering the visitor's coordinates, with its acquisition date. "A European
+satellite photographed your street 3 days ago." On-brand and genuinely
+impressive; needs a Copernicus account, so it is a server-side route, not a
+browser fetch.
+
+## Open questions
+
+- **How many is too many?** The panel already runs to four groups. Adding
+  eight more figures makes it a data dump, which is the opposite of the
+  point. Likely answer: promote two or three to a *headline sentence* each,
+  the way the elevation twin already is, and leave the rest as the table.
+- **What happens without permission?** Everything above degrades to "my
+  street" — which is fine for the ground, and slightly strange for "your
+  weather twin". Some of these should probably say "here is mine instead"
+  rather than pretending.
+- **Does B5 belong on this site at all?** See PURPOSE.md's third failure
+  mode. It is a real question and the answer might be no.

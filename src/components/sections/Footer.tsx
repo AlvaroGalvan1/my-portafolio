@@ -1,5 +1,9 @@
 import { socials } from "@/content/socials";
 import { SITE_PURPOSE } from "@/content/site";
+import { say } from "@/content/i18n";
+import { currentLocale } from "@/content/locale.server";
+import { UI } from "@/content/ui";
+import MeasuredFooter from "./MeasuredFooter";
 
 // The colophon: what this site is for, then the three marks.
 //
@@ -14,41 +18,46 @@ import { SITE_PURPOSE } from "@/content/site";
 // intent is read by someone who has been through the thing and is deciding
 // what to do about it; at the top it would be a claim made before any of
 // the evidence, which is the one place it can't earn anything.
-export default function Footer() {
+export default async function Footer() {
+  const locale = await currentLocale();
+
   return (
     // Screen only. The three addresses are already set out in full under
     // the name on a printed page, and a second copy of them at the end —
     // as glyphs, each followed by its own URL — is the least useful square
     // inch on the CV.
-    <footer className="bg-brand-maroon px-6 py-14 print:hidden sm:px-16">
+    <MeasuredFooter className="bg-brand-maroon px-6 py-[clamp(1.75rem,4vh,3.5rem)] print:hidden sm:px-16">
       <h2 className="text-center font-sans text-xs font-semibold uppercase tracking-[0.3em] text-brand-yellow">
-        What this site is for
+        {UI[locale].footer.heading}
       </h2>
 
       {/* Three across from `sm`, stacked below. Cream on maroon is 6.4:1,
           so this is the one place on the page where body copy can sit on
           the dark field without a panel under it. */}
-      <div className="mx-auto mt-8 grid max-w-5xl gap-8 sm:grid-cols-3 sm:gap-10">
-        {SITE_PURPOSE.map((purpose) => (
-          <div key={purpose.title}>
-            <h3 className="font-[family-name:var(--font-display)] text-xl text-brand-yellow">
-              {purpose.title}
-            </h3>
-            <p className="mt-3 font-sans text-sm leading-relaxed text-brand-cream/85">
-              {purpose.body}
-            </p>
-          </div>
-        ))}
+      <div className="mx-auto mt-[clamp(1rem,2.5vh,2rem)] grid max-w-5xl gap-8 sm:grid-cols-3 sm:gap-10">
+        {SITE_PURPOSE.map((purpose) => {
+          const title = say(purpose.title, locale);
+          return (
+            <div key={title}>
+              <h3 className="font-[family-name:var(--font-display)] text-xl text-brand-yellow">
+                {title}
+              </h3>
+              <p className="mt-3 font-sans text-sm leading-relaxed text-brand-cream/85">
+                {say(purpose.body, locale)}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       {/* A rule, then the marks. Without it the glyphs read as a fourth
           column of the grid above rather than as the end of the page. */}
       <div
         aria-hidden
-        className="mx-auto mt-12 h-px max-w-5xl bg-brand-cream/25"
+        className="mx-auto mt-[clamp(1.5rem,3.5vh,3rem)] h-px max-w-5xl bg-brand-cream/25"
       />
 
-      <div className="mt-10 flex items-center justify-center gap-8">
+      <div className="mt-[clamp(1.25rem,3vh,2.5rem)] flex items-center justify-center gap-8">
         {socials.map((s) => (
           <a
             key={s.name}
@@ -73,6 +82,6 @@ export default function Footer() {
           </a>
         ))}
       </div>
-    </footer>
+    </MeasuredFooter>
   );
 }

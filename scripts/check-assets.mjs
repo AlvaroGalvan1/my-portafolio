@@ -16,21 +16,39 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+// Two of the entries here were stale and the list was quietly checking
+// nothing: `About.tsx` was deleted when the toolkit moved into Background,
+// and `HeroCard.tsx` has not existed under that name for some time. The
+// loop `continue`s past a file that is missing, so both failures were
+// silent — a checker that reports success while scanning two files that do
+// not exist is worse than no checker, which is the bug below.
 const filesToScan = [
   "src/components/gallery/data.ts",
   "src/content/profile.ts",
-  "src/components/sections/About.tsx",
-  // The hero card holds the only link to the CV now that the About section
-  // no longer does, so a renamed PDF would otherwise go unnoticed here.
-  "src/components/sections/HeroCard.tsx",
+  // Company marks, and the reason this list grew: two of them
+  // (hyticos.svg, fuego-earth.svg) were referenced and absent, 404ing on
+  // every page load, and nothing here was looking at `/logos/` at all.
+  // They degrade to a lettermark so nobody saw a broken box — which is
+  // exactly the kind of failure a build-time check is for.
+  "src/content/experience.ts",
+  // Institution marks for the Education logo row and the map legend.
+  "src/content/places.ts",
+  // The CV download lives in Background's closing bar now, so a renamed
+  // PDF would otherwise go unnoticed.
+  "src/components/sections/Background.tsx",
 ];
 
-const pathPattern = /["'](\/(?:gallery|papers|hero)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;
+const pathPattern = /["'](\/(?:gallery|papers|hero|logos)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;
 
 const missing = [];
 for (const file of filesToScan) {
   const abs = join(root, file);
-  if (!existsSync(abs)) continue;
+  if (!existsSync(abs)) {
+    // Loudly, rather than `continue`. A scan list that silently skips a
+    // renamed file reports "all assets exist" while checking nothing.
+    console.warn(`⚠ check-assets: scan target no longer exists — ${file}`);
+    continue;
+  }
   const text = readFileSync(abs, "utf8");
   for (const match of text.matchAll(pathPattern)) {
     const assetPath = match[1];
@@ -48,7 +66,8 @@ if (missing.length === 0) {
     console.warn(`  ${assetPath}  (referenced in ${file})`);
   }
   console.warn(
-    "\nThese render as hidden gallery tiles / hidden images at runtime, not broken " +
-      "boxes — but they're worth fixing. Add the file, or update the entry.\n",
+    "\nThese render as hidden gallery tiles, lettermarks or hidden images at " +
+      "runtime rather than broken boxes — but every one of them is still a 404 " +
+      "in the console on every page load. Add the file, or update the entry.\n",
   );
 }

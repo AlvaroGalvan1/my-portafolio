@@ -5,6 +5,7 @@ import { CONTACT_OPEN_EVENT } from "./ContactTrigger";
 import { Z } from "@/lib/layers";
 import { useDialog } from "@/lib/useDialog";
 import { socials, CALENDLY_URL, CONTACT_EMAIL } from "@/content/socials";
+import type { UiStrings } from "@/content/ui";
 
 // Where submissions go. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT (see .env.example
 // for how to get one) and messages land in your inbox without the visitor
@@ -23,7 +24,7 @@ const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? "";
 
 type Status = "idle" | "sending" | "sent" | "opened-email-client" | "error";
 
-export default function ContactModal() {
+export default function ContactModal({ strings }: { strings: UiStrings["contact"] }) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [fields, setFields] = useState({ name: "", email: "", subject: "", message: "" });
@@ -43,7 +44,7 @@ export default function ContactModal() {
 
   const mailtoHref = `mailto:${CONTACT_EMAIL}${
     fields.subject || fields.message
-      ? `?subject=${encodeURIComponent(fields.subject || "Portfolio contact")}&body=${encodeURIComponent(
+      ? `?subject=${encodeURIComponent(fields.subject || strings.defaultSubject)}&body=${encodeURIComponent(
           `${fields.message}${fields.name ? `\n\n— ${fields.name}` : ""}${
             fields.email ? ` <${fields.email}>` : ""
           }`,
@@ -73,7 +74,7 @@ export default function ContactModal() {
         body: JSON.stringify({
           name: fields.name,
           email: fields.email,
-          subject: fields.subject || "Portfolio contact",
+          subject: fields.subject || strings.defaultSubject,
           message: fields.message,
         }),
       });
@@ -107,7 +108,7 @@ export default function ContactModal() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          aria-label="Close"
+          aria-label={strings.close}
           className="absolute right-5 top-5 text-3xl font-bold text-brand-maroon"
         >
           &times;
@@ -117,7 +118,7 @@ export default function ContactModal() {
           id="contact-heading"
           className="font-[family-name:var(--font-display)] text-4xl text-brand-red sm:text-5xl"
         >
-          Get In Touch
+          {strings.heading}
         </h2>
 
         {/* Booking first: for most people "grab 30 minutes" is a lower bar
@@ -131,7 +132,7 @@ export default function ContactModal() {
             rel="noopener noreferrer"
             className="border-2 border-brand-red bg-brand-red px-6 py-3 font-sans text-base font-semibold text-white transition-colors hover:bg-transparent hover:text-brand-red"
           >
-            Book 30 minutes ↗
+            {strings.book}
           </a>
 
           <div className="flex items-center gap-2">
@@ -164,12 +165,12 @@ export default function ContactModal() {
             hand the page a click. Wraps at the `break-all` because the
             local part alone is 28 characters and overflowed on a phone. */}
         <p className="mt-4 text-sm text-brand-maroon">
-          Prefer to chat directly?{" "}
+          {strings.preferDirect}{" "}
           <a
             href={mailtoHref}
             className="font-semibold underline underline-offset-2 break-all"
           >
-            Email me at {CONTACT_EMAIL}
+            {strings.emailMeAt} {CONTACT_EMAIL}
           </a>
           .
         </p>
@@ -188,14 +189,14 @@ export default function ContactModal() {
             most of the reason a contact form gets finished at all. */}
         <form className="mt-8 flex flex-col gap-5" onSubmit={handleSubmit}>
           <label htmlFor="contact-name" className="sr-only">
-            Name
+            {strings.name}
           </label>
           <input
             id="contact-name"
             type="text"
             name="name"
             autoComplete="name"
-            placeholder="Name"
+            placeholder={strings.name}
             required
             value={fields.name}
             onChange={(e) => setFields((f) => ({ ...f, name: e.target.value }))}
@@ -206,38 +207,38 @@ export default function ContactModal() {
               answer. Formspree also reads this field by name to set the
               notification's reply-to. */}
           <label htmlFor="contact-email" className="sr-only">
-            Your email
+            {strings.email}
           </label>
           <input
             id="contact-email"
             type="email"
             name="email"
             autoComplete="email"
-            placeholder="Your email"
+            placeholder={strings.email}
             required
             value={fields.email}
             onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           <label htmlFor="contact-subject" className="sr-only">
-            Subject
+            {strings.subject}
           </label>
           <input
             id="contact-subject"
             type="text"
             name="subject"
-            placeholder="Subject"
+            placeholder={strings.subject}
             value={fields.subject}
             onChange={(e) => setFields((f) => ({ ...f, subject: e.target.value }))}
             className="border-2 border-brand-maroon bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-500"
           />
           <label htmlFor="contact-message" className="sr-only">
-            Message
+            {strings.message}
           </label>
           <textarea
             id="contact-message"
             name="message"
-            placeholder="Message"
+            placeholder={strings.message}
             rows={6}
             required
             value={fields.message}
@@ -249,20 +250,18 @@ export default function ContactModal() {
             disabled={status === "sending"}
             className="border-2 border-brand-red bg-brand-red px-6 py-3 font-semibold text-white hover:bg-transparent hover:text-brand-red disabled:opacity-60"
           >
-            {status === "sending" ? "Sending…" : "Send"}
+            {status === "sending" ? strings.sending : strings.send}
           </button>
           {status === "sent" && (
-            <p className="text-sm font-semibold text-brand-maroon">Sent — thanks, I&apos;ll reply soon.</p>
+            <p className="text-sm font-semibold text-brand-maroon">{strings.sent}</p>
           )}
           {status === "opened-email-client" && (
             <p className="text-sm font-semibold text-brand-maroon">
-              Opened your email client with this filled in — hit send there to reach me.
+              {strings.openedClient}
             </p>
           )}
           {status === "error" && (
-            <p className="text-sm font-semibold text-brand-red">
-              Something went wrong — try the &quot;email me directly&quot; link above instead.
-            </p>
+            <p className="text-sm font-semibold text-brand-red">{strings.failed}</p>
           )}
         </form>
       </div>

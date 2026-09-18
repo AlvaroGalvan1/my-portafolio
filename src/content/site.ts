@@ -1,3 +1,5 @@
+import type { Locale, Phrase } from "./i18n";
+
 // Where the site lives, in one place.
 //
 // This is the only line to change when the custom domain lands — Next
@@ -18,37 +20,29 @@ export const SITE_NAME = "Álvaro Galván";
 // place with no room for a specialism, and a tab strip full of dashes and
 // ampersands truncates to nothing useful.
 //
-// "Portafolio" with the Spanish spelling, matching the repo and the way
-// he'd say it. Title case, not the shout — caps belong to the display type
-// in the hero, not to the tab.
-export const SITE_TITLE = `${SITE_NAME} Portafolio`;
+// "Portafolio" with the Spanish spelling in both languages, matching the
+// repo and the way he'd say it — it was never the English word with a typo
+// in it. Title case, not the shout — caps belong to the display type in the
+// hero, not to the tab.
+export const SITE_TITLE: Record<Locale, string> = {
+  en: `${SITE_NAME} Portafolio`,
+  es: `${SITE_NAME} Portafolio`,
+};
 
 // Used as the meta description, as the social card's subtitle, AND as the
-// text rendered into the OG image itself (see app/opengraph-image.tsx) — so
-// it has to stand alone: someone reading it in a Slack unfurl has no other
-// context about who this is.
+// text rendered into the OG image itself (see app/[lang]/opengraph-image.tsx)
+// — so it has to stand alone: someone reading it in a Slack unfurl has no
+// other context about who this is.
 //
 // "GeoAI" is out of it. The title is the line people read when they look
 // the site up, but the description is the line directly under it in a
 // search result and the subtitle printed on the card, so leaving the term
 // here would have kept it in exactly the places it was meant to leave.
 // What's left says the same thing in words that aren't a field's name.
-// The greeting. One line, and it does a job no other line on the page can:
-// it says what kind of thing this is before the reader has to work it out.
-// A portfolio that opens on a name and a paragraph asks them to infer it.
-export const SITE_WELCOME = "Welcome to my portfolio.";
-
-// The mission, in one line, under the name in the hero.
-//
-// It is the three purposes below compressed into a sentence, and it has to
-// stay that: if this line and SITE_PURPOSE ever say different things, the
-// site has two missions and therefore none. Change them together.
-//
-// Under the name rather than in the footer with the long version, because
-// the first thing a stranger wants after a name is what the person is for.
-// The bio under it says who I am; this says what this is.
-export const SITE_MISSION =
-  "Somewhere to know the work, somewhere to keep it, and somewhere a climate or geospatial project can begin.";
+export const SITE_DESCRIPTION: Record<Locale, string> = {
+  en: "Wildfire modelling, satellite data, and tools that help people adapt to a changing planet.",
+  es: "Modelado de incendios forestales, datos satelitales, y herramientas para adaptarse a un planeta que cambia.",
+};
 
 // What this site is FOR, in its own words.
 //
@@ -62,20 +56,26 @@ export const SITE_MISSION =
 // a colophon is read by someone who has been through the thing and is
 // deciding what to do about it, not by someone still deciding whether to
 // scroll.
-export const SITE_PURPOSE = [
+export const SITE_PURPOSE: { title: Phrase; body: Phrase }[] = [
   {
-    title: "To be known",
-    body: "Who I am and what I have actually built, in one place that is neither a PDF nor a profile on someone else's platform.",
+    title: { en: "To be known", es: "Para darme a conocer" },
+    body: {
+      en: "What I've built and how I think, in one place I own.",
+      es: "Lo que he construido y cómo pienso, en un solo lugar que es mío.",
+    },
   },
   {
-    title: "To keep the work",
-    body: "Maps, models, decks and experiments live here rather than scattered across drives and feeds, with whoever made each one named on it.",
+    title: { en: "To keep the work", es: "Para guardar el trabajo" },
+    body: {
+      en: "Maps, models and experiments live here, named and dated, not lost in a drive.",
+      es: "Mapas, modelos y experimentos viven aquí, con nombre y fecha, no perdidos en un disco.",
+    },
   },
   {
-    title: "To start things",
-    body: "If you work on climate or geospatial problems, this is the front door. Collaborations, commissions and conversations all begin the same way.",
+    title: { en: "To start things", es: "Para empezar cosas" },
+    body: {
+      en: "If you work on climate or geospatial problems, this is the front door.",
+      es: "Si trabajas en problemas climáticos o geoespaciales, esta es la puerta de entrada.",
+    },
   },
 ];
-
-export const SITE_DESCRIPTION =
-  "Wildfire modelling, satellite data, and tools that help people adapt to a changing planet.";

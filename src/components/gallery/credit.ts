@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, type Locale } from "@/content/i18n";
+
 // Who made the thing on a tile, and how to say so.
 //
 // This replaces two older half-systems: a hover-only `@handle` byline that
@@ -36,18 +38,37 @@ export type Credit = {
 
 // The word before the name. `mine` and `author` take none — a name on its
 // own already reads as "they made this".
-const PREFIX: Record<CreditRelation, string> = {
-  mine: "",
-  author: "",
-  data: "Data: ",
-  photo: "Photo: ",
-  footage: "Footage: ",
-  posted: "Posted by ",
-  after: "After ",
+//
+// Translated, because a byline is one of the few strings on this site that
+// a reader meets dozens of times: it is on every tile of the Wall and under
+// the hero's backdrop. An English "Photo:" under a Spanish caption is the
+// kind of seam that makes a translated page feel machine-made.
+const PREFIX: Record<Locale, Record<CreditRelation, string>> = {
+  en: {
+    mine: "",
+    author: "",
+    data: "Data: ",
+    photo: "Photo: ",
+    footage: "Footage: ",
+    posted: "Posted by ",
+    after: "After ",
+  },
+  es: {
+    mine: "",
+    author: "",
+    data: "Datos: ",
+    photo: "Foto: ",
+    footage: "Material: ",
+    posted: "Publicado por ",
+    after: "Según ",
+  },
 };
 
 /** The visible byline, or null for work that shouldn't carry one. */
-export function creditLine(credit: Credit): string | null {
+export function creditLine(
+  credit: Credit,
+  locale: Locale = DEFAULT_LOCALE,
+): string | null {
   if (credit.relation === "mine") return null;
-  return `${PREFIX[credit.relation]}${credit.who}`;
+  return `${PREFIX[locale][credit.relation]}${credit.who}`;
 }

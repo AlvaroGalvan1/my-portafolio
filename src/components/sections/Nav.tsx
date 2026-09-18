@@ -1,6 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LOCALES, LOCALE_META, type Locale } from "@/content/i18n";
+import type { UiStrings } from "@/content/ui";
 import { Z } from "@/lib/layers";
 
 // In page order, deliberately — the highlight below picks the first match
@@ -13,18 +17,21 @@ import { Z } from "@/lib/layers";
 // page IS the about now, so "Home" and "About" were two labels pointing at
 // one screen. `#skills` is the back half of About rather than a destination
 // of its own.
-//
-// `#work` isn't in this list either, but for the opposite reason — it's the
-// yellow button at the other end of the bar, which is a louder thing than a
-// label in a row of labels, and deliberately so.
 const LINKS = [
-  { id: "home", label: "Home" },
-  { id: "background", label: "Background" },
-  { id: "wall", label: "My Wall" },
+  { id: "home", key: "home" },
+  { id: "background", key: "background" },
+  { id: "wall", key: "wall" },
 ] as const;
 
-export default function Nav() {
+export default function Nav({
+  lang,
+  strings,
+}: {
+  lang: Locale;
+  strings: UiStrings["nav"];
+}) {
   const [active, setActive] = useState<string>("home");
+  const pathname = usePathname();
 
   // Which section the bar should be pointing at. The band is the slice of
   // viewport between 15% and 45% down — high enough to be under the nav
@@ -62,9 +69,12 @@ export default function Nav() {
   return (
     <nav
       style={{ zIndex: Z.NAV }}
-      className="sticky top-0 flex items-center justify-between gap-3 bg-brand-maroon px-4 py-4 font-sans text-xs font-semibold uppercase tracking-wide text-brand-cream sm:gap-0 sm:px-16 sm:text-sm sm:tracking-widest"
+      className="sticky top-0 flex items-center justify-between gap-2 bg-brand-maroon px-3 py-4 font-sans text-[0.7rem] font-semibold uppercase tracking-wide text-brand-cream sm:gap-0 sm:px-16 sm:text-sm sm:tracking-widest"
     >
-      <div className="flex gap-3 sm:gap-8">
+      {/* `whitespace-nowrap` on the links and `min-w-0` on the row: "My
+          Wall" was breaking onto two lines at 390px, which made the bar
+          two rows tall and pushed the page down by 20px. */}
+      <div className="flex min-w-0 gap-3 sm:gap-8">
         {LINKS.map((link) => {
           const isActive = active === link.id;
           return (
@@ -74,11 +84,11 @@ export default function Nav() {
               // "location", not "page": every one of these is an anchor
               // within this document, not a link to a different page.
               aria-current={isActive ? "location" : undefined}
-              className={`relative hover:text-brand-yellow ${
+              className={`relative whitespace-nowrap hover:text-brand-yellow ${
                 isActive ? "text-brand-yellow" : ""
               }`}
             >
-              {link.label}
+              {strings[link.key]}
               {/* A painted rule under the current label rather than colour
                   alone — colour alone is the same signal the bar already
                   spends on hover, so the two would be indistinguishable.
@@ -94,31 +104,86 @@ export default function Nav() {
           );
         })}
       </div>
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        {/* Yellow, where everything else in this bar is white on maroon.
-            It's the only element on the page allowed to interrupt that, and
-            it earns it by being the one thing the bar is actually for: the
-            visitor who has decided to hire me and doesn't want to scroll
-            five sections to find out how.
 
-            It is also, now, the ONLY contact route in the chrome. There
-            were four ways to start this same conversation in one screenful
-            — this button and a white "Contact" beside it, then two more in
-            the hero — which reads as eagerness rather than as an offer.
-            The hero keeps one button and it points the other way, into the
-            work; the Work section this lands on carries both the booking
-            link and the form.
+      {/* The corner is the language control and nothing else.
 
-            An anchor, not a button — it goes to a place on this page, so it
-            has to behave like a link (middle-click, open in new tab, and a
-            visible target in the status bar). */}
-        <a
-          href="#work"
-          className="border-2 border-brand-yellow bg-brand-yellow px-3 py-1 text-brand-maroon hover:bg-transparent hover:text-brand-yellow sm:px-4 sm:py-1.5"
-        >
-          Work with me
-        </a>
-      </div>
+          "Let's work together" stood here, in yellow, on every screen of
+          the page. It came out because the bar was carrying a call to
+          action AND a language switch AND three section links on a 390px
+          phone, and the one that has to survive that squeeze is the one
+          the reader cannot get anywhere else — you can reach the contact
+          panel from the hero and from the Work with me section, but there
+          is exactly one place to change the language. */}
+      <LanguageToggle current={lang} pathname={pathname} label={strings.language} />
     </nav>
+  );
+}
+
+// A two-position toggle at the end of the bar, in the page's yellow.
+//
+// Two real links, not a state switch: /en and /es are two pages that both
+// exist, so this has to be middle-clickable, openable in a new tab and
+// visible in the status bar. `prefetch` does the rest — the other language
+// is already in the browser by the time it is clicked.
+//
+// It *looks* like a toggle because that is what it is: one filled half and
+// one hollow half inside a single yellow rule, which reads as one control
+// with two positions. It was two words separated by a slash, which reads
+// as two links that happen to be next to each other — and a reader has to
+// work out that they are alternatives rather than a menu.
+//
+// Yellow now that the button beside it is gone. That colour was reserved
+// for the page's one call to action and this would have competed with it;
+// with the corner to itself, yellow is just the bar's accent, and this is
+// the only thing in the bar worth accenting.
+//
+// It keeps the rest of the path, which matters less today (there is one
+// page) than it will the first time there is a second one.
+function LanguageToggle({
+  current,
+  pathname,
+  label,
+}: {
+  current: Locale;
+  pathname: string;
+  label: string;
+}) {
+  const rest = LOCALES.reduce(
+    (path, locale) =>
+      path === `/${locale}` || path.startsWith(`/${locale}/`)
+        ? path.slice(locale.length + 1)
+        : path,
+    pathname,
+  );
+
+  return (
+    // `role="group"` and not a bare div: an aria-label on an element with
+    // no role is ignored by most screen readers, so the pair of links
+    // would announce as two loose letters with nothing saying what they
+    // are for.
+    <div
+      role="group"
+      aria-label={label}
+      className="flex shrink-0 overflow-hidden border-2 border-brand-yellow"
+    >
+      {LOCALES.map((locale) => (
+        <Link
+          key={locale}
+          href={`/${locale}${rest}`}
+          hrefLang={locale}
+          prefetch
+          aria-current={locale === current ? "true" : undefined}
+          title={LOCALE_META[locale].switchTo}
+          className={`px-2.5 py-1 transition-colors sm:px-3.5 sm:py-1.5 ${
+            locale === current
+              ? "bg-brand-yellow text-brand-maroon"
+              : "text-brand-yellow hover:bg-brand-yellow/20"
+          }`}
+        >
+          {LOCALE_META[locale].code}
+          <span className="sr-only"> — {LOCALE_META[locale].native}</span>
+        </Link>
+      ))}
+    </div>
   );
 }

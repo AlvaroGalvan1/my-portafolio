@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Z } from "@/lib/layers";
 import { useDialog } from "@/lib/useDialog";
 import { creditLine, type Credit } from "./credit";
+import type { Locale } from "@/content/i18n";
 
 export type LightboxContent =
   | { kind: "image"; src: string; alt: string; caption?: string; credit?: Credit }
@@ -31,9 +32,15 @@ export type LightboxContent =
 export default function Lightbox({
   content,
   onClose,
+  locale,
+  readOriginal,
 }: {
   content: LightboxContent | null;
   onClose: () => void;
+  locale: Locale;
+  /** The fallback label on the "out to the original" link, for pieces that
+   *  don't carry one of their own. */
+  readOriginal: string;
 }) {
   // Escape, focus in and back out, Tab containment and the scroll lock all
   // come from here — see lib/useDialog.ts. Called before the early return
@@ -142,17 +149,17 @@ export default function Lightbox({
                   rel="noopener noreferrer"
                   className="mt-2 self-start border-2 border-white/40 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white hover:text-neutral-950"
                 >
-                  {content.linkLabel ?? "Read the original ↗"}
+                  {content.linkLabel ?? readOriginal}
                 </a>
               )}
             </div>
           </div>
         )}
 
-        {(caption || (credit && creditLine(credit))) && (
+        {(caption || (credit && creditLine(credit, locale))) && (
           <div className="w-full text-center text-sm text-white/80">
             {caption && <p>{caption}</p>}
-            {credit && <LightboxCredit credit={credit} />}
+            {credit && <LightboxCredit credit={credit} locale={locale} />}
           </div>
         )}
       </div>
@@ -210,8 +217,8 @@ function PostImages({ images }: { images: { src: string; alt: string }[] }) {
 
 // The full version of the tile byline: the same line, plus where it
 // appeared, and linked if there's anywhere to link to.
-function LightboxCredit({ credit }: { credit: Credit }) {
-  const line = creditLine(credit);
+function LightboxCredit({ credit, locale }: { credit: Credit; locale: Locale }) {
+  const line = creditLine(credit, locale);
   if (!line) return null;
 
   return (

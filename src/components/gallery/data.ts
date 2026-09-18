@@ -1,4 +1,5 @@
 import type { FrameData } from "./frames/registry";
+import type { Locale } from "@/content/i18n";
 
 // Named tile shapes, so sizes read as intent ("this is a poster") rather
 // than as two magic numbers. The Wall is 2 rows tall, so `rowSpan: 2` means
@@ -425,3 +426,82 @@ const allItems: FrameData[] = [
 const isUncredited = (item: FrameData) => item.credit.who.startsWith("TODO");
 
 export const galleryItems: FrameData[] = allItems.filter((item) => !isUncredited(item));
+
+// ── The Wall, in Spanish ──────────────────────────────────────────────
+//
+// An overlay keyed by `id`, not a second array and not a `{ en, es }` on
+// every field. Three reasons, and they are specific to this file rather
+// than a general preference — the rest of `content/` does carry both
+// languages inline:
+//
+//   1. Most of what a tile says is a proper noun. "Satanizar el Fuego",
+//      "LANDFIRE", "The Dispossessed", "Cellular Automaton (Rule 30)" are
+//      the names of things and are the same name in every language. Wiring
+//      each one through a two-language object would be forty copies of one
+//      string to say nothing.
+//   2. A tile whose Spanish is missing should fall back to its own title,
+//      silently. A piece added to the Wall must never be gated on someone
+//      writing a translation for a name that has none.
+//   3. The frame components below — eleven of them — take `title: string`.
+//      Resolving at this boundary keeps every one of them out of the
+//      language question entirely.
+//
+// Only the entries that genuinely read differently in Spanish appear here.
+// Everything absent is deliberate.
+type FrameText = {
+  title?: string;
+  caption?: string;
+  alt?: string;
+  linkLabel?: string;
+};
+
+const GALLERY_ES: Record<string, FrameText> = {
+  "prairie-dog": { title: "Un drama de un solo actor" },
+  "i-have-a-mission": { title: "Tengo una misión" },
+  life: { title: "Autómata celular (Vida, de Conway)" },
+  brain: { title: "Autómata celular (Cerebro de Brian)" },
+  cyclic: { title: "Autómata celular (cíclico)" },
+  "rule-30": { title: "Autómata celular (Regla 30)" },
+  "map-rivers": {
+    title: "Los ríos de México",
+    alt: "Un mapa de la red fluvial de México, dibujada como finas líneas ramificadas.",
+  },
+  "map-soils": {
+    title: "Los suelos de Oaxaca",
+    alt: "Un mapa de los perfiles de suelo de Oaxaca, sombreado por tipo de suelo.",
+  },
+  "leopard-gecko": { title: "Gecko leopardo" },
+  "growing-ca": {
+    title: "Propagación del fuego — arrastra para encender",
+    linkLabel: "Léelo en Distill ↗",
+  },
+  "landfire-viewer": { title: "Cobertura vegetal LANDFIRE, 2024 (en vivo)" },
+  graduacion: {
+    alt: "Álvaro en su graduación universitaria.",
+    linkLabel: "Léelo en LinkedIn ↗",
+  },
+  "how-to-do-nothing": { title: "How to Do Nothing" },
+  papers: { title: "Artículos", linkLabel: "Leer ↗" },
+};
+
+/**
+ * The Wall's items in one language.
+ *
+ * The cast is confined to this function on purpose. Every field being
+ * overlaid is a `string` on whichever frame kinds declare it, and none of
+ * them is the `type` discriminant — so the spread cannot produce an
+ * invalid frame — but TypeScript can't see that through a union of eleven
+ * shapes where `caption` exists on some and not others. One cast here beats
+ * eleven optional-field gymnastics at the call sites.
+ */
+export function localizeGallery(items: FrameData[], locale: Locale): FrameData[] {
+  if (locale === "en") return items;
+  return items.map((item) => {
+    const text = GALLERY_ES[item.id];
+    if (!text) return item;
+    // Only keys actually present in the overlay are written, so a tile with
+    // a Spanish title and no Spanish caption keeps its English caption
+    // rather than losing it to `undefined`.
+    return { ...item, ...text } as FrameData;
+  });
+}

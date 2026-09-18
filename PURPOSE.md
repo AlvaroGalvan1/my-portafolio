@@ -4,20 +4,16 @@ Three purposes. They are the northstars: when something is proposed for
 this site, it earns its place by serving one of them, and the honest answer
 to "which one?" is sometimes "none", which is what this file is for.
 
-The same three are stated on the page itself, twice, both from
-`src/content/site.ts`: compressed to one sentence as `SITE_MISSION`, which
-sits under the name in the hero, and in full as `SITE_PURPOSE` in the
-footer. Change all three — this file, the line and the list — together. A
-site whose stated purpose and working purpose differ is worse than one that
-states nothing, and one that states two different purposes on the same page
-is worse again.
+The same three are stated on the page itself, from `src/content/site.ts`,
+as `SITE_PURPOSE` in the footer. Change both — this file and the list —
+together. A site whose stated purpose and working purpose differ is worse
+than one that states nothing.
 
 ---
 
 ## 1. To be known
 
-Who I am and what I have actually built, in one place that is neither a PDF
-nor a profile on someone else's platform.
+What I've built and how I think, in one place I own.
 
 A CV says where I worked. This says what I made, how it behaves, and what I
 think about it. The distinction matters because the work is the argument:
@@ -34,8 +30,8 @@ page twice for exactly that reason.
 
 ## 2. To keep the work
 
-Maps, models, decks and experiments live here rather than scattered across
-drives and feeds, with whoever made each one named on it.
+Maps, models and experiments live here, named and dated, not lost in a
+drive.
 
 This is a storage brief as much as a presentation one, and it is why the
 Wall is built the way it is: adding a piece means adding an entry to
@@ -54,7 +50,6 @@ project. If adding a photograph takes a component, the design is wrong.
 ## 3. To start things
 
 If you work on climate or geospatial problems, this is the front door.
-Collaborations, commissions and conversations all begin the same way.
 
 Note what this is not: it is not "to get hired". Hiring is one outcome of
 this purpose and not the largest one. A collaborator, a commissioner and a

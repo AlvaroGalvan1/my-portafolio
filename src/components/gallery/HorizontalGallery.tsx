@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import FrameCell from "./FrameCell";
 import Lightbox, { type LightboxContent } from "./Lightbox";
+import { localizeGallery } from "./data";
 import type { FrameData } from "./frames/registry";
 import { reportAssetIssue } from "./reportAssetIssue";
+import type { Locale } from "@/content/i18n";
+import type { UiStrings } from "@/content/ui";
 import { Z } from "@/lib/layers";
 
 export type { FrameData } from "./frames/registry";
@@ -27,43 +30,85 @@ export type { FrameData } from "./frames/registry";
 // Row height, in svh rather than vh. Mobile browsers measure `vh` against
 // the viewport with the URL bar *hidden*, so a vh-sized element is taller
 // than the screen on arrival and resizes the moment the bar collapses —
-// which, on a page whose grid rows are sized this way, reflows the whole
-// Wall mid-scroll. `svh` is the small viewport: the one that is actually
+// which, on a page whose rows are sized this way, reflows the whole Wall
+// mid-scroll. `svh` is the small viewport: the one that is actually
 // visible on load, and which never changes.
-const ROW_H_VH = 36;
+//
+// 18 and three rows, where it was 36 and two. Every piece is half as tall
+// and half as wide as it was — a quarter of the area — so they read as
+// postcards and prints stuck to a wall rather than as posters hung in a
+// row. The Wall itself only lost a quarter of its height, because the
+// extra row takes most of it back.
+const ROW_H_VH = 18;
+const ROWS = 3;
 // Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
 // (see globals.css) rather than here, because it has to change with the
-// viewport: a single 26vw track is 97px on a 375px phone, which turned every
-// tile without its own aspect ratio — the Game of Life, the fire sim, the
-// papers card — into a 97x227 vertical sliver. `--wall-tile-max` is the
-// other half of that: widening the track makes a 3-span tile 138vw, so
-// every tile is also capped to just under the viewport, which leaves a
-// sliver of the next one showing and says "this continues" for free.
-// Must match the `gap-*` class on the scroller below — `gap-10` is 2.5rem.
-// `tileWidth` adds this back in for every track and row a tile spans, so a
-// gap class changed without this number (or the reverse) leaves multi-span
-// tiles over- or under-wide by exactly the difference.
-const GAP_REM = 2.5;
+// viewport. `--wall-tile-max` caps every tile to just under the viewport.
+//
+// The space between pieces, horizontally and vertically. `tileWidth` and
+// `tileHeight` add it back for every track and row a tile spans, so a
+// 2-row piece lines up with two 1-row pieces stacked beside it.
+// 1rem, down from 2.5: at postcard size the wider gap left the pieces
+// floating apart rather than hung together.
+const GAP_REM = 1;
 
 // How wide one tile is. Two cases:
 //   - A piece with a real-world shape (a map print, a book cover) states an
 //     `aspectRatio`; its width follows from the height it occupies, so it
 //     keeps its true proportions instead of being cropped to a cell.
 //   - Everything else fills the column track(s) its colSpan covers.
-// Both are explicit because the grid's columns are `min-content` — they
-// size to the tiles, not the other way round.
+function tileHeight(item: FrameData) {
+  return `calc(${ROW_H_VH * item.rowSpan}svh + ${(item.rowSpan - 1) * GAP_REM}rem)`;
+}
+
 function tileWidth(item: FrameData) {
-  const heightVh = ROW_H_VH * item.rowSpan;
-  const innerGaps = item.rowSpan - 1;
   if (item.aspectRatio) {
-    return `calc((${heightVh}svh + ${innerGaps * GAP_REM}rem) * ${item.aspectRatio})`;
+    return `calc(${tileHeight(item)} * ${item.aspectRatio})`;
   }
   return `min(calc(${item.colSpan} * var(--wall-col) + ${
     (item.colSpan - 1) * GAP_REM
   }rem), var(--wall-tile-max))`;
 }
 
-export default function HorizontalGallery({ items }: { items: FrameData[] }) {
+// Pack one copy of the Wall into stacks: each stack is a column of pieces
+// whose rowSpans add up to at most ROWS. In order, with one concession —
+// when the next piece is too tall for what's left of a stack, the first
+// later piece that does fit goes there instead, so stacks don't end with a
+// hole in them.
+//
+// This used to be CSS grid's `grid-flow-col-dense`, and with two rows that
+// was fine. With three and a mix of 1- and 2-row pieces, dense packing
+// back-fills holes in one copy with pieces from the next, so the three
+// copies of the loop stop being identical and the rewind below jumps
+// visibly. Packing one copy here and repeating the result makes them
+// identical by construction.
+function packStacks(items: FrameData[]): FrameData[][] {
+  const queue = [...items];
+  const stacks: FrameData[][] = [];
+  while (queue.length > 0) {
+    const stack: FrameData[] = [];
+    let left = ROWS;
+    while (left > 0) {
+      const i = queue.findIndex((item) => Math.min(item.rowSpan, ROWS) <= left);
+      if (i === -1) break;
+      const [item] = queue.splice(i, 1);
+      stack.push(item);
+      left -= Math.min(item.rowSpan, ROWS);
+    }
+    stacks.push(stack);
+  }
+  return stacks;
+}
+
+export default function HorizontalGallery({
+  items,
+  locale,
+  strings,
+}: {
+  items: FrameData[];
+  locale: Locale;
+  strings: UiStrings["wall"];
+}) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<LightboxContent | null>(null);
   // The hint below the heading, and whether it's been earned out. Sideways
@@ -75,9 +120,15 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
   // (not shown as an empty/broken box). A frame reports itself broken via
   // `onFail`, which also logs why through reportAssetIssue.
   const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set());
-  const visibleItems = items.filter((item) => !brokenIds.has(item.id));
-  const loopItems =
-    visibleItems.length > 0 ? [...visibleItems, ...visibleItems, ...visibleItems] : [];
+  // Localised here rather than in the frames below: eleven frame kinds
+  // each take `title: string`, and the alternative was threading a locale
+  // through every one of them. See `localizeGallery` in data.ts.
+  const visibleItems = useMemo(
+    () => localizeGallery(items, locale).filter((item) => !brokenIds.has(item.id)),
+    [items, locale, brokenIds],
+  );
+  const stacks = useMemo(() => packStacks(visibleItems), [visibleItems]);
+  const loopStacks = stacks.length > 0 ? [...stacks, ...stacks, ...stacks] : [];
 
   // Looping: three back-to-back copies, and the scroll position quietly
   // rewinds by one copy-width whenever it strays into the first or third —
@@ -200,7 +251,10 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
   };
 
   return (
-    <div className="relative bg-brand-brick pt-6 pb-12">
+    // `flex-1` and centred: the Wall section is one screen tall (see
+    // Wall.tsx), and the pieces sit in the middle of whatever the heading
+    // leaves rather than hard under it with the slack below.
+    <div className="relative flex flex-1 flex-col justify-center bg-brand-brick pt-6 pb-12">
       {/* Set bold in the sans face rather than in the display one: it has to
           carry across a red field at small size, and Bungee — the display
           face — only ships at one weight and reads as a second heading
@@ -236,65 +290,74 @@ export default function HorizontalGallery({ items }: { items: FrameData[] }) {
       <EdgeZone side="right" onPan={setPan} onLeave={stopLoop} />
 
       {/* No side padding, unlike the heading and the hint above it: the row
-          runs the full width of the screen and the tiles are cut off by the
-          window rather than by a margin, which is what makes the brick read
-          as a wall that continues past the frame instead of a panel inset
-          on the page.
+          runs the full width of the screen and the pieces are cut off by
+          the window rather than by a margin, which is what makes the brick
+          read as a wall that continues past the frame instead of a panel
+          inset on the page.
 
-          It also makes the loop arithmetic exact. `setWidth` below is
+          It also makes the loop arithmetic exact. `setWidth` above is
           `scrollWidth / 3`, and a scroll container's scrollWidth includes
-          its padding — so with px-6/sm:px-16 the measured copy width was
-          one-third of a padding wider than a real copy, and every rewind
-          drifted by that much. */}
+          its padding — so horizontal padding here would make every rewind
+          drift. For the same reason each stack carries its own trailing
+          margin instead of the row having a `gap`: n-1 gaps across three
+          copies don't divide by three, n margins do.
+
+          Vertical padding is fine, and keeps the shadows from being
+          clipped: a scroller clips on both axes. */}
       <div
         ref={rowRef}
         tabIndex={0}
         role="region"
-        aria-label="My Wall — scroll sideways to browse"
-        className="wall-scroller grid cursor-grab grid-flow-col-dense gap-10 overflow-x-auto pb-4 will-change-scroll active:cursor-grabbing"
-        style={{
-          gridTemplateRows: `repeat(2, ${ROW_H_VH}svh)`,
-          // Columns size to their content rather than to a fixed width, so
-          // a tile carrying its own real-world proportions gets exactly the
-          // width that shape needs — no clipping, no leftover track. Every
-          // tile therefore states its width explicitly (see `tileWidth`).
-          gridAutoColumns: "min-content",
-        }}
+        aria-label={strings.scrollHint}
+        className="wall-scroller flex cursor-grab items-center overflow-x-auto pt-6 pb-8 will-change-scroll active:cursor-grabbing"
       >
-        {loopItems.map((item, i) => (
+        {loopStacks.map((stack, s) => (
           <div
-            key={`${item.id}__${i}`}
+            key={s}
+            className="flex shrink-0 flex-col items-center justify-center"
             style={{
-              gridColumn: `span ${item.colSpan}`,
-              gridRow: `span ${item.rowSpan}`,
-              width: tileWidth(item),
+              gap: `${GAP_REM}rem`,
+              marginRight: `${GAP_REM}rem`,
+              height: `calc(${ROWS * ROW_H_VH}svh + ${(ROWS - 1) * GAP_REM}rem)`,
             }}
-            // The frame turns yellow under the pointer, and under keyboard
-            // focus anywhere inside it. Until now the only sign a tile did
-            // anything was TileLabel's caption fading in, which arrives
-            // after you have already committed to hovering — so a wall of
-            // tiles read as pictures hung on brick rather than as things to
-            // open. Yellow because that is already the page's "this
-            // responds" colour, on the nav and in the edge zones.
-            //
-            // `focus-within` rather than `focus`: what actually takes focus
-            // is the button or link inside the tile, and the frame is what
-            // has to show it.
-            className="group relative overflow-hidden border-[3px] border-black bg-black shadow-[10px_10px_0_rgba(0,0,0,0.55)] transition-colors duration-150 hover:border-brand-yellow focus-within:border-brand-yellow"
           >
-            <FrameCell
-              frame={item}
-              onOpenLightbox={setLightbox}
-              onFail={(detail) => {
-                reportAssetIssue({ id: item.id, title: item.title, type: item.type, detail });
-                setBrokenIds((prev) => new Set(prev).add(item.id));
-              }}
-            />
+            {stack.map((item) => (
+              <div
+                key={item.id}
+                style={{ width: tileWidth(item), height: tileHeight(item) }}
+                // The frame turns yellow under the pointer, and under
+                // keyboard focus anywhere inside it — yellow because that is
+                // already the page's "this responds" colour, on the nav and
+                // in the edge zones. `focus-within` rather than `focus`:
+                // what actually takes focus is the button or link inside the
+                // tile, and the frame is what has to show it.
+                //
+                // Square to the page. The pieces were tilted and taped for
+                // one pass, and it read as a costume; the variety in sizes
+                // and the stacks already keep the Wall from looking like a
+                // grid. The cream border is the white margin of a print.
+                className="group relative shrink-0 overflow-hidden border-[5px] border-brand-cream bg-black shadow-[3px_5px_10px_rgba(0,0,0,0.45)] transition-colors duration-150 hover:border-brand-yellow focus-within:border-brand-yellow"
+              >
+                <FrameCell
+                  frame={item}
+                  onOpenLightbox={setLightbox}
+                  onFail={(detail) => {
+                    reportAssetIssue({ id: item.id, title: item.title, type: item.type, detail });
+                    setBrokenIds((prev) => new Set(prev).add(item.id));
+                  }}
+                />
+              </div>
+            ))}
           </div>
         ))}
       </div>
 
-      <Lightbox content={lightbox} onClose={() => setLightbox(null)} />
+      <Lightbox
+        content={lightbox}
+        onClose={() => setLightbox(null)}
+        locale={locale}
+        readOriginal={strings.readOriginal}
+      />
     </div>
   );
 }
