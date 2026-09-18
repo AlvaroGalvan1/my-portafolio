@@ -75,7 +75,7 @@ export default async function Testimonials() {
               {/* How we worked together, set apart from the role — a
                   reader weighs "managed me at Pano" differently from
                   "studied with me", and the two are different facts. */}
-              <p className="mt-1 font-sans text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-brand-red">
+              <p className="eyebrow mt-1 text-brand-red">
                 {say(testimonial.relation, locale)}
               </p>
             </figcaption>

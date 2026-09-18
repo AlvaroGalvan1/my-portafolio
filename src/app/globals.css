@@ -98,6 +98,27 @@ html {
   }
 }
 
+/* ── The small-caps label ────────────────────────────────────────────
+   One style for every tracked-out uppercase label on the page: the
+   dateline over the name, the plates on the artwork, the company line in
+   Experience, the skill groups, the footer. It was six near-identical
+   variants (0.65 and 0.7rem, 0.15 to 0.3em of tracking, semibold and
+   bold), and the differences read as noise rather than as hierarchy.
+   Colour stays with the caller. */
+.eyebrow {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+@media (min-width: 640px) {
+  .eyebrow {
+    font-size: 0.75rem;
+  }
+}
+
 /* The nav is `sticky top-0`, so an anchor that scrolls its target flush
    with the viewport top parks the section heading *behind* the maroon bar.
    Every jump on this page goes to a `<section id>`, so the offset belongs

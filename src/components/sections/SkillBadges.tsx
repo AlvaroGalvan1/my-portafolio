@@ -41,7 +41,7 @@ export default async function SkillBadges() {
     <ul className="mt-5 divide-y divide-brand-red/15 border-y border-brand-red/15 lg:mt-4 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:divide-y-0 lg:border-y-0">
       {skillGroups.map((group) => (
         <li key={say(group.label, "en")} className="py-6 lg:py-0">
-          <h5 className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.18em] text-brand-red">
+          <h5 className="eyebrow text-brand-red">
             {say(group.label, locale)}
           </h5>
 

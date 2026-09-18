@@ -27,7 +27,7 @@ export default async function Footer() {
     // as glyphs, each followed by its own URL — is the least useful square
     // inch on the CV.
     <MeasuredFooter className="bg-brand-maroon px-6 py-[clamp(1.75rem,4vh,3.5rem)] print:hidden sm:px-16">
-      <h2 className="text-center font-sans text-xs font-semibold uppercase tracking-[0.3em] text-brand-yellow">
+      <h2 className="eyebrow text-center text-brand-yellow">
         {UI[locale].footer.heading}
       </h2>
 

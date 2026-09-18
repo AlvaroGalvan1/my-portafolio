@@ -8,11 +8,11 @@ import { UI } from "@/content/ui";
 // rather than sixteen bullets. The heading and the card around it belong to
 // Background, which owns the panel shape every section of it shares.
 //
-// Each entry is one plate and three lines: who and when, what changed
-// because I was there, and what the company does. Three of these four
-// names mean nothing to a reader who hasn't met them, so the company line
-// stays on screen; the takeaway is the heading, because it is the one
-// sentence a recruiter is here for.
+// Each entry is one plate, one line saying where and as what, and a
+// headline: a short label in the display face and one sentence under it.
+// That is all a skimming reader gets, and it is enough to know what the
+// job was. Under it, an Expand control opens the problem, the tools and
+// what changed, for the reader who wants the next level down.
 //
 // Everything else prints. The entries carried a second paragraph of scope
 // on screen as well, which across four roles is eight paragraphs of body
@@ -21,8 +21,8 @@ import { UI } from "@/content/ui";
 // print block in globals.css brings them all back, so the screen can run at
 // one sentence each without the CV losing a word.
 //
-// It also answers the tuned-CV problem: a takeaway written as "what changed
-// because I was there" reads as true against a GIS CV and a climate CV
+// It also answers the tuned-CV problem: one broad line on what I did
+// reads as true against a GIS CV and a climate CV
 // alike, where a bullet list written for one contradicts the other.
 export default async function Experience() {
   const locale = await currentLocale();
@@ -31,77 +31,82 @@ export default async function Experience() {
   return (
     <div>
       {/* One column, at every width. The panel is half the page wide, and
-          splitting it again into two columns of roles gives each heading
-          a twenty-five-character measure — a fifteen-word takeaway in
-          display caps wrapped to five lines there, which is the opposite
-          of the point. The section went two-by-two at `lg` once, to fit
-          one screen when each entry ran to eight lines; at three lines an
-          entry, four stacked rows come out the same height as the grid
-          did, with the sentences on two lines instead of five. */}
+          splitting it again into two columns of roles gives each line a
+          twenty-five-character measure. At three short lines an entry,
+          four stacked rows come out about the height the grid was. */}
       <ol className="mt-2 divide-y divide-brand-red/15 lg:mt-4">
         {experience.map((job) => (
-          <li key={`${job.org}-${say(job.dates, "en")}`} className="print-keep py-7 first:pt-1 lg:py-5 lg:first:pt-1 lg:last:pb-1">
-            {/* Block one: the company. Its mark, its name, and what it
-                actually does — which was missing, and without it three of
-                these four names tell a reader nothing at all. */}
+          <li key={`${job.org}-${say(job.dates, "en")}`} className="print-keep py-6 first:pt-1 lg:py-4 lg:first:pt-1 lg:last:pb-1">
             <div className="flex items-start gap-4 sm:gap-5 lg:gap-4">
               <Plate job={job} />
 
               <div className="min-w-0 flex-1">
-                {/* ── Three lines, and that is the whole entry ─────────
-                    Who and when, the takeaway, the company. Nothing else
-                    on screen.
+                {/* ── Where, as what, and when ─────────────────────────
+                    The company (linked where the address is checked), the
+                    role, and the dates at the right. */}
+                <div className="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
+                  <p className="eyebrow text-brand-maroon/60">
+                    {job.href ? (
+                      <a
+                        href={job.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-maroon hover:text-brand-red"
+                      >
+                        {job.org}
+                        <span className="sr-only">{ui.newTab}</span>
+                      </a>
+                    ) : (
+                      <span className="text-brand-maroon">{job.org}</span>
+                    )}
+                    {" · "}
+                    {say(job.role, locale)}
+                  </p>
+                  <p className="shrink-0 font-sans text-xs font-semibold tabular-nums text-brand-maroon/60">
+                    {say(job.dates, locale)}
+                  </p>
+                </div>
 
-                    This section has now three times grown past that and
-                    three times been cut back, so it is worth writing down
-                    why: four roles times one extra element is four more
-                    things in a half-width column, and a reader skimming a
-                    portfolio does not read the fourth one. The last
-                    version had a question heading, its one-line answer
-                    AND a red methods line — the question and the answer
-                    said the same thing twice, and the methods repeated
-                    Skills, two inches below. Everything cut is in the
-                    print-only fields further down, where a reader has
-                    already decided they want it.
-
-                    Adding a line here means taking one out. */}
-                <p className="font-sans text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-maroon/60">
-                  {job.href ? (
-                    <a
-                      href={job.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-brand-red"
-                    >
-                      {job.org}
-                      <span className="sr-only">{ui.newTab}</span>
-                    </a>
-                  ) : (
-                    job.org
-                  )}
-                  {" · "}
-                  {say(job.role, locale)}
-                  {" · "}
-                  {say(job.dates, locale)}
-                </p>
-
-                {/* The takeaway, and it is the heading. See the note on
-                    `answer` in experience.ts: "experienced in geospatial
-                    analysis" is a claim a reader cannot check, and "faults
-                    found in the data before they were found in the field"
-                    is a thing that happened. They draw the conclusion; the
-                    page never states it. Sized to hold a fifteen-word
-                    sentence in two lines across the panel. */}
-                <h4 className="mt-2 font-[family-name:var(--font-display)] text-[1.25rem] leading-[1.15] text-brand-maroon sm:text-[1.4rem] lg:text-[1.2rem]">
-                  {say(job.answer, locale)}
+                {/* The headline: the label is what a skimming reader keeps,
+                    the line under it is what makes the label true. */}
+                <h4 className="mt-1.5 font-[family-name:var(--font-display)] text-[1.2rem] leading-tight text-brand-maroon lg:text-[1.1rem]">
+                  {say(job.headline.label, locale)}
                 </h4>
-
-                {/* What the company does, in one quiet line. The plate
-                    shows a mark the reader has never seen, and the
-                    takeaway assumes they know what a Hyticos is. */}
-                <p className="mt-2.5 font-sans text-[0.95rem] leading-relaxed text-neutral-600 lg:mt-2 lg:text-sm lg:leading-snug">
-                  {say(job.what, locale)}
+                <p className="mt-1 font-sans text-[0.95rem] leading-relaxed text-neutral-700 lg:text-sm lg:leading-snug">
+                  {say(job.headline.line, locale)}
                 </p>
+
+                {/* The next level down, behind one control. A native
+                    <details>: keyboard and screen readers get the
+                    open/closed state for free, and it works before any
+                    JavaScript has loaded. The label swaps with the state.
+                    Labels beside their text from `sm`, above it on a phone,
+                    where two columns leave the text a word wide.
+                    Screen only: paper gets the full bullets below. */}
+                <details className="group mt-2 print:hidden">
+                  <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 font-sans text-xs font-semibold text-brand-red underline decoration-brand-red/40 decoration-2 underline-offset-4 hover:decoration-brand-red [&::-webkit-details-marker]:hidden">
+                    <span aria-hidden className="inline-block w-2.5 text-center">
+                      <span className="group-open:hidden">+</span>
+                      <span className="hidden group-open:inline">–</span>
+                    </span>
+                    <span className="group-open:hidden">{ui.expand}</span>
+                    <span className="hidden group-open:inline">{ui.collapse}</span>
+                  </summary>
+                  <dl className="mt-3 grid min-w-0 grid-cols-1 gap-x-4 gap-y-1 border-l-2 border-brand-red/30 pl-4 font-sans text-sm leading-snug sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-y-2">
+                    {(
+                      [
+                        [ui.problem, job.details.problem],
+                        [ui.tech, job.details.tech],
+                        [ui.impact, job.details.impact],
+                      ] as const
+                    ).map(([term, value]) => (
+                      <div key={term} className="contents">
+                        <dt className="eyebrow pt-0.5 text-brand-red">{term}</dt>
+                        <dd className="mb-2 text-neutral-700 last:mb-0 sm:mb-0">{say(value, locale)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
 
                 {/* ── Paper only, from here down ─────────────────────────
                     The bargain of printing the site as the CV: on screen
@@ -109,6 +114,9 @@ export default async function Experience() {
                     PDF that lands in an inbox they need the bullets a
                     recruiter is searching for. Same data, both times. */}
                 <div className="hidden print:block">
+                  <p className="mt-2 font-sans text-sm leading-relaxed text-neutral-600">
+                    {say(job.what, locale)}
+                  </p>
                   {/* The methods, as one middot-separated line under the
                       role they were used on — the one place a skill is
                       evidence rather than a claim. Paper only: on screen

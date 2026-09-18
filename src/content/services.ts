@@ -53,12 +53,17 @@ export const services: Service[] = [
   },
 ];
 
-// The line beside the two actions at the top of the section. No rate card
-// and no scoping language either: the work is priced per project, a number
-// here with no scope attached would be wrong in both directions, and the
-// sentence that used to explain that was explaining a policy to someone who
-// had not yet asked for anything. The call is the price discovery.
+// The line beside the two actions at the top of the section: the rate,
+// how far it bends, why, and what kind of work I'm open to.
+//
+// ONE statement, on purpose, and it stays one. No tiers, no packages, no
+// pricing table: a single rate and a single sentence about when it drops
+// is simpler to read and more honest than a grid of options, and it says
+// the thing a grid can't, which is that the price is not the point for
+// the right project. It always names both kinds of work, consulting and
+// full-time, so neither kind of reader leaves thinking the other is all
+// that's on offer.
 export const RATES_NOTE: Phrase = {
-  en: "Tell me what you're trying to find out. I'll tell you what it takes.",
-  es: "Dime qué estás tratando de averiguar. Yo te digo qué hace falta.",
+  en: "My rate is $85 USD/hour, flexible down to $0 (pro bono) for mission-aligned climate, environmental and field-conservation projects. We need to solve the climate crisis together. I'm open to both independent consulting contracts and full-time geospatial engineering roles.",
+  es: "Mi tarifa es de 85 USD/hora, flexible hasta 0 USD (pro bono) para proyectos climáticos, ambientales y de conservación en campo alineados con la misión. Tenemos que resolver la crisis climática juntos. Estoy abierto tanto a contratos de consultoría independiente como a puestos de tiempo completo en ingeniería geoespacial.",
 };

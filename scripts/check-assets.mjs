@@ -33,7 +33,7 @@ const filesToScan = [
   "src/content/experience.ts",
   // Institution marks for the Education logo row and the map legend.
   "src/content/places.ts",
-  // The CV download lives in Background's closing bar now, so a renamed
+  // The CV download lives on Background's Experience heading, so a renamed
   // PDF would otherwise go unnoticed.
   "src/components/sections/Background.tsx",
 ];

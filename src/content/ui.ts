@@ -34,7 +34,13 @@ const en = {
   },
 
   hero: {
-    aboutMe: "About me",
+    // The left column's paragraph, under the name. It opens on the words
+    // a recruiter searches for — geospatial, wildfire, climate risk — and
+    // then says what working with me is like, so the ask never has to be
+    // made in words: the reader is already picturing me on their team.
+    pitch:
+      "Geospatial engineer working on wildfire and climate risk. I turn satellite, terrain and sensor data into tools people rely on: scrappy enough to start from scratch, structured enough to hand off clean, on my own or inside your team.",
+    openTo: "Open to volunteering to advance geospatial projects",
     aboutYou: "About you",
     // ── The invitation on the artwork ───────────────────────────────
     // The question is the button. Three versions were tried and the first
@@ -161,13 +167,21 @@ const en = {
       after: ", in both flavours.",
     },
     newTab: " (opens in a new tab)",
+    // The control under each Experience headline, and the three labels it
+    // reveals.
+    expand: "Expand",
+    collapse: "Collapse",
+    problem: "Problem",
+    tech: "Tech",
+    impact: "Impact",
   },
 
   wall: {
     heading: "My Wall",
     skip: "Skip the Wall",
-    note: "A collection of my own projects alongside work I admire in the wildfire and climate-adaptation space.",
-    whatsThis: "What's on this wall?",
+    // Under the title, visible, rather than behind an "i": it says what
+    // the Wall is, and that it grows.
+    note: "My own projects, pinned next to work I admire in wildfire and climate adaptation. I add to it as I go.",
     scrollHint: "My Wall — scroll sideways to browse",
     readOriginal: "Read the original ↗",
   },
@@ -178,15 +192,6 @@ const en = {
     // card sits beside one called Experience, and a reader scanning for
     // where the tools are should find the word they are looking for.
     heading: "Skills",
-    // The line beside the download, in the display face.
-    //
-    // It said "All of it, on two pages." and that was a claim about a
-    // document nobody had counted: the CV is generated from this page by
-    // the @media print block, so its length depends on how much content
-    // the sections are carrying that week. A number in this position is a
-    // promise to a reader deciding whether to open the file, and it would
-    // have started being wrong the moment a fifth role was added.
-    cvLede: "All of it, on paper.",
     downloadPdf: "Download my CV",
   },
 
@@ -252,7 +257,9 @@ const es: UiStrings = {
   },
 
   hero: {
-    aboutMe: "Sobre mí",
+    pitch:
+      "Ingeniero geoespacial enfocado en incendios forestales y riesgo climático. Convierto datos satelitales, de terreno y de sensores en herramientas en las que la gente confía: lo bastante ágil para empezar de cero, lo bastante ordenado para entregarlo limpio, por mi cuenta o dentro de tu equipo.",
+    openTo: "Abierto a voluntariado para impulsar proyectos geoespaciales",
     aboutYou: "Sobre ti",
     aboutYouHook: "¿Dónde estás, en realidad?",
     aboutYouOpen: "Descúbrelo",
@@ -357,20 +364,23 @@ const es: UiStrings = {
       after: ", en los dos sabores.",
     },
     newTab: " (abre en una pestaña nueva)",
+    expand: "Ver más",
+    collapse: "Ver menos",
+    problem: "Problema",
+    tech: "Tecnología",
+    impact: "Impacto",
   },
 
   wall: {
     heading: "Mi Muro",
     skip: "Saltar el Muro",
-    note: "Una colección de mis propios proyectos junto a trabajo que admiro en incendios forestales y adaptación climática.",
-    whatsThis: "¿Qué hay en este muro?",
+    note: "Mis propios proyectos, junto a trabajo que admiro en incendios forestales y adaptación climática. Le voy agregando cosas.",
     scrollHint: "Mi Muro — desplázate de lado para navegar",
     readOriginal: "Leer el original ↗",
   },
 
   skills: {
     heading: "Herramientas",
-    cvLede: "Todo, en papel.",
     downloadPdf: "Descarga mi CV",
   },
 

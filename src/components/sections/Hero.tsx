@@ -2,8 +2,7 @@ import HeroArt from "./HeroArt";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
-import { socials, CONTACT_EMAIL } from "@/content/socials";
-import { say } from "@/content/i18n";
+import { socials, CONTACT_EMAIL, CALENDLY_URL } from "@/content/socials";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
 
@@ -38,7 +37,6 @@ export default async function Hero() {
   // plate hides entirely in that case rather than rendering "Backdrop —"
   // with nothing after it.
   const backdropCredit = creditLine(profile.heroBackdrop.credit, locale);
-  const [lede] = profile.bio;
 
   return (
     // Two rows on a phone, two columns from `lg`. The artwork is a fixed
@@ -78,11 +76,11 @@ export default async function Hero() {
           `min-h-0` is load-bearing on a grid child: without it the column
           refuses to shrink below its content and the row blows past the
           100svh the section was given. */}
-      <div className="hero-words flex min-h-0 flex-col justify-center bg-brand-cream px-6 py-8 sm:px-12 lg:px-16 lg:py-12">
+      <div className="hero-words flex min-h-0 flex-col justify-center bg-brand-cream px-6 py-8 sm:px-16 lg:py-12">
         {/* The dateline. Small caps over a huge name is the oldest trick in
             editorial layout and it works because the contrast is enormous:
             10px of tracked-out sans against 100px of display face. */}
-        <p className="flex items-center gap-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-brand-maroon sm:text-xs">
+        <p className="eyebrow flex items-center gap-3 text-brand-maroon">
           <span className="location-dot" aria-hidden />
           {profile.location.label}
         </p>
@@ -128,12 +126,8 @@ export default async function Hero() {
             column is a typographic device, where a short heavy stub is a
             mark — the same mark over Education, over Experience, over each
             service. Painted things repeat their marks. Keep it short. */}
-        <div aria-hidden className="mt-[clamp(0.75rem,2.5vh,1.5rem)] h-1.5 w-24 bg-brand-red" />
+        <div aria-hidden className="mt-[clamp(0.75rem,2.5vh,1.5rem)] h-1.5 w-24 shrink-0 bg-brand-red" />
 
-        {/* "About me" here and "About you" on the artwork opposite are the
-            same kind of thing on either side of the seam, and the pair is
-            what makes the split read as deliberate rather than as a column
-            of text with a video next to it. */}
         {/* ── The block that yields ────────────────────────────────────
             A hero promised to be exactly one screen tall has to decide
             what happens when the screen is too small for what is in it,
@@ -141,11 +135,11 @@ export default async function Hero() {
             decides. Measured: a 390×844 phone holds all of this with room
             to spare; a 360×640 one overflows the column by 54px, which
             `overflow-hidden` was quietly eating — the name lost its top and
-            the button lost its bottom.
+            the buttons lost their bottom.
 
             So this is the block that goes, and it is the right one: the
-            name and the one button are what the hero owes a
-            stranger, and the bio is the paragraph they read if they stay.
+            name and the buttons are what the hero owes a
+            stranger, and the pitch is the paragraph they read if they stay.
             It comes back on anything 700px tall, and on any screen wide
             enough for the two-column layout, where the words have a full
             column to themselves.
@@ -153,42 +147,42 @@ export default async function Hero() {
             A height query rather than a width one, because height is the
             constraint. A 360px-wide phone with a tall screen has room for
             this; a 900px-wide window 600px tall does not. */}
-        {lede && (
-          <div className="mt-[clamp(1rem,3vh,2rem)] hidden [@media(min-height:700px)]:block lg:block">
-            <h2 className="font-sans text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-brand-red sm:text-xs">
-              {ui.hero.aboutMe}
-            </h2>
-            <p className="mt-2 max-w-[46ch] font-sans text-[clamp(0.9rem,1.7vh,1.05rem)] leading-relaxed text-brand-maroon">
-              {say(lede, locale)}
-            </p>
-          </div>
-        )}
+        {/* What I do and how I work, then who it is open to. The personal
+            bio that stood here is off the page for now (see profile.ts):
+            this column is for the reader deciding whether to hire me, and
+            the pitch is the paragraph that answers that. */}
+        <div className="mt-[clamp(1rem,3vh,2rem)] hidden [@media(min-height:700px)]:block lg:block">
+          <p className="max-w-[46ch] font-sans text-[clamp(0.95rem,1.8vh,1.1rem)] leading-relaxed text-brand-maroon">
+            {ui.hero.pitch}
+          </p>
+          <p className="eyebrow mt-3 flex items-center gap-2.5 text-brand-red">
+            <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-brand-red" />
+            {ui.hero.openTo}
+          </p>
+        </div>
 
-        {/* ONE button. Not a primary and a secondary, not a button and a
-            quiet link beside it — one.
-
-            There was a "See the work ↓" link next to this for a pass. It
-            was defensible and it was still wrong: a reader looking at a
-            hero with two things to press spends the moment deciding
-            between them, and the second one was pointing at a section they
-            reach by doing the thing they were already doing, which is
-            scrolling. The bar above carries the same action on every
-            screen of the page, so this is the one place it is allowed to
-            be the size of a decision.
-
-            Yellow, and it is now the only yellow on this screen. The bar
-            used to carry a yellow copy of this same button and the colour
-            was doing double duty; with the corner given over to the
-            language toggle, yellow means one thing on the page again —
-            press this. Maroon on yellow is 6.98:1, so the label is
-            comfortable rather than merely legal.
+        {/* Two actions, side by side: talk to me (yellow, opens the
+            contact panel) and book a call (maroon, straight to the
+            calendar).
+            They are the same intent at two levels of commitment, and a
+            reader ready to book should not have to open a form to find
+            the calendar.
 
             Screen only: on paper a button is a dead rectangle, and the
             print-only line under it carries the addresses instead. */}
-        <div className="mt-[clamp(1.25rem,3.5vh,2.5rem)] print:hidden">
-          <ContactTrigger className="inline-block border-2 border-brand-yellow bg-brand-yellow px-8 py-4 font-sans text-lg font-semibold text-brand-maroon transition-colors hover:bg-transparent hover:text-brand-maroon">
+        <div className="mt-[clamp(1.25rem,3.5vh,2.5rem)] flex flex-wrap gap-3 print:hidden">
+          <ContactTrigger className="inline-block border-2 border-brand-yellow bg-brand-yellow px-6 py-3.5 font-sans text-base font-semibold text-brand-maroon transition-colors hover:bg-transparent hover:text-brand-maroon">
             {ui.nav.cta}
           </ContactTrigger>
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block border-2 border-brand-maroon bg-brand-maroon px-6 py-3.5 font-sans text-base font-semibold text-brand-cream transition-colors hover:bg-transparent hover:text-brand-maroon"
+          >
+            {ui.services.book}
+            <span className="sr-only">{ui.background.newTab}</span>
+          </a>
         </div>
 
         {/* Paper only. On screen the contact routes are the bar's button and
@@ -206,8 +200,7 @@ export default async function Hero() {
           The Coral loop, taking the right panel whole, with the one piece
           on this site that is about the reader rather than about me. See
           HeroArt.tsx — the plate on it is live before it is pressed, and
-          what it opens covers the screen rather than the panel, because
-          the readout outgrew the panel a long time ago. */}
+          what it opens covers the screen rather than the panel. */}
       <HeroArt
         src={profile.heroBackdrop.src}
         credit={backdropCredit}

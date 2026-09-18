@@ -76,6 +76,12 @@ export type GroupDef = {
   /** The logo is a wide wordmark that already spells the name, so the
    *  legend shows it on its own, without the short label beside it. */
   wordmark?: boolean;
+  /** The institution's logo WITH its name, for the Education strip. The
+   *  square `logo` stays what the map pins and popups draw — a wide mark
+   *  squeezed into a round pin is illegible — and this is what the strip
+   *  shows in its place, on its own, with no short label beside it. The
+   *  files are the institutions' own, from their own sites. */
+  nameMark?: string;
   /** Ring colour on the pin, and the legend swatch. */
   color: string;
   // `about` lived here: one line per institution explaining what it is.
@@ -104,18 +110,21 @@ export const GROUPS: Record<PlaceGroup, GroupDef> = {
     label: "Minerva University",
     short: "Minerva",
     logo: "/logos/minerva.png",
+    nameMark: "/logos/minerva-wordmark.svg",
     color: "#d92b1c",
   },
   uwc: {
     label: "United World Colleges",
     short: "UWC",
     logo: "/logos/uwc.png",
+    nameMark: "/logos/uwc-wordmark.svg",
     color: "#ffc93c",
   },
   uaa: {
     label: "Universidad Autónoma de Aguascalientes",
     short: "UAA",
     logo: "/logos/uaa.png",
+    nameMark: "/logos/uaa-wordmark.png",
     color: "#f5821f",
   },
   voyage: {

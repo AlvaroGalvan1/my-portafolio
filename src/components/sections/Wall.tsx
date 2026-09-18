@@ -41,39 +41,20 @@ export default async function Wall() {
       >
         {ui.skip}
       </a>
-      {/* "My Wall" says what it looks like, not what it holds, so the info
-          marker carries the rest. It's a hover/focus note rather than a
-          standing line of body copy: the heading stays a heading, and the
-          explanation is there for whoever wonders. CSS-only — the button
-          exists to give keyboard and touch users a focus target, since
-          hover alone would strand both. */}
-      <h2 className="flex items-center gap-3 bg-brand-brick px-6 pt-16 font-[family-name:var(--font-display)] text-4xl text-white sm:px-16">
-        {ui.heading}
-        <span className="group relative inline-flex">
-          <button
-            type="button"
-            aria-label={ui.whatsThis}
-            aria-describedby="wall-note"
-            className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white/50 font-sans text-xs font-bold leading-none text-white/80 transition-colors hover:border-white hover:text-white focus-visible:border-white focus-visible:text-white"
-          >
-            i
-          </button>
-          <span
-            id="wall-note"
-            role="tooltip"
-            /* Shifted two thirds of its own width left on a phone, not one
-               third. The note is laid out even while it is transparent, so
-               at 360px the old offset left it hanging 17px past the right
-               edge of the document — which gives the WHOLE PAGE a
-               horizontal scrollbar, permanently, for a tooltip nobody can
-               see. Above `sm` there is room and it sits under its marker. */
-            style={{ zIndex: Z.CARD_CONTENT }}
-            className="pointer-events-none absolute left-0 top-full mt-3 w-64 max-w-[60vw] -translate-x-2/3 border-2 border-brand-maroon bg-brand-cream p-3 font-sans text-sm font-normal normal-case leading-snug text-brand-maroon opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 sm:w-80 sm:-translate-x-0"
-          >
-            {ui.note}
-          </span>
-        </span>
-      </h2>
+      {/* The title and what the Wall is, together above the pieces, like
+          the sign over a gallery wall. The line under the title used to
+          hide behind an "i" marker as a tooltip; it says what the pieces
+          are and that more keep arriving, which is worth saying out loud
+          rather than on hover. Same heading size and side padding as
+          every other section. */}
+      <header className="px-6 pt-16 sm:px-16">
+        <h2 className="font-[family-name:var(--font-display)] text-4xl text-white">
+          {ui.heading}
+        </h2>
+        <p className="mt-3 max-w-2xl font-sans text-base leading-relaxed text-white/85 sm:text-lg">
+          {ui.note}
+        </p>
+      </header>
       <div className="flex flex-1 flex-col print:hidden">
         <HorizontalGallery items={galleryItems} locale={locale} strings={ui} />
       </div>

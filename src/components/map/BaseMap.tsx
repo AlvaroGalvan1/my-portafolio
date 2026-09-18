@@ -473,6 +473,17 @@ export default function BaseMap({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* The schools first, the map under them. A reader scanning a CV
+          looks for the names before the geography, and the marks now carry
+          the full names (see `nameMark` in places.ts), so the strip reads
+          as the Education section's list and the map as its illustration.
+          It is still the map's progress bar while the route plays. */}
+      <JourneyStory
+        chapters={chapters}
+        reached={reached}
+        locale={locale}
+        strings={{ ports: journeyStrings.ports, cities: journeyStrings.cities }}
+      />
       {/* Landscape, and short. The no-repeat zoom floor is derived from
           the container's larger side, so a wide box is what keeps every pin
           in the opening view — and a tall one made the map the loudest
@@ -494,12 +505,6 @@ export default function BaseMap({
           </div>
         )}
       </div>
-      <JourneyStory
-        chapters={chapters}
-        reached={reached}
-        locale={locale}
-        strings={{ ports: journeyStrings.ports, cities: journeyStrings.cities }}
-      />
     </div>
   );
 }

@@ -48,16 +48,17 @@ const ROWS = 3;
 // The space between pieces, horizontally and vertically. `tileWidth` and
 // `tileHeight` add it back for every track and row a tile spans, so a
 // 2-row piece lines up with two 1-row pieces stacked beside it.
-// 1rem, down from 2.5: at postcard size the wider gap left the pieces
-// floating apart rather than hung together.
-const GAP_REM = 1;
+// 0.5rem, down from 1 and from 2.5 before that: the pieces should read as
+// one wall of things pinned edge to edge, a collection that grows, rather
+// than as separate prints each with its own air.
+const GAP_REM = 0.5;
 
 // How wide one tile is. Two cases:
 //   - A piece with a real-world shape (a map print, a book cover) states an
 //     `aspectRatio`; its width follows from the height it occupies, so it
 //     keeps its true proportions instead of being cropped to a cell.
 //   - Everything else fills the column track(s) its colSpan covers.
-function tileHeight(item: FrameData) {
+function tileHeight(item: { rowSpan: number }) {
   return `calc(${ROW_H_VH * item.rowSpan}svh + ${(item.rowSpan - 1) * GAP_REM}rem)`;
 }
 
@@ -71,10 +72,32 @@ function tileWidth(item: FrameData) {
 }
 
 // Pack one copy of the Wall into stacks: each stack is a column of pieces
-// whose rowSpans add up to at most ROWS. In order, with one concession —
-// when the next piece is too tall for what's left of a stack, the first
-// later piece that does fit goes there instead, so stacks don't end with a
-// hole in them.
+// whose rowSpans add up to at most ROWS.
+//
+// ── Keeping the pieces edge to edge ───────────────────────────────────
+// A stack is as wide as its widest piece, so a narrow piece under a wide
+// one leaves a hole beside it, and a stack that runs out of pieces leaves
+// a hole under it. Both read as the Wall falling apart. Two rules close
+// them:
+//
+//   1. Choosing. Each stack still starts with the next piece in line, so
+//      the order in data.ts is the order the Wall reads in. What goes
+//      UNDER it is the piece from anywhere later in the queue whose width
+//      is closest — the 16:9 videos end up together, the map sheets
+//      together, the book covers together. A piece more than MAX_MISMATCH
+//      row-heights off is not taken at all: a stack with a spare row can
+//      stretch a shapeless piece into it, but a hole beside a mismatched
+//      piece cannot be filled by anything.
+//   2. Stretching, at render time. A piece with no real-world shape (no
+//      `aspectRatio`) fills its stack's width, and takes any rows its
+//      stack has left over. Pieces WITH a shape — photos, maps, covers —
+//      are never stretched, because that is the whole point of stating
+//      one: they are shown uncropped.
+//
+// Widths are compared in row heights, with one column track taken as
+// COL_IN_ROWS of them. That is the desktop ratio (a 12.5vw track against
+// an 18svh row on a 16:10 screen); it only has to rank candidates, not
+// measure them, so one ratio for every screen is enough.
 //
 // This used to be CSS grid's `grid-flow-col-dense`, and with two rows that
 // was fine. With three and a mix of 1- and 2-row pieces, dense packing
@@ -82,22 +105,92 @@ function tileWidth(item: FrameData) {
 // copies of the loop stop being identical and the rewind below jumps
 // visibly. Packing one copy here and repeating the result makes them
 // identical by construction.
+const COL_IN_ROWS = 1.1;
+const MAX_MISMATCH = 0.5;
+const SHAPELESS_COST = 0.2;
+
+function widthInRows(item: FrameData) {
+  const rows = Math.min(item.rowSpan, ROWS);
+  return item.aspectRatio ? rows * item.aspectRatio : item.colSpan * COL_IN_ROWS;
+}
+
 function packStacks(items: FrameData[]): FrameData[][] {
   const queue = [...items];
   const stacks: FrameData[][] = [];
   while (queue.length > 0) {
-    const stack: FrameData[] = [];
-    let left = ROWS;
+    const first = queue.shift()!;
+    const stack: FrameData[] = [first];
+    let width = widthInRows(first);
+    let left = ROWS - Math.min(first.rowSpan, ROWS);
     while (left > 0) {
-      const i = queue.findIndex((item) => Math.min(item.rowSpan, ROWS) <= left);
-      if (i === -1) break;
-      const [item] = queue.splice(i, 1);
+      let best = -1;
+      let bestCost = Infinity;
+      for (let i = 0; i < queue.length; i++) {
+        const candidate = queue[i];
+        if (Math.min(candidate.rowSpan, ROWS) > left) continue;
+        const w = widthInRows(candidate);
+        // A shaped piece costs its gap either way. A shapeless one
+        // narrower than the stack stretches to fit, so it costs only a
+        // small flat SHAPELESS_COST — enough that a shaped piece that
+        // matches well is taken first, because the shapeless one can fit
+        // under almost anything and the shaped one can't.
+        const cost = candidate.aspectRatio
+          ? Math.abs(w - width)
+          : SHAPELESS_COST + Math.max(0, w - width);
+        if (cost <= MAX_MISMATCH && cost < bestCost) {
+          best = i;
+          bestCost = cost;
+        }
+      }
+      if (best === -1) break;
+      const [item] = queue.splice(best, 1);
       stack.push(item);
+      width = Math.max(width, widthInRows(item));
       left -= Math.min(item.rowSpan, ROWS);
     }
     stacks.push(stack);
   }
-  return stacks;
+  return mergeShortStacks(stacks);
+}
+
+// The end of the queue is where the leftovers land: the last few pieces
+// fall into stacks of their own, each with rows to spare. Fold a later
+// short stack into an earlier one whenever it fits, choosing the one
+// closest in width, so the tail of the Wall is as tight as the rest.
+function mergeShortStacks(stacks: FrameData[][]): FrameData[][] {
+  const rowsOf = (stack: FrameData[]) =>
+    stack.reduce((sum, item) => sum + Math.min(item.rowSpan, ROWS), 0);
+  const widthOf = (stack: FrameData[]) => Math.max(...stack.map(widthInRows));
+  const out = stacks.map((stack) => [...stack]);
+  for (let i = 0; i < out.length; i++) {
+    while (rowsOf(out[i]) < ROWS) {
+      const room = ROWS - rowsOf(out[i]);
+      let best = -1;
+      let bestCost = Infinity;
+      for (let j = i + 1; j < out.length; j++) {
+        if (rowsOf(out[j]) > room) continue;
+        const cost = Math.abs(widthOf(out[j]) - widthOf(out[i]));
+        if (cost < bestCost) {
+          best = j;
+          bestCost = cost;
+        }
+      }
+      if (best === -1) break;
+      out[i].push(...out[best]);
+      out.splice(best, 1);
+    }
+  }
+  return out;
+}
+
+// The rows a stack leaves empty go to its first shapeless piece. Returns the
+// rowSpan each piece is drawn at.
+function drawnRows(stack: FrameData[]): number[] {
+  const rows = stack.map((item) => Math.min(item.rowSpan, ROWS));
+  const spare = ROWS - rows.reduce((a, b) => a + b, 0);
+  const grow = stack.findIndex((item) => !item.aspectRatio);
+  if (spare > 0 && grow !== -1) rows[grow] += spare;
+  return rows;
 }
 
 export default function HorizontalGallery({
@@ -254,7 +347,7 @@ export default function HorizontalGallery({
     // `flex-1` and centred: the Wall section is one screen tall (see
     // Wall.tsx), and the pieces sit in the middle of whatever the heading
     // leaves rather than hard under it with the slack below.
-    <div className="relative flex flex-1 flex-col justify-center bg-brand-brick pt-6 pb-12">
+    <div className="relative flex flex-1 flex-col justify-center bg-brand-brick pt-4 pb-10">
       {/* Set bold in the sans face rather than in the display one: it has to
           carry across a red field at small size, and Bungee — the display
           face — only ships at one weight and reads as a second heading
@@ -273,7 +366,7 @@ export default function HorizontalGallery({
           pointing at a zone that isn't there. */}
       <p
         aria-hidden={hinted}
-        className={`mb-6 flex items-center justify-end gap-3 px-6 font-sans text-sm font-bold tracking-wide text-white transition-opacity duration-700 sm:px-16 sm:text-base ${
+        className={`mb-2 flex items-center justify-end gap-3 px-6 font-sans text-sm font-bold tracking-wide text-white transition-opacity duration-700 sm:px-16 sm:text-base ${
           hinted ? "opacity-0" : "opacity-95"
         }`}
       >
@@ -309,22 +402,31 @@ export default function HorizontalGallery({
         tabIndex={0}
         role="region"
         aria-label={strings.scrollHint}
-        className="wall-scroller flex cursor-grab items-center overflow-x-auto pt-6 pb-8 will-change-scroll active:cursor-grabbing"
+        className="wall-scroller flex cursor-grab items-center overflow-x-auto pt-4 pb-6 will-change-scroll active:cursor-grabbing"
       >
-        {loopStacks.map((stack, s) => (
+        {loopStacks.map((stack, s) => {
+          const rows = drawnRows(stack);
+          return (
           <div
             key={s}
-            className="flex shrink-0 flex-col items-center justify-center"
+            className="flex shrink-0 flex-col items-stretch justify-center"
             style={{
               gap: `${GAP_REM}rem`,
               marginRight: `${GAP_REM}rem`,
               height: `calc(${ROWS * ROW_H_VH}svh + ${(ROWS - 1) * GAP_REM}rem)`,
             }}
           >
-            {stack.map((item) => (
+            {stack.map((item, i) => (
               <div
                 key={item.id}
-                style={{ width: tileWidth(item), height: tileHeight(item) }}
+                // Shaped pieces keep their exact size, centred in the stack.
+                // Shapeless ones take the stack's width (a minimum, so the
+                // stack still grows to fit them) and their drawn rows.
+                style={
+                  item.aspectRatio
+                    ? { width: tileWidth(item), height: tileHeight(item), alignSelf: "center" }
+                    : { minWidth: tileWidth(item), height: tileHeight({ ...item, rowSpan: rows[i] }) }
+                }
                 // The frame turns yellow under the pointer, and under
                 // keyboard focus anywhere inside it — yellow because that is
                 // already the page's "this responds" colour, on the nav and
@@ -336,7 +438,7 @@ export default function HorizontalGallery({
                 // one pass, and it read as a costume; the variety in sizes
                 // and the stacks already keep the Wall from looking like a
                 // grid. The cream border is the white margin of a print.
-                className="group relative shrink-0 overflow-hidden border-[5px] border-brand-cream bg-black shadow-[3px_5px_10px_rgba(0,0,0,0.45)] transition-colors duration-150 hover:border-brand-yellow focus-within:border-brand-yellow"
+                className="group relative shrink-0 overflow-hidden border-4 border-brand-cream bg-black shadow-[2px_4px_8px_rgba(0,0,0,0.45)] transition-colors duration-150 hover:border-brand-yellow focus-within:border-brand-yellow"
               >
                 <FrameCell
                   frame={item}
@@ -349,7 +451,8 @@ export default function HorizontalGallery({
               </div>
             ))}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <Lightbox

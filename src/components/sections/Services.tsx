@@ -13,11 +13,11 @@ import { UI } from "@/content/ui";
 // seen the models run and the map drawn.
 //
 // The buying itself is a booked call or a written brief, not a checkout.
-// That is not a placeholder for a real one: consulting at this size is
-// priced per project (see RATES_NOTE), so there is no fixed thing to put in
-// a cart. When there IS one — an hourly block, a fixed-scope audit, a
-// template — the payment link goes in the panel beside the other two, and
-// nothing else about this section has to change.
+// The rate is one hourly figure that bends down to pro bono for the right
+// project (see RATES_NOTE), so the conversation, not a cart, is where the
+// price for a given piece of work gets settled. If a fixed thing to buy
+// ever exists — a fixed-scope audit, a template — the payment link goes in
+// the panel beside the other two, and nothing else here has to change.
 export default async function Services() {
   const locale = await currentLocale();
   const ui = UI[locale];

@@ -7,32 +7,20 @@ export type Job = {
    *  both; they are separate fields now, because the layout shows company,
    *  role and dates as three separate things. */
   org: string;
-  /** What the company does, in one line, for a reader who has never heard
-   *  of it. On screen and on paper: three of these four names mean nothing
-   *  to a stranger, and the logo does not explain them. This was print
-   *  only for one iteration, with a question heading doing the placing on
-   *  screen, and the question could not say what Hyticos is. */
+  /** What the company does, in one full sentence. PRINT ONLY: on paper a
+   *  recruiter wants the company placed properly. On screen the headline
+   *  and its details carry the entry. */
   what: Phrase;
-  /** THE TAKEAWAY, and it is the heading of the entry.
-   *
-   *  One sentence on what changed because I was there, written so a
-   *  stranger can picture it: "faults on the grid found in the data before
-   *  they were found in the field" is a thing that happened, where
-   *  "experienced in statistical diagnosis" is a claim about me that the
-   *  reader has no way to check. The reader draws the conclusion; the page
-   *  never states it.
-   *
-   *  It replaced a pair — a question in the reader's words as the heading,
-   *  then this line as its answer — because the two said the same thing
-   *  twice, and four questions in display caps side by side shouted over
-   *  each other and over the section heading. One sentence carries the
-   *  same "he has already solved this" without the echo.
-   *
-   *  It has to fit two lines of display type in a half-width column, so
-   *  about fifteen words. If it needs more, it is not a takeaway yet; the
-   *  detail lives in the print-only fields below, where a reader has
-   *  already decided they want it. */
-  answer: Phrase;
+  /** The entry's headline: a short label for the kind of work, set in the
+   *  display face, then one line on what it did. "Camera Network
+   *  Intelligence" / "Siting wildfire cameras with terrain algorithms
+   *  instead of guesswork." The label is what a skimming reader
+   *  remembers; the line is what makes it true. */
+  headline: { label: Phrase; line: Phrase };
+  /** Behind the entry's Expand control: the problem, the tools, and what
+   *  changed. Three short lines, always in that order, so a reader who
+   *  opens one entry knows where to look in the next. */
+  details: { problem: Phrase; tech: Phrase; impact: Phrase };
   /** How it was actually done — three or four. PRINT ONLY: on paper they
    *  sit under the role they were used on, which is where a skill is
    *  evidence rather than a claim. On screen they were a red all-caps
@@ -52,7 +40,7 @@ export type Job = {
    *  is one piece of work rather than a list of them. Rendered before the
    *  bullets when both are present. */
   summary?: Phrase;
-  /** PRINT ONLY. One line of scale or method: where `answer` says what
+  /** PRINT ONLY. One line of scale or method: where the headline says what
    *  the work was, this says how much or by what means — the numbers a
    *  reader wants before they believe it. On paper there is room; on
    *  screen it was the line that turned a four-line entry into six. */
@@ -81,9 +69,26 @@ const allJobs: Job[] = [
   {
     role: { en: "Geospatial Analyst", es: "Analista Geoespacial" },
     org: "Pano AI",
-    answer: {
-      en: "Where a wildfire camera should stand, worked out from the terrain instead of guessed at.",
-      es: "Dónde debe estar una cámara de incendios, calculado a partir del terreno en lugar de adivinado.",
+    headline: {
+      label: { en: "Camera Network Intelligence", es: "Inteligencia para redes de cámaras" },
+      line: {
+        en: "Siting wildfire cameras with terrain algorithms instead of guesswork.",
+        es: "Ubicar cámaras de incendios con algoritmos de terreno en lugar de a ojo.",
+      },
+    },
+    details: {
+      problem: {
+        en: "Manual terrain checks left blind spots across camera coverage networks.",
+        es: "Las revisiones manuales del terreno dejaban puntos ciegos en la cobertura de las redes de cámaras.",
+      },
+      tech: {
+        en: "Python (GeoPandas, Shapely, SciPy), custom viewshed algorithms, ArcGIS integration.",
+        es: "Python (GeoPandas, Shapely, SciPy), algoritmos propios de cuencas visuales, integración con ArcGIS.",
+      },
+      impact: {
+        en: "Replaced manual estimation with automated scoring to maximize camera coverage.",
+        es: "Reemplacé la estimación manual con una puntuación automatizada para maximizar la cobertura de las cámaras.",
+      },
     },
     methods: [
       { en: "Viewshed analysis", es: "Análisis de cuencas visuales" },
@@ -125,9 +130,26 @@ const allJobs: Job[] = [
   {
     role: { en: "Geospatial Data Engineer", es: "Ingeniero de Datos Geoespaciales" },
     org: "Hyticos",
-    answer: {
-      en: "A team with no way to judge fire risk now has one that updates itself.",
-      es: "Un equipo sin forma de evaluar el riesgo de incendio ahora tiene una que se actualiza sola.",
+    headline: {
+      label: { en: "Community-Driven Risk", es: "Riesgo desde la comunidad" },
+      line: {
+        en: "Self-updating fire maps built for local tiger reserve teams.",
+        es: "Mapas de incendio que se actualizan solos, hechos para los equipos locales de las reservas de tigres.",
+      },
+    },
+    details: {
+      problem: {
+        en: "Reserve teams lacked software tools to track seasonal fire risks on their own.",
+        es: "Los equipos de las reservas no tenían herramientas para seguir por su cuenta el riesgo estacional de incendio.",
+      },
+      tech: {
+        en: "Python, Analytic Hierarchy Process (AHP) weighting, Sentinel-2 satellite data.",
+        es: "Python, ponderación por Proceso Analítico Jerárquico (AHP), datos satelitales de Sentinel-2.",
+      },
+      impact: {
+        en: "Delivered an automated fire index map that updates daily based on field input.",
+        es: "Entregué un mapa automatizado de índice de incendio que se actualiza a diario con información de campo.",
+      },
     },
     methods: [
       { en: "Multi-source fusion", es: "Fusión de múltiples fuentes" },
@@ -163,11 +185,28 @@ const allJobs: Job[] = [
     bullets: [],
   },
   {
-    role: { en: "Geospatial Frontend Engineer", es: "Ingeniero Geoespacial de Frontend" },
+    role: { en: "Geospatial Full-Stack Engineer", es: "Ingeniero Geoespacial Full-Stack" },
     org: "Fuego.Earth",
-    answer: {
-      en: "Physics-grade fire simulation, made legible to people who will never read the physics.",
-      es: "Simulación de incendios con rigor físico, hecha legible para gente que nunca leerá la física.",
+    headline: {
+      label: { en: "Full-Stack Simulation", es: "Simulación full-stack" },
+      line: {
+        en: "Connecting 5+ APIs to run and display live fire-spread models.",
+        es: "Conectando más de 5 APIs para correr y mostrar modelos de propagación de incendios en vivo.",
+      },
+    },
+    details: {
+      problem: {
+        en: "Fire spread models were locked in raw data formats that field teams couldn't use.",
+        es: "Los modelos de propagación estaban atrapados en formatos de datos crudos que los equipos de campo no podían usar.",
+      },
+      tech: {
+        en: "React, D3.js, Python, 5 external APIs (Copernicus, LANDFIRE, Sentinel-2).",
+        es: "React, D3.js, Python, 5 APIs externas (Copernicus, LANDFIRE, Sentinel-2).",
+      },
+      impact: {
+        en: "Built a modular backend runner and UI processing 1,000+ daily simulation runs.",
+        es: "Construí un ejecutor backend modular y una interfaz que procesan más de 1,000 simulaciones al día.",
+      },
     },
     methods: [
       { en: "Cloud infrastructure", es: "Infraestructura en la nube" },
@@ -182,7 +221,7 @@ const allJobs: Job[] = [
     // TODO: fuego.earth returns 404 at the root, with or without www. Put
     // the live address here and the name links.
     logoSrc: "/logos/fuego-earth.svg",
-    dates: { en: "2025 – 2026", es: "2025 – 2026" },
+    dates: { en: "Sep 2025 – Apr 2026", es: "Sep 2025 – Abr 2026" },
     location: { en: "San Francisco, CA", es: "San Francisco, California" },
     lettermark: "FE",
     scope: {
@@ -211,9 +250,26 @@ const allJobs: Job[] = [
   {
     role: { en: "Data Analyst", es: "Analista de Datos" },
     org: "Gridware",
-    answer: {
-      en: "Faults on the electrical grid found in the data before they were found in the field.",
-      es: "Fallas en la red eléctrica encontradas en los datos antes de encontrarse en campo.",
+    headline: {
+      label: { en: "Early Fault Detection", es: "Detección temprana de fallas" },
+      line: {
+        en: "Catching electrical grid failures in data before outages happen.",
+        es: "Detectar fallas de la red eléctrica en los datos antes de que haya apagones.",
+      },
+    },
+    details: {
+      problem: {
+        en: "Power line damage was only caught after physical blackouts or fires occurred.",
+        es: "El daño en las líneas solo se detectaba después de apagones o incendios.",
+      },
+      tech: {
+        en: "Python, Pandas, streaming time-series data analysis.",
+        es: "Python, Pandas, análisis de series de tiempo en streaming.",
+      },
+      impact: {
+        en: "Flagged line anomalies early so crews could repair grid issues before blackouts hit.",
+        es: "Marqué anomalías en las líneas a tiempo para que las cuadrillas repararan antes de los apagones.",
+      },
     },
     methods: [
       { en: "Sensor data", es: "Datos de sensores" },

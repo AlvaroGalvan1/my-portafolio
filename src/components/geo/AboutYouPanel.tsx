@@ -3,8 +3,7 @@
 import WhereYouAre from "./WhereYouAre";
 import type { Locale } from "@/content/i18n";
 import type { UiStrings } from "@/content/ui";
-import { Z } from "@/lib/layers";
-import { useDialog } from "@/lib/useDialog";
+import HeroSheet from "@/components/sections/HeroSheet";
 
 // "About you", full screen.
 //
@@ -35,57 +34,17 @@ export default function AboutYouPanel({
   locale: Locale;
   strings: UiStrings["aboutYou"];
 }) {
-  // Escape, focus in and back out, Tab containment and the scroll lock all
-  // come from here — see lib/useDialog.ts. Called before the early return
-  // below, as every hook has to be.
-  const dialogRef = useDialog(open, onClose);
-
-  if (!open) return null;
-
+  // The shell — portal, header, close, focus handling — is HeroSheet.
   return (
-    <div
-      style={{ zIndex: Z.MODAL }}
-      className="fixed inset-0 bg-brand-maroon/85 px-0 py-0 sm:px-6 sm:py-6"
-      onClick={onClose}
+    <HeroSheet
+      open={open}
+      onClose={onClose}
+      id="about-you"
+      title={strings.title}
+      subtitle={strings.subtitle}
+      closeLabel={strings.close}
     >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="about-you-heading"
-        tabIndex={-1}
-        className="mx-auto flex h-full max-w-5xl flex-col border-brand-maroon bg-brand-cream focus:outline-none sm:border-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* The header stays put while the figures scroll under it: the
-            close button on a full-screen overlay has to be reachable from
-            anywhere in a readout this long, and "scroll back to the top to
-            get out" is how a panel becomes a trap on a phone. */}
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b-2 border-brand-red/30 bg-brand-cream px-5 py-4 sm:px-8 sm:py-5">
-          <div>
-            <h2
-              id="about-you-heading"
-              className="font-[family-name:var(--font-display)] text-2xl text-brand-maroon sm:text-3xl"
-            >
-              {strings.title}
-            </h2>
-            <p className="mt-1 font-sans text-xs uppercase tracking-[0.2em] text-brand-red">
-              {strings.subtitle}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="shrink-0 border-2 border-brand-maroon px-3 py-1.5 font-sans text-sm font-semibold text-brand-maroon transition-colors hover:bg-brand-maroon hover:text-brand-cream"
-          >
-            {strings.close}
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">
-          <WhereYouAre locale={locale} strings={strings} />
-        </div>
-      </div>
-    </div>
+      <WhereYouAre locale={locale} strings={strings} />
+    </HeroSheet>
   );
 }

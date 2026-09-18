@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Z } from "@/lib/layers";
 import { useDialog } from "@/lib/useDialog";
@@ -52,7 +53,9 @@ export default function Lightbox({
   const caption = content.kind === "image" ? content.caption : undefined;
   const credit = content.credit;
 
-  return (
+  // Portalled to <body>, so no transform or stacking context on the Wall
+  // can ever pin a fixed overlay to the section instead of the screen.
+  return createPortal(
     <div
       ref={dialogRef}
       role="dialog"
@@ -67,8 +70,9 @@ export default function Lightbox({
       //
       // `overlay-dark` is the hook globals.css uses to flip the focus ring
       // to yellow: this sits on near-black, where the page's default maroon
-      // ring is invisible. The lightbox renders at the document root rather
-      // than inside a section, so it can't inherit that from one.
+      // ring is invisible. The lightbox is portalled to the document root
+      // rather than rendered inside a section, so it can't inherit that
+      // from one.
       className="overlay-dark fixed inset-0 flex items-center justify-center bg-black/85 px-4 py-10 focus:outline-none"
       onClick={onClose}
     >
@@ -163,7 +167,8 @@ export default function Lightbox({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

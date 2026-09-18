@@ -513,7 +513,7 @@ function UnitToggle({
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="font-sans text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-brand-red">
+      <h4 className="eyebrow text-brand-red">
         {title}
       </h4>
       {/* Label-over-value, two columns on a phone and four where there is

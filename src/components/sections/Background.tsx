@@ -58,7 +58,7 @@ export default async function Background() {
   return (
     <section id="background" className="bg-brand-orange px-6 py-20 sm:px-16 lg:py-0">
       {/* One screen tall from `lg`, like every other part of the page —
-          hero, this, the Wall, the close — with the CV bar hung under it.
+          hero, this, the Wall, the close.
           That constraint shaped what is inside: the stagger between the
           columns went, Experience runs two by two, and Skills runs three
           across under it. `min-h` rather than `h`, so a short laptop grows
@@ -66,9 +66,33 @@ export default async function Background() {
 
           Under `lg` none of this applies: one column, as long as it needs. */}
       <div className="flex flex-col lg:min-h-[calc(100svh-var(--nav-h))] lg:justify-center lg:py-[clamp(1.5rem,4vh,3rem)] print:block print:min-h-0">
-      <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-maroon">
-        {ui.heading}
-      </h2>
+      {/* The section title, and the CV on the same line at the right: the
+          first thing in the section, not the last. A reader who came for
+          the CV finds it before scrolling a map and four roles, and a
+          reader who didn't still sees there is one.
+
+          The button wears the site's stamp — the hard offset shadow the
+          plates and buttons use — in yellow, the page's "press this"
+          colour, which is what lifts it off the orange. Pressed, it sinks
+          into its shadow. Screen only: printed, it would sit inside the
+          document it offers. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-5">
+        <h2 className="font-[family-name:var(--font-display)] text-4xl text-brand-maroon">
+          {ui.heading}
+        </h2>
+        <a
+          href="/cv.pdf"
+          className="group inline-flex shrink-0 items-center gap-3 border-2 border-brand-maroon bg-brand-maroon px-6 py-3.5 font-sans text-base font-semibold text-brand-cream shadow-[5px_5px_0_var(--color-brand-yellow)] transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[2px_2px_0_var(--color-brand-yellow)] print:hidden"
+        >
+          {skills.downloadPdf}
+          <span className="border border-brand-cream/40 px-1.5 py-0.5 font-mono text-[0.65rem] tracking-wider text-brand-cream/80">
+            PDF
+          </span>
+          <span aria-hidden className="transition-transform duration-150 group-hover:translate-y-0.5">
+            ↓
+          </span>
+        </a>
+      </div>
       <div className="mt-10 grid gap-6 lg:mt-[clamp(1rem,3vh,2rem)] lg:grid-cols-[11fr_13fr]">
         {/* `min-w-0` on both columns: a grid item defaults to
             `min-width: auto`, which means its content can push it wider
@@ -153,25 +177,6 @@ export default async function Background() {
       </div>
       </div>
 
-      {/* ── The closing bar ─────────────────────────────────────────────
-          Under the one-screen panel rather than inside it: this is the
-          section's action, and a reader who has just been through a map,
-          four problems and a toolkit is exactly the reader who wants the
-          CV. It also closes the composition on a straight line.
-
-          Screen only: printed, this sits inside the document it is
-          offering to hand the reader. */}
-      <div className="mt-8 flex flex-col items-center justify-between gap-5 border-t-4 border-brand-maroon pt-8 print:hidden sm:flex-row lg:mt-0 lg:pb-12">
-        <p className="text-center font-[family-name:var(--font-display)] text-2xl text-brand-maroon sm:text-left sm:text-3xl">
-          {skills.cvLede}
-        </p>
-        <a
-          href="/cv.pdf"
-          className="shrink-0 whitespace-nowrap border-2 border-brand-maroon bg-brand-maroon px-8 py-4 text-center font-sans text-lg font-semibold text-brand-cream transition-colors hover:bg-transparent hover:text-brand-maroon"
-        >
-          {skills.downloadPdf}
-        </a>
-      </div>
     </section>
   );
 }

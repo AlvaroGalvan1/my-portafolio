@@ -57,13 +57,14 @@ export const profile = {
   // No em dashes here, on purpose. The rest of this file is full of them
   // and this is the one string a visitor reads as a voice.
   //
-  // Hero.tsx takes bio[0] as the lede of the left column. Any further
-  // entries are unrendered today; a second paragraph needs a place in that
-  // layout first, so add the markup with the string.
+  // Nothing renders this today. It stood under the name until the hero's
+  // left column took the pitch, then briefly sat behind an "About me"
+  // plate on the artwork, which came out. Kept for whatever About me
+  // becomes next.
   bio: [
     {
-      en: "Hey, I'm Álvaro from Oaxaca. I build geospatial software for wildfire and the energy transition. If you're building toward a livable future, let's chat 🌸",
-      es: "Hola, soy Álvaro, de Oaxaca. Construyo software geoespacial para incendios forestales y la transición energética. Si estás construyendo hacia un futuro habitable, platiquemos 🌸",
+      en: "Hey, I'm Álvaro from Oaxaca. If you're building toward a livable future, let's chat 🌸",
+      es: "Hola, soy Álvaro, de Oaxaca. Si estás construyendo hacia un futuro habitable, platiquemos 🌸",
     },
   ] satisfies Phrase[],
 };
