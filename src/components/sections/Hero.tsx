@@ -2,7 +2,6 @@ import HeroArt from "./HeroArt";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
-import { experience } from "@/content/experience";
 import { socials, CONTACT_EMAIL, CALENDLY_URL } from "@/content/socials";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
@@ -179,27 +178,6 @@ export default async function Hero() {
             {ui.services.book}
             <span className="sr-only">{ui.background.newTab}</span>
           </a>
-        </div>
-
-        {/* Where I've worked, as marks: the fastest credibility signal a
-            hiring manager gets. Only on screens tall enough to hold it, so
-            the one-screen rule above still holds on a short laptop. */}
-        <div className="mt-[clamp(1.25rem,3.5vh,2.25rem)] hidden flex-col gap-2.5 print:hidden [@media(min-width:1024px)_and_(min-height:760px)]:flex">
-          <p className="eyebrow text-brand-maroon/60">{ui.hero.workedWith}</p>
-          <ul className="flex flex-wrap items-center gap-2.5">
-            {experience
-              .filter((job) => job.logoSrc)
-              .map((job) => (
-                <li
-                  key={job.org}
-                  title={job.org}
-                  className="flex h-11 w-[5.5rem] items-center justify-center border-2 border-brand-maroon/15 bg-white px-2"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={job.logoSrc} alt={job.org} className="max-h-7 max-w-full object-contain" />
-                </li>
-              ))}
-          </ul>
         </div>
 
         {/* Paper only. On screen the contact routes are the bar's button and
