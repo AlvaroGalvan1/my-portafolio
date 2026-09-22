@@ -41,7 +41,7 @@ export const SITE_TITLE: Record<Locale, string> = {
 // What's left says the same thing in words that aren't a field's name.
 export const SITE_DESCRIPTION: Record<Locale, string> = {
   en: "Wildfire modelling, satellite data, and tools that help people adapt to a changing planet.",
-  es: "Modelado de incendios forestales, datos satelitales, y herramientas para adaptarse a un planeta que cambia.",
+  es: "Modelado de incendios forestales, datos satelitales y herramientas para adaptarnos a un planeta que cambia.",
 };
 
 // What this site is FOR, in its own words.
@@ -58,24 +58,24 @@ export const SITE_DESCRIPTION: Record<Locale, string> = {
 // scroll.
 export const SITE_PURPOSE: { title: Phrase; body: Phrase }[] = [
   {
-    title: { en: "To be known", es: "Para darme a conocer" },
+    title: { en: "My work", es: "Mi trabajo" },
     body: {
-      en: "What I've built and how I think, in one place I own.",
-      es: "Lo que he construido y cómo pienso, en un solo lugar que es mío.",
+      en: "Everything I have built, in one place.",
+      es: "Todo lo que he construido, en un solo lugar.",
     },
   },
   {
-    title: { en: "To keep the work", es: "Para guardar el trabajo" },
+    title: { en: "My archive", es: "Mi archivo" },
     body: {
-      en: "Maps, models and experiments live here, named and dated, not lost in a drive.",
-      es: "Mapas, modelos y experimentos viven aquí, con nombre y fecha, no perdidos en un disco.",
+      en: "I keep my maps, models and experiments here so I can find them later.",
+      es: "Aquí guardo mis mapas, modelos y experimentos para poder encontrarlos después.",
     },
   },
   {
-    title: { en: "To start things", es: "Para empezar cosas" },
+    title: { en: "Get in touch", es: "Escríbeme" },
     body: {
-      en: "If you work on climate or geospatial problems, this is the front door.",
-      es: "Si trabajas en problemas climáticos o geoespaciales, esta es la puerta de entrada.",
+      en: "Working on climate or geospatial problems? Write to me.",
+      es: "¿Trabajas en problemas climáticos o geoespaciales? Escríbeme.",
     },
   },
 ];

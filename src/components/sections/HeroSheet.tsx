@@ -70,9 +70,13 @@ export default function HeroSheet({
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 border-2 border-brand-maroon px-3 py-1.5 font-sans text-sm font-semibold text-brand-maroon transition-colors hover:bg-brand-maroon hover:text-brand-cream"
+            aria-label={closeLabel}
+            title={closeLabel}
+            className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-brand-maroon text-brand-maroon transition-colors hover:bg-brand-maroon hover:text-brand-cream"
           >
-            {closeLabel}
+            <svg viewBox="0 0 16 16" aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <path d="M3 3l10 10M13 3L3 13" />
+            </svg>
           </button>
         </div>
 

@@ -1,9 +1,8 @@
-import { socials } from "@/content/socials";
+import { socials, CONTACT_EMAIL } from "@/content/socials";
 import { SITE_PURPOSE } from "@/content/site";
 import { say } from "@/content/i18n";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
-import MeasuredFooter from "./MeasuredFooter";
 
 // The colophon: what this site is for, then the three marks.
 //
@@ -26,7 +25,7 @@ export default async function Footer() {
     // the name on a printed page, and a second copy of them at the end —
     // as glyphs, each followed by its own URL — is the least useful square
     // inch on the CV.
-    <MeasuredFooter className="bg-brand-maroon px-6 py-[clamp(1.75rem,4vh,3.5rem)] print:hidden sm:px-16">
+    <footer id="colophon" className="scroll-mt-[var(--nav-h)] bg-brand-maroon px-6 py-[clamp(1.75rem,4vh,3.5rem)] print:hidden sm:px-16">
       <h2 className="eyebrow text-center text-brand-yellow">
         {UI[locale].footer.heading}
       </h2>
@@ -82,6 +81,17 @@ export default async function Footer() {
           </a>
         ))}
       </div>
-    </MeasuredFooter>
+
+      {/* The address in plain text too: a hiring manager who wants to
+          write should not have to find the contact panel first. */}
+      <p className="mt-6 text-center font-sans text-sm">
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="text-brand-cream/85 underline decoration-brand-yellow/60 decoration-2 underline-offset-4 hover:text-white hover:decoration-brand-yellow"
+        >
+          {CONTACT_EMAIL}
+        </a>
+      </p>
+    </footer>
   );
 }

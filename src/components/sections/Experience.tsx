@@ -8,11 +8,10 @@ import { UI } from "@/content/ui";
 // rather than sixteen bullets. The heading and the card around it belong to
 // Background, which owns the panel shape every section of it shares.
 //
-// Each entry is one plate, one line saying where and as what, and a
-// headline: a short label in the display face and one sentence under it.
-// That is all a skimming reader gets, and it is enough to know what the
-// job was. Under it, an Expand control opens the problem, the tools and
-// what changed, for the reader who wants the next level down.
+// Each entry is built to be skimmed in three seconds: the company and what
+// it does, the headline of the work, one or two results set large, and the
+// stack as chips. Under it, Expand opens the problem and what changed, for
+// the reader who wants the story behind the numbers.
 //
 // Everything else prints. The entries carried a second paragraph of scope
 // on screen as well, which across four roles is eight paragraphs of body
@@ -67,6 +66,10 @@ export default async function Experience() {
                   </p>
                 </div>
 
+                <p className="mt-0.5 font-sans text-xs italic text-neutral-600 print:hidden">
+                  {say(job.what, locale)}
+                </p>
+
                 {/* The headline: the label is what a skimming reader keeps,
                     the line under it is what makes the label true. */}
                 <h4 className="mt-1.5 font-[family-name:var(--font-display)] text-[1.2rem] leading-tight text-brand-maroon lg:text-[1.1rem]">
@@ -76,6 +79,34 @@ export default async function Experience() {
                   {say(job.headline.line, locale)}
                 </p>
 
+                {/* The results, set large: what a skimming reader should
+                    leave the entry remembering. Screen only; paper has
+                    the bullets. */}
+                <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-2 print:hidden">
+                  {job.stats.map((stat) => (
+                    <div key={say(stat.label, "en")} className="min-w-0 max-w-[14rem]">
+                      <dt className="sr-only">{say(stat.label, locale)}</dt>
+                      <dd className="font-[family-name:var(--font-display)] text-2xl leading-none text-brand-red">
+                        {say(stat.value, locale)}
+                      </dd>
+                      <dd aria-hidden className="mt-1 font-sans text-xs leading-snug text-neutral-600">
+                        {say(stat.label, locale)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <ul className="mt-3 flex flex-wrap gap-1.5 print:hidden" aria-label={ui.tech}>
+                  {job.stack.map((tool) => (
+                    <li
+                      key={tool}
+                      className="border border-brand-maroon/20 bg-white/60 px-2 py-0.5 font-sans text-[0.7rem] font-semibold text-brand-maroon"
+                    >
+                      {tool}
+                    </li>
+                  ))}
+                </ul>
+
                 {/* The next level down, behind one control. A native
                     <details>: keyboard and screen readers get the
                     open/closed state for free, and it works before any
@@ -83,7 +114,7 @@ export default async function Experience() {
                     Labels beside their text from `sm`, above it on a phone,
                     where two columns leave the text a word wide.
                     Screen only: paper gets the full bullets below. */}
-                <details className="group mt-2 print:hidden">
+                <details className="group mt-3 print:hidden">
                   <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 font-sans text-xs font-semibold text-brand-red underline decoration-brand-red/40 decoration-2 underline-offset-4 hover:decoration-brand-red [&::-webkit-details-marker]:hidden">
                     <span aria-hidden className="inline-block w-2.5 text-center">
                       <span className="group-open:hidden">+</span>
@@ -96,7 +127,6 @@ export default async function Experience() {
                     {(
                       [
                         [ui.problem, job.details.problem],
-                        [ui.tech, job.details.tech],
                         [ui.impact, job.details.impact],
                       ] as const
                     ).map(([term, value]) => (

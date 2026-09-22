@@ -1,4 +1,4 @@
-import { siGithub, siInstagram } from "simple-icons";
+import { siGithub, siInstagram, siSoundcloud } from "simple-icons";
 
 export type Social = {
   name: string;
@@ -7,6 +7,9 @@ export type Social = {
   path: string;
   /** Defaults to simple-icons' 24×24 grid. */
   viewBox?: string;
+  /** Personal rather than professional: shown in the footer only, not in
+   *  the contact panel or on the printed CV. */
+  footerOnly?: boolean;
 };
 
 // LinkedIn has no simple-icons mark (pulled over trademark restrictions,
@@ -27,6 +30,12 @@ export const socials: Social[] = [
     href: "https://www.linkedin.com/in/alvarogalvan",
     path: LINKEDIN_PATH,
     viewBox: "0 0 16 16",
+  },
+  {
+    name: "SoundCloud",
+    href: "https://on.soundcloud.com/2kLnWcwNPTckjZRSXT",
+    path: siSoundcloud.path,
+    footerOnly: true,
   },
 ];
 

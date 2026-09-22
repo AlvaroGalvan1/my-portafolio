@@ -1,5 +1,6 @@
 "use client";
 
+import { cityName } from "@/content/cityNames";
 import { GROUPS, type JourneyStop, type PlaceGroup } from "@/content/places";
 import { say, type Locale } from "@/content/i18n";
 
@@ -58,7 +59,7 @@ export default function JourneyStory({
         const lit = reached !== null && reached >= chapter.first;
         const current = lit && reached !== null && reached <= chapter.last;
         const faded = reached !== null && !lit;
-        const cities = [...new Set(chapter.stops.map((s) => s.name))];
+        const cities = [...new Set(chapter.stops.map((s) => cityName(s.name, locale)))];
         const where =
           cities.length <= 2
             ? cities.join(" · ")

@@ -27,13 +27,10 @@ export default async function Wall() {
           it takes focus, which happens exactly once — on the tab that would
           otherwise have started that walk.
 
-          The target is whatever section follows the Wall. That was
-          `#skills` until the toolkit moved up into Background; it is now
-          `#work`, which is the next section a keyboard visitor can
-          actually land on — `#testimonials` renders nothing while that
-          array is empty, and a skip link to an element that is not in the
-          document does nothing at all. Revisit this the day testimonials
-          ship. A skip link goes forward, and no further than it has to. */}
+          The target is whatever follows the Wall: `#work` today, since
+          `#testimonials` renders nothing while that array is empty and a
+          skip link to an element not in the document does nothing at all.
+          Revisit this the day testimonials ship. */}
       <a
         href="#work"
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}

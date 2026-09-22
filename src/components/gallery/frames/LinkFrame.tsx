@@ -18,14 +18,26 @@ export function LinkFrameCell({ frame }: FrameCellProps<LinkFrameData>) {
       href={frame.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="absolute inset-0 flex h-full w-full flex-col justify-end bg-neutral-950"
+      className={`absolute inset-0 flex h-full w-full flex-col justify-end ${
+        frame.thumbnailSrc ? "bg-neutral-950" : "bg-brand-cream"
+      }`}
     >
       {frame.thumbnailSrc && (
         <TileImage src={frame.thumbnailSrc} alt={frame.title} />
       )}
       <div style={{ zIndex: Z.CARD_CONTENT }} className="relative p-4">
-        <p className="text-base font-semibold text-white">{frame.title}</p>
-        <p className="text-xs text-white/50">{frame.linkLabel ?? "Visit ↗"}</p>
+        <p
+          className={
+            frame.thumbnailSrc
+              ? "text-base font-semibold text-white"
+              : "font-[family-name:var(--font-display)] text-2xl leading-tight text-brand-maroon"
+          }
+        >
+          {frame.title}
+        </p>
+        <p className={`text-xs ${frame.thumbnailSrc ? "text-white/50" : "text-brand-red"}`}>
+          {frame.linkLabel ?? "Visit ↗"}
+        </p>
       </div>
     </a>
   );

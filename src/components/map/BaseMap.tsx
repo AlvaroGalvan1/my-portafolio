@@ -1,5 +1,6 @@
 "use client";
 
+import { cityName } from "@/content/cityNames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
@@ -9,7 +10,8 @@ import { say, type Locale } from "@/content/i18n";
 import { Z } from "@/lib/layers";
 import JourneyControl from "./JourneyControl";
 import JourneyStory, { chaptersOf } from "./JourneyStory";
-import { JOURNEY_DURATION_MS, buildJourneyPath, journeyFrame } from "./journey";
+import { JOURNEY_DURATION_MS, buildJourneyPath, journeyFrame, travelled, type Mode } from "./journey";
+import { PLANE_PATH, SHIP_PATH, travelSvg } from "./travelIcons";
 
 declare module "leaflet" {
   interface MapOptions {
@@ -77,7 +79,7 @@ function popupContent(place: Place, locale: Locale, itineraryLabel: string) {
   head.append(el("p", "map-popup__inst", say(group.label, locale)));
   root.append(head);
 
-  root.append(el("p", "map-popup__city", place.name));
+  root.append(el("p", "map-popup__city", cityName(place.name, locale)));
   root.append(
     el(
       "p",
@@ -129,7 +131,14 @@ export default function BaseMap({
 }: {
   locale: Locale;
   itineraryLabel: string;
-  journeyStrings: { play: string; stop: string; ports: string; cities: string };
+  journeyStrings: {
+    play: string;
+    stop: string;
+    ports: string;
+    cities: string;
+    flight: string;
+    sea: string;
+  };
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
@@ -143,9 +152,11 @@ export default function BaseMap({
   const leafletRef = useRef<typeof import("leaflet") | null>(null);
 
   const [playing, setPlaying] = useState(false);
-  /** The stop under the marker right now, for the toolbar readout. Null
-   *  while the marker is between two of them. */
-  const [atStop, setAtStop] = useState<string | null>(null);
+  /** What the readout says: a stop's name while the traveller sits on
+   *  it, or "Flight · A → B" while it moves. Primitives, so a frame that
+   *  changes nothing re-renders nothing. */
+  const [caption, setCaption] = useState<string | null>(null);
+  const [captionMode, setCaptionMode] = useState<Mode | null>(null);
   /** Hidden until the map has actually built a route to play. */
   const [canPlay, setCanPlay] = useState(false);
   /** The furthest stop the marker has reached, while playing or after;
@@ -350,12 +361,11 @@ export default function BaseMap({
   }, [locale, itineraryLabel]);
 
   // ── Playing the journey ───────────────────────────────────────────
-  // See journey.ts for the pacing and for why the camera stays still. This
-  // is the Leaflet half: one layer group holding a trail polyline and a
-  // marker, redrawn each frame by setting coordinates on objects that
-  // already exist rather than rebuilding them — Leaflet re-projects on
-  // `setLatLngs`, which is cheap, where creating a polyline every frame
-  // for fourteen seconds is ~800 layers for the map to garbage collect.
+  // See journey.ts for the pacing and the shapes. This is the Leaflet
+  // half: every leg's line is created once, empty, when play starts, and
+  // each frame only sets coordinates on the leg in progress. The traveller
+  // is one marker whose icon swaps between plane and ship as the mode
+  // changes, and whose plane turns to face where it is going.
   const stopJourney = useCallback(() => {
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
     frameRef.current = null;
@@ -368,7 +378,8 @@ export default function BaseMap({
       staticRouteRef.current.addTo(map);
     }
     setPlaying(false);
-    setAtStop(null);
+    setCaption(null);
+    setCaptionMode(null);
     setReached(null);
   }, []);
 
@@ -391,85 +402,141 @@ export default function BaseMap({
     );
 
     // The voyage's dashed line comes off while the animated one draws, or
-    // the trail is invisible against an identical line already there.
+    // the new line is invisible against an identical one already there.
     staticRouteRef.current?.remove();
 
     const group = L.layerGroup().addTo(map);
     playbackRef.current = group;
 
-    // Two strokes, same as the static route: a dark casing under a pale
-    // line. A single stroke crosses navy ocean, brown Iberia and white
-    // cloud in the space of one leg and loses contrast against at least
-    // one of them.
-    const casing = L.polyline([], {
-      color: "#7a1710",
-      weight: 6,
-      opacity: 0.75,
+    // Two strokes per leg: a dark casing under a pale line, so it reads
+    // over ocean, desert and cloud alike. Flights solid, the ship dashed,
+    // which is how the legend tells them apart before anything moves.
+    const lines = path.legs.map((leg) => {
+      const casing = L.polyline([], {
+        color: "#7a1710",
+        weight: leg.mode === "air" ? 5 : 6,
+        opacity: 0.7,
+        interactive: false,
+      }).addTo(group);
+      const line = L.polyline([], {
+        color: "#fff4de",
+        weight: 2,
+        opacity: 1,
+        dashArray: leg.mode === "sea" ? "6 6" : undefined,
+        interactive: false,
+      }).addTo(group);
+      return { casing, line };
+    });
+    const drawLeg = (i: number, points: [number, number][]) => {
+      lines[i].casing.setLatLngs(points);
+      lines[i].line.setLatLngs(points);
+    };
+
+    const iconFor = (mode: Mode) =>
+      L.divIcon({
+        className: "map-traveller-wrap",
+        html: `<span class="map-traveller map-traveller--${mode}">${travelSvg(
+          mode === "air" ? PLANE_PATH : SHIP_PATH,
+          "map-traveller__icon",
+        )}</span>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+      });
+    let iconMode: Mode = path.legs[0].mode;
+    const traveller = L.marker([journey[0].lat, journey[0].lon], {
+      icon: iconFor(iconMode),
       interactive: false,
+      keyboard: false,
+      zIndexOffset: 1000,
     }).addTo(group);
-    const trail = L.polyline([], {
-      color: "#fff4de",
-      weight: 2.5,
-      opacity: 1,
-      interactive: false,
-    }).addTo(group);
-    const traveller = L.circleMarker([journey[0].lat, journey[0].lon], {
-      radius: 6,
-      color: "#fff4de",
-      weight: 3,
-      fillColor: "#d92b1c",
-      fillOpacity: 1,
-      interactive: false,
-    }).addTo(group);
+
+    // Plane: turn to the heading on screen. Ship: face east or west.
+    const orient = (mode: Mode, from: [number, number], to: [number, number]) => {
+      const svg = traveller.getElement()?.querySelector<SVGElement>(".map-traveller__icon");
+      if (!svg) return;
+      const a = map.latLngToContainerPoint(from);
+      const b = map.latLngToContainerPoint(to);
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      if (Math.hypot(dx, dy) < 0.01) return;
+      svg.style.transform =
+        mode === "air"
+          ? `rotate(${(Math.atan2(dy, dx) * 180) / Math.PI + 90}deg)`
+          : dx < 0
+            ? "scaleX(-1)"
+            : "";
+    };
+
+    const label = (mode: Mode) => (mode === "air" ? journeyStrings.flight : journeyStrings.sea);
+    const show = (mode: Mode | null, text: string) => {
+      setCaptionMode(mode);
+      setCaption(text);
+    };
 
     setPlaying(true);
-    setAtStop(journey[0].name);
     setReached(0);
+    show(null, cityName(journey[0].name, locale));
 
     // A visitor who has asked their OS for less motion gets the answer
-    // rather than the animation: the whole route drawn at once, and the
-    // last stop named. The control still does something, and what it does
-    // is still the fact it was there to deliver.
+    // rather than the animation: every leg drawn at once, and the last
+    // stop named.
     const reduced =
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
-      const whole = journey.map((s) => [s.lat, s.lon] as [number, number]);
-      casing.setLatLngs(whole);
-      trail.setLatLngs(whole);
-      traveller.setLatLng(whole[whole.length - 1]);
+      path.legs.forEach((leg, i) => drawLeg(i, leg.samples));
+      const last = journey[journey.length - 1];
+      traveller.setLatLng([last.lat, last.lon]);
       setPlaying(false);
-      setAtStop(journey[journey.length - 1].name);
+      show(null, cityName(last.name, locale));
       setReached(journey.length - 1);
       return;
     }
 
+    let drawnUpTo = 0;
     const started = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - started) / JOURNEY_DURATION_MS);
       const frame = journeyFrame(path, t);
+      const leg = path.legs[frame.legIndex];
 
-      casing.setLatLngs(frame.trail);
-      trail.setLatLngs(frame.trail);
+      // Legs finished since the last frame get drawn whole, once.
+      while (drawnUpTo < frame.legIndex) {
+        drawLeg(drawnUpTo, path.legs[drawnUpTo].samples);
+        drawnUpTo++;
+      }
+      drawLeg(frame.legIndex, frame.along > 0 ? travelled(leg, frame.along) : []);
+
+      if (leg.mode !== iconMode && !frame.dwelling) {
+        iconMode = leg.mode;
+        traveller.setIcon(iconFor(iconMode));
+      }
       traveller.setLatLng(frame.position);
-      setAtStop(frame.atStop ? journey[frame.stopIndex]?.name ?? null : null);
+      orient(iconMode, frame.position, frame.ahead);
+
+      const stop = journey[frame.stopIndex];
+      if (frame.dwelling) show(null, cityName(stop.name, locale));
+      else
+        show(
+          leg.mode,
+          `${label(leg.mode)} · ${cityName(journey[leg.from].name, locale)} → ${cityName(journey[leg.to].name, locale)}`,
+        );
       setReached(frame.stopIndex);
 
       if (t < 1) {
         frameRef.current = requestAnimationFrame(step);
         return;
       }
-      // Arrived. The trail stays on the map rather than snapping back to
-      // the dashed version — the reader just watched it being drawn, and
-      // replacing it the instant it finishes throws that away. Pressing
-      // the control again resets and replays.
+      // Arrived. The drawn route stays on the map rather than snapping
+      // back to the dashed version: the reader just watched it drawn.
+      // Pressing the control again resets and replays.
       frameRef.current = null;
       setPlaying(false);
-      setAtStop(journey[journey.length - 1].name);
+      show(null, cityName(journey[journey.length - 1].name, locale));
       setReached(journey.length - 1);
     };
     frameRef.current = requestAnimationFrame(step);
-  }, []);
+  }, [journeyStrings.flight, journeyStrings.sea, locale]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -497,9 +564,11 @@ export default function BaseMap({
           <div style={{ zIndex: Z.CARD_OVERLAY_CONTROL }} className="pointer-events-none absolute inset-0">
             <JourneyControl
               playing={playing}
-              atStop={atStop}
+              caption={caption}
+              captionMode={captionMode}
               playLabel={journeyStrings.play}
               stopLabel={journeyStrings.stop}
+              legend={{ air: journeyStrings.flight, sea: journeyStrings.sea }}
               onToggle={() => (playing ? stopJourney() : playJourney())}
             />
           </div>

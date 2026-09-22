@@ -19,6 +19,7 @@ const en = {
     home: "Home",
     background: "Background",
     wall: "My Wall",
+    pricing: "Pricing",
     // The bar's one action, and the page's primary. It used to be "Work
     // with me" pointing at a section further down; it now says the thing
     // it does and opens the contact panel directly, which is one fewer
@@ -39,7 +40,7 @@ const en = {
     // then says what working with me is like, so the ask never has to be
     // made in words: the reader is already picturing me on their team.
     pitch:
-      "Geospatial engineer working on wildfire and climate risk. I turn satellite, terrain and sensor data into tools people rely on: scrappy enough to start from scratch, structured enough to hand off clean, on my own or inside your team.",
+      "Geospatial engineer working on wildfire and climate risk. I turn satellite, terrain and sensor data into maps, models and tools that teams use every day. I can start a project from zero or join yours.",
     aboutYou: "About you",
     // ── The invitation on the artwork ───────────────────────────────
     // The question is the button. Three versions were tried and the first
@@ -58,6 +59,7 @@ const en = {
     // panel whose best line is relational — "you are standing at the
     // height of Maastricht, where I studied" — which is The Pudding's
     // trick rather than a readout's.
+    workedWith: "Worked with",
     aboutYouHook: "Where are you, really?",
     aboutYouOpen: "Find out",
     yourClock: "Your clock",
@@ -68,14 +70,21 @@ const en = {
 
   aboutYou: {
     title: "About you",
-    subtitle: "The ground under whoever is reading",
+    subtitle: "Where you are in time and space",
     close: "Close",
+    // A short statement before anything is asked for: what this is, why it
+    // exists, and that nothing is kept.
     intro:
-      "Give me your coordinates and I will tell you the height of the ground under you, which city in my life sits at that same height, what the air is doing, and how fast the planet is carrying you east.",
+      "A location is two numbers, and those two numbers hold a surprising amount of time and space. This panel reads yours against public datasets: the terrain under you, the rock beneath it, the places people have written about nearby, where this moment falls in the day and the year, how today compares with the same day in 1950, and the sky right now. It is a small demonstration of how much can be read from a single point.",
+    notCollected:
+      "Nothing is collected. Your coordinates go straight from your browser to the public services below and never reach this site.",
+    sourcesLabel: "Sources",
+    sources:
+      "Copernicus 90 m elevation model and ERA5 via Open-Meteo · Macrostrat geology · OpenStreetMap · Wikipedia",
     denied:
       "No coordinates, which is a perfectly good answer. Here is the same readout for my own street instead.",
     error:
-      "Open-Meteo did not answer. It is a free service, so try again in a moment.",
+      "The data services did not answer. They are free and public, so try again in a moment.",
     locate: "Locate me",
     locating: "Asking your browser",
     reading: "Reading the ground",
@@ -84,7 +93,7 @@ const en = {
     you: "you",
     clear: "Clear",
     privacy:
-      "Coordinates go to open-meteo.com for the lookup and nowhere else. They are not stored, logged, or sent to this site.",
+      "Your coordinates go only to Open-Meteo, Macrostrat, OpenStreetMap and Wikipedia, for these lookups. Nothing is stored or logged, and nothing reaches this site.",
     units: "Units",
     metric: "Metric",
     imperial: "Imperial",
@@ -98,6 +107,7 @@ const en = {
       planet: "Your planet",
     },
     stat: {
+      location: "Location",
       coordinates: "Coordinates",
       inDegrees: "In degrees",
       utm: "UTM square",
@@ -120,8 +130,68 @@ const en = {
       spinSpeed: "Spin speed",
       toEquator: "To the equator",
       toOaxaca: "To Oaxaca",
-      nearestMine: "Nearest place I have been",
-      antipode: "Straight down and out",
+      antipode: "Other side of the planet",
+    },
+    sections: {
+      space: { title: "Space", note: "What the terrain, the rock and the map say about this point." },
+      time: { title: "Time", note: "Where this moment falls in the day, the month, the year and the century." },
+      air: { title: "Air", note: "The sky above you right now." },
+    },
+    terrain: {
+      title: "Terrain",
+      caption: "The 2 km around you, from a 90 m elevation model.",
+      slope: "Slope",
+      facing: "Facing",
+      flat: "Flat",
+      relief: "Relief",
+      highest: "Highest point",
+      grades: { gentle: "gentle", moderate: "moderate", steep: "steep", verySteep: "very steep" },
+      away: "{d} {dir}",
+      here: "right here",
+    },
+    bedrock: {
+      title: "Rock under you",
+      million: "million years",
+      thousand: "thousand years",
+      upTo: "Up to",
+      from: "from the",
+      none: "No mapped rock here. Most likely open water.",
+      kinds: {
+        sedimentary: "Sedimentary rock",
+        volcanic: "Volcanic rock",
+        plutonic: "Plutonic rock",
+        metamorphic: "Metamorphic rock",
+        igneous: "Igneous rock",
+        other: "Rock",
+      },
+    },
+    nearby: { title: "Nearby on Wikipedia", none: "No articles within 10 km." },
+    clock: {
+      title: "Your clock",
+      ahead: "Your clock runs {n} min ahead of the sun.",
+      behind: "Your clock runs {n} min behind the sun.",
+      even: "Your clock matches the sun.",
+    },
+    moon: {
+      title: "Moon",
+      lit: "{n}% lit",
+      phases: ["New moon", "Waxing crescent", "First quarter", "Waxing gibbous", "Full moon", "Waning gibbous", "Last quarter", "Waning crescent"],
+    },
+    then: {
+      title: "This day in 1950",
+      body: "The high here on this date in 1950 was {then}. Today's forecast high is {now}.",
+      warmer: "{d} warmer",
+      cooler: "{d} cooler",
+      same: "About the same",
+    },
+    year: { title: "Your year", body: "Day {n} of {total}" },
+    windFrom: "from",
+    uvLevel: {
+      low: "Low",
+      moderate: "Moderate",
+      high: "High",
+      veryHigh: "Very high",
+      extreme: "Extreme",
     },
     daytime: "Daytime",
     night: "Night",
@@ -151,15 +221,22 @@ const en = {
   background: {
     heading: "Background",
     education: "Education",
+    // One quiet line under the heading: how the education was paid for
+    // and what the classrooms were like. The map says where; this says how.
+    educationNote:
+      "I studied on scholarships the whole way, across seven countries, with classmates from more than 90 nationalities.",
     experience: "Experience",
     ports: "ports",
     cities: "cities",
     itinerary: "The itinerary ↗",
     // The map's play control. It says what you get and how long it takes:
-    // "Play my journey" said neither, and a reader deciding whether to
-    // press something wants to know it costs ten seconds.
-    playJourney: "The story in 10 seconds",
+    // a reader deciding whether to press something wants to know the cost.
+    playJourney: "Play the journey · 14s",
     stopJourney: "Stop",
+    // How each leg was travelled: the key on the map, and the start of the
+    // caption while a leg plays ("Flight · Oaxaca → Aguascalientes").
+    flight: "Flight",
+    sea: "By ship",
     fullCv: {
       before: "The bullets, the tools and the dates in full are in the ",
       link: "CV below",
@@ -192,6 +269,7 @@ const en = {
     // where the tools are should find the word they are looking for.
     heading: "Skills",
     downloadPdf: "Download my CV",
+    cvMeta: "One page · PDF · Sep 2026",
   },
 
   testimonials: {
@@ -199,19 +277,42 @@ const en = {
     // marketing-page word and it primes a reader to discount whatever is
     // under it; the first is a description of who is about to speak.
     heading: "People I've worked with",
+    intro: "Pick a name to read what they said.",
+    verify: "View profile",
+    project: "Project",
+    placeholder: "Placeholder",
   },
 
   services: {
     heading: "Work with me",
-    lede: "I build geospatial tools for wildfire and climate problems. Scrappy enough to start from scratch, structured enough to hand it off clean. Independent or alongside your team.",
-    book: "Book a 30-minute call ↗",
+    lede: "I build end-to-end geospatial products for wildfire and climate work, from the first question to a tool running in production.",
+    pipeline: "One person, the whole product",
+    callBefore: "Rates, including NGO and pro bono options, are on the ",
+    callLink: "pricing page",
+    callAfter: ".",
+    book: "Book a 30-minute call",
     brief: "or send a brief instead",
+  },
+
+  pricing: {
+    // The route's <title>, run through the layout's "%s — name" template.
+    metaTitle: "Pricing",
+    metaDescription:
+      "Geospatial consulting: research, building and design. $65 USD/hour base rate, fixed-price projects, reduced rates for NGOs, and pro bono work for mission-aligned climate projects.",
+    eyebrow: "Work with me",
+    heading: "Pricing",
+    lede: "Four ways to work together. Every project starts with a 30-minute call.",
+    talkHeading: "Let's talk",
+    talkBody:
+      "Tell me what you're working on and we'll find the right fit.",
+    book: "Book a 30-minute call",
+    brief: "or send me a message",
   },
 
   contact: {
     heading: "Get In Touch",
     close: "Close",
-    book: "Book 30 minutes ↗",
+    book: "Book 30 minutes",
     preferDirect: "Prefer to chat directly?",
     emailMeAt: "Email me at",
     name: "Name",
@@ -220,11 +321,11 @@ const en = {
     message: "Message",
     send: "Send",
     sending: "Sending…",
-    sent: "Sent — thanks, I'll reply soon.",
+    sent: "Sent. Thanks, I'll reply soon.",
     openedClient:
-      "Opened your email client with this filled in — hit send there to reach me.",
+      "Your email app opened with this message filled in. Hit send there to reach me.",
     failed:
-      "Something went wrong — try the email link above instead.",
+      "Something went wrong. Try the email link above instead.",
     defaultSubject: "Portfolio contact",
   },
 
@@ -250,6 +351,7 @@ const es: UiStrings = {
     home: "Inicio",
     background: "Trayectoria",
     wall: "Mi Muro",
+    pricing: "Tarifas",
     cta: "Trabajemos juntos",
     ctaShort: "Hablemos",
     language: "Idioma",
@@ -257,8 +359,9 @@ const es: UiStrings = {
 
   hero: {
     pitch:
-      "Ingeniero geoespacial enfocado en incendios forestales y riesgo climático. Convierto datos satelitales, de terreno y de sensores en herramientas en las que la gente confía: lo bastante ágil para empezar de cero, lo bastante ordenado para entregarlo limpio, por mi cuenta o dentro de tu equipo.",
+      "Soy ingeniero geoespacial y trabajo en riesgo de incendios forestales y riesgo climático. Convierto datos satelitales, de terreno y de sensores en mapas, modelos y herramientas que los equipos usan todos los días. Puedo arrancar un proyecto desde cero o sumarme al tuyo.",
     aboutYou: "Sobre ti",
+    workedWith: "He trabajado con",
     aboutYouHook: "¿Dónde estás, en realidad?",
     aboutYouOpen: "Descúbrelo",
     yourClock: "Tu reloj",
@@ -268,14 +371,19 @@ const es: UiStrings = {
 
   aboutYou: {
     title: "Sobre ti",
-    subtitle: "El suelo bajo quien esté leyendo",
+    subtitle: "Dónde estás en el tiempo y el espacio",
     close: "Cerrar",
     intro:
-      "Dame tus coordenadas y te digo la altura del suelo bajo tus pies, qué ciudad de mi vida está a esa misma altura, qué está haciendo el aire, y a qué velocidad te lleva el planeta hacia el este.",
+      "Una ubicación son dos números, y esos dos números guardan muchísimo tiempo y espacio. Este panel cruza la tuya con datos públicos: el terreno bajo tus pies, la roca que hay debajo, los lugares cercanos sobre los que alguien ha escrito, en qué punto del día y del año cae este momento, cómo se compara hoy con el mismo día de 1950 y cómo está el cielo ahora. Es una pequeña muestra de todo lo que se puede leer a partir de un solo punto.",
+    notCollected:
+      "No se recopila nada. Tus coordenadas van directo de tu navegador a los servicios públicos de abajo y nunca llegan a este sitio.",
+    sourcesLabel: "Fuentes",
+    sources:
+      "Modelo de elevación Copernicus de 90 m y ERA5 vía Open-Meteo · Geología de Macrostrat · OpenStreetMap · Wikipedia",
     denied:
-      "Sin coordenadas, que es una respuesta perfectamente válida. Aquí va la misma lectura para mi propia calle.",
+      "Sin coordenadas, y está perfecto. Te dejo los mismos datos, pero de mi calle.",
     error:
-      "Open-Meteo no respondió. Es un servicio gratuito, así que inténtalo de nuevo en un momento.",
+      "Los servicios de datos no respondieron. Son gratuitos y públicos, así que vuelve a intentarlo en un momento.",
     locate: "Ubícame",
     locating: "Preguntando a tu navegador",
     reading: "Leyendo el terreno",
@@ -284,12 +392,12 @@ const es: UiStrings = {
     you: "tú",
     clear: "Limpiar",
     privacy:
-      "Las coordenadas van a open-meteo.com para la consulta y a ningún otro lado. No se guardan, no se registran, y no se envían a este sitio.",
+      "Tus coordenadas solo se mandan a Open-Meteo, Macrostrat, OpenStreetMap y Wikipedia para estas consultas. No se guarda ni se registra nada, y nada llega a este sitio.",
     units: "Unidades",
     metric: "Métrico",
     imperial: "Imperial",
     aboveSeaLevel: "sobre el nivel del mar, más o menos la altura de",
-    toTheMetre: ", al metro.",
+    toTheMetre: ", al metro exacto.",
     apart: ", con {gap} de diferencia.",
     groups: {
       ground: "Tu terreno",
@@ -298,12 +406,13 @@ const es: UiStrings = {
       planet: "Tu planeta",
     },
     stat: {
+      location: "Ubicación",
       coordinates: "Coordenadas",
       inDegrees: "En grados",
       utm: "Cuadrícula UTM",
       fix: "Precisión",
       temperature: "Temperatura",
-      feelsLike: "Sensación",
+      feelsLike: "Sensación térmica",
       humidity: "Humedad",
       wind: "Viento",
       cloud: "Nubosidad",
@@ -320,8 +429,68 @@ const es: UiStrings = {
       spinSpeed: "Velocidad de giro",
       toEquator: "Al ecuador",
       toOaxaca: "A Oaxaca",
-      nearestMine: "El lugar mío más cercano",
-      antipode: "Recto hacia abajo y al otro lado",
+      antipode: "Del otro lado del planeta",
+    },
+    sections: {
+      space: { title: "Espacio", note: "Lo que el terreno, la roca y el mapa dicen de este punto." },
+      time: { title: "Tiempo", note: "Dónde cae este momento en el día, el mes, el año y el siglo." },
+      air: { title: "Aire", note: "El cielo sobre ti ahora mismo." },
+    },
+    terrain: {
+      title: "Terreno",
+      caption: "Los 2 km a tu alrededor, según un modelo de elevación de 90 m.",
+      slope: "Pendiente",
+      facing: "Orientación",
+      flat: "Plano",
+      relief: "Desnivel",
+      highest: "Punto más alto",
+      grades: { gentle: "suave", moderate: "moderada", steep: "fuerte", verySteep: "muy fuerte" },
+      away: "a {d} al {dir}",
+      here: "aquí mismo",
+    },
+    bedrock: {
+      title: "La roca bajo tus pies",
+      million: "millones de años",
+      thousand: "mil años",
+      upTo: "Hasta",
+      from: "del",
+      none: "No hay roca cartografiada aquí. Lo más probable es que sea agua.",
+      kinds: {
+        sedimentary: "Roca sedimentaria",
+        volcanic: "Roca volcánica",
+        plutonic: "Roca plutónica",
+        metamorphic: "Roca metamórfica",
+        igneous: "Roca ígnea",
+        other: "Roca",
+      },
+    },
+    nearby: { title: "Cerca de ti en Wikipedia", none: "No hay artículos a menos de 10 km." },
+    clock: {
+      title: "Tu reloj",
+      ahead: "Tu reloj va {n} min adelantado respecto al sol.",
+      behind: "Tu reloj va {n} min atrasado respecto al sol.",
+      even: "Tu reloj coincide con el sol.",
+    },
+    moon: {
+      title: "Luna",
+      lit: "{n}% iluminada",
+      phases: ["Luna nueva", "Luna creciente", "Cuarto creciente", "Gibosa creciente", "Luna llena", "Gibosa menguante", "Cuarto menguante", "Luna menguante"],
+    },
+    then: {
+      title: "Este día en 1950",
+      body: "La máxima aquí en esta fecha de 1950 fue de {then}. Para hoy se pronostica {now}.",
+      warmer: "{d} más cálido",
+      cooler: "{d} más fresco",
+      same: "Casi igual",
+    },
+    year: { title: "Tu año", body: "Día {n} de {total}" },
+    windFrom: "del",
+    uvLevel: {
+      low: "Bajo",
+      moderate: "Moderado",
+      high: "Alto",
+      veryHigh: "Muy alto",
+      extreme: "Extremo",
     },
     daytime: "De día",
     night: "De noche",
@@ -341,8 +510,8 @@ const es: UiStrings = {
       good: "Buena",
       moderate: "Moderada",
       sensitive: "Dañina para grupos sensibles",
-      unhealthy: "Dañina",
-      veryUnhealthy: "Muy dañina",
+      unhealthy: "Dañina a la salud",
+      veryUnhealthy: "Muy dañina a la salud",
       hazardous: "Peligrosa",
     },
   },
@@ -350,16 +519,20 @@ const es: UiStrings = {
   background: {
     heading: "Trayectoria",
     education: "Formación",
+    educationNote:
+      "Estudié con becas de principio a fin, en siete países y con compañeros de más de 90 nacionalidades.",
     experience: "Experiencia",
     ports: "puertos",
     cities: "ciudades",
     itinerary: "El itinerario ↗",
-    playJourney: "La historia en 10 segundos",
+    playJourney: "Ver el recorrido · 14 s",
     stopJourney: "Detener",
+    flight: "Vuelo",
+    sea: "En barco",
     fullCv: {
       before: "Los detalles, las herramientas y las fechas completas están en el ",
       link: "CV de abajo",
-      after: ", en los dos sabores.",
+      after: ", en sus dos versiones.",
     },
     newTab: " (abre en una pestaña nueva)",
     expand: "Ver más",
@@ -372,31 +545,54 @@ const es: UiStrings = {
   wall: {
     heading: "Mi Muro",
     skip: "Saltar el Muro",
-    note: "Mis propios proyectos, junto a trabajo que admiro en incendios forestales y adaptación climática. Le voy agregando cosas.",
-    scrollHint: "Mi Muro — desplázate de lado para navegar",
+    note: "Mis proyectos, junto a trabajos que admiro sobre incendios forestales y adaptación al cambio climático. Lo voy actualizando.",
+    scrollHint: "Mi Muro: desliza hacia los lados para recorrerlo",
     readOriginal: "Leer el original ↗",
   },
 
   skills: {
     heading: "Herramientas",
     downloadPdf: "Descarga mi CV",
+    cvMeta: "Una página · PDF · sep 2026",
   },
 
   testimonials: {
     heading: "Gente con la que he trabajado",
+    intro: "Elige un nombre para leer lo que dijo.",
+    verify: "Ver perfil",
+    project: "Proyecto",
+    placeholder: "Ejemplo",
   },
 
   services: {
     heading: "Trabajemos juntos",
-    lede: "Construyo herramientas geoespaciales para problemas de incendios y clima. Lo bastante ágil para empezar de cero, lo bastante ordenado para entregarlo limpio. Por mi cuenta o junto a tu equipo.",
-    book: "Agenda 30 minutos ↗",
+    lede: "Construyo productos geoespaciales de principio a fin para incendios y clima, desde la primera pregunta hasta una herramienta en producción.",
+    pipeline: "Una sola persona, el producto completo",
+    callBefore: "Las tarifas, con opciones para ONG y pro bono, están en la ",
+    callLink: "página de tarifas",
+    callAfter: ".",
+    book: "Agenda una llamada de 30 minutos",
     brief: "o mándame un resumen del proyecto",
+  },
+
+  pricing: {
+    metaTitle: "Tarifas",
+    metaDescription:
+      "Consultoría geoespacial: investigación, desarrollo y diseño. Tarifa base de 65 USD por hora, proyectos con precio cerrado, tarifas reducidas para ONG y trabajo pro bono para proyectos climáticos con los que comparto causa.",
+    eyebrow: "Trabajemos juntos",
+    heading: "Tarifas",
+    lede: "Hay cuatro formas de trabajar juntos. Todo proyecto empieza con una llamada de 30 minutos.",
+    talkHeading: "Hablemos",
+    talkBody:
+      "Cuéntame en qué estás trabajando y encontramos la mejor opción.",
+    book: "Agenda una llamada de 30 minutos",
+    brief: "o mándame un mensaje",
   },
 
   contact: {
     heading: "Hablemos",
     close: "Cerrar",
-    book: "Agenda 30 minutos ↗",
+    book: "Agenda una llamada",
     preferDirect: "¿Prefieres escribir directamente?",
     emailMeAt: "Escríbeme a",
     name: "Nombre",
@@ -405,11 +601,11 @@ const es: UiStrings = {
     message: "Mensaje",
     send: "Enviar",
     sending: "Enviando…",
-    sent: "Enviado — gracias, te respondo pronto.",
+    sent: "Enviado. Gracias, te contesto pronto.",
     openedClient:
-      "Abrí tu cliente de correo con esto ya escrito — dale enviar ahí para que me llegue.",
+      "Se abrió tu correo con el mensaje ya escrito. Solo dale enviar.",
     failed:
-      "Algo salió mal — prueba con el enlace de correo de arriba.",
+      "Algo salió mal. Mejor escríbeme al correo de arriba.",
     defaultSubject: "Contacto desde el portafolio",
   },
 

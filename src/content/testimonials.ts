@@ -33,10 +33,10 @@ import type { Phrase } from "./i18n";
 //    both versions, use both. `role` and `relation` are mine to write, so
 //    those translate freely.
 //
-// The section renders nothing at all while this array is empty — see
-// Testimonials.tsx. That is deliberate: a "Testimonials" heading over a
-// placeholder is worse than no section, and this file is the only thing
-// that needs to change to turn it on.
+// In production the section renders nothing while this array is empty: a
+// heading over placeholders is worse than no section. In development it
+// renders three clearly marked placeholders, so the layout can be worked
+// on before the first real quote arrives. See Testimonials.tsx.
 
 export type Testimonial = {
   /** Their words, in the language they said them in. See rule 4. */
@@ -54,6 +54,12 @@ export type Testimonial = {
    *  worth having — a quote with a name you can check is a different
    *  object from a quote with a name you cannot. */
   href?: string;
+  /** The organisation, shown beside the role. */
+  org?: string;
+  /** Which piece of work the quote is about, when it is about one. */
+  project?: Phrase;
+  /** A portrait they sent, under /public. Initials stand in without one. */
+  photoSrc?: string;
 };
 
 // EMPTY ON PURPOSE. Add entries and the section appears on its own.

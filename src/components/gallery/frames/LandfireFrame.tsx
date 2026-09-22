@@ -113,7 +113,7 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
           (~700) draw straight over it. */}
       <div
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
-        className="pointer-events-none absolute inset-x-3 bottom-3 border border-white/15 bg-black/70 p-3 backdrop-blur-sm sm:inset-x-auto sm:bottom-auto sm:left-5 sm:top-1/2 sm:max-w-[30%] sm:-translate-y-1/2 sm:p-4"
+        className="pointer-events-none absolute inset-x-3 bottom-3 border border-white/15 bg-black/70 p-3 backdrop-blur-sm sm:inset-x-auto sm:bottom-auto sm:left-5 sm:top-1/2 sm:max-w-[30%] sm:-translate-y-1/2 sm:p-4 transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100"
       >
         <Image
           src="/logos/landfire.png"
@@ -127,12 +127,6 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
           mapping vegetation, wildland fuel and disturbance across the entire
           country at 30-metre resolution.
         </p>
-        {/* The second half is why it's on a wildfire portfolio at all, but
-            it's the first thing to go when the tile is narrow. */}
-        <p className="mt-2 hidden text-[11px] leading-snug text-white/60 sm:block sm:text-xs">
-          Fuel layers like this one are what fire-behaviour models read to
-          work out where a fire can spread, and how hot it burns.
-        </p>
       </div>
 
       <TileLabel title={frame.title} />
@@ -142,9 +136,9 @@ export function LandfireFrameCell({ frame, onFail }: FrameCellProps<LandfireFram
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
-        className="absolute right-2 top-2 border-2 border-white/40 bg-black/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-white/80 transition-colors hover:border-white hover:text-white"
+        className="absolute right-2 top-2 border-2 border-white/40 bg-black/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-white/80 hover:border-white hover:text-white transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100"
       >
-        Open official viewer ↗
+        Open official viewer
       </a>
     </div>
   );

@@ -43,7 +43,11 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             Testimonials — other people's words, which is the one claim I
                          cannot make myself. Renders nothing until there
                          are any; see content/testimonials.ts.
-            Services   — the ask, once everything above has earned it.
+
+            Services   — what I do and how to start, once everything above
+                         has earned it. The rates are not in this run:
+                         they are the Pricing page, /[lang]/pricing, the
+                         one route outside the scroll, linked from here.
 
             A "Capabilities" band sat between Background and the Wall for
             one deploy — a "Worked with" logo row and four what-I-do cards.
@@ -61,8 +65,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Hero />
         <Background />
         <Wall />
-        <Testimonials />
         <Services />
+        <Testimonials />
       </main>
       <Footer />
       <ContactModal strings={ui.contact} />

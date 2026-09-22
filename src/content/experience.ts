@@ -21,6 +21,11 @@ export type Job = {
    *  changed. Three short lines, always in that order, so a reader who
    *  opens one entry knows where to look in the next. */
   details: { problem: Phrase; tech: Phrase; impact: Phrase };
+  /** One or two results, set large on screen. Figures from the CV only;
+   *  a number here has to be one I can defend in an interview. */
+  stats: { value: Phrase; label: Phrase }[];
+  /** The tools, as short chips under the headline. */
+  stack: string[];
   /** How it was actually done — three or four. PRINT ONLY: on paper they
    *  sit under the role they were used on, which is where a skill is
    *  evidence rather than a claim. On screen they were a red all-caps
@@ -73,7 +78,7 @@ const allJobs: Job[] = [
       label: { en: "Camera Network Intelligence", es: "Inteligencia para redes de cámaras" },
       line: {
         en: "Siting wildfire cameras with terrain algorithms instead of guesswork.",
-        es: "Ubicar cámaras de incendios con algoritmos de terreno en lugar de a ojo.",
+        es: "Ubicar cámaras contra incendios con algoritmos de terreno, no a ojo.",
       },
     },
     details: {
@@ -90,6 +95,11 @@ const allJobs: Job[] = [
         es: "Reemplacé la estimación manual con una puntuación automatizada para maximizar la cobertura de las cámaras.",
       },
     },
+    stats: [
+      { value: "1,000+", label: { en: "critical assets ranked by camera coverage", es: "activos críticos clasificados por cobertura de cámaras" } },
+      { value: "0 to 40%", label: { en: "of high-risk zones with measured coverage", es: "de zonas de alto riesgo con cobertura medida" } },
+    ],
+    stack: ["Python", "GeoPandas", "Rasterio", "Shapely", "SciPy", "ArcGIS"],
     methods: [
       { en: "Viewshed analysis", es: "Análisis de cuencas visuales" },
       { en: "Network coverage", es: "Cobertura de red" },
@@ -98,7 +108,7 @@ const allJobs: Job[] = [
     ],
     what: {
       en: "Early wildfire detection, from a network of mountaintop cameras watching for smoke.",
-      es: "Detección temprana de incendios, desde una red de cámaras en cumbres vigilando el humo.",
+      es: "Detección temprana de incendios con una red de cámaras en cerros y montañas que vigilan el humo.",
     },
     href: "https://www.pano.ai",
     logoSrc: "/logos/pano-ai.svg",
@@ -134,13 +144,13 @@ const allJobs: Job[] = [
       label: { en: "Community-Driven Risk", es: "Riesgo desde la comunidad" },
       line: {
         en: "Self-updating fire maps built for local tiger reserve teams.",
-        es: "Mapas de incendio que se actualizan solos, hechos para los equipos locales de las reservas de tigres.",
+        es: "Mapas de riesgo de incendio que se actualizan solos, hechos para los equipos de las reservas de tigres.",
       },
     },
     details: {
       problem: {
         en: "Reserve teams lacked software tools to track seasonal fire risks on their own.",
-        es: "Los equipos de las reservas no tenían herramientas para seguir por su cuenta el riesgo estacional de incendio.",
+        es: "Los equipos de las reservas no tenían cómo dar seguimiento por su cuenta al riesgo de incendio de cada temporada.",
       },
       tech: {
         en: "Python, Analytic Hierarchy Process (AHP) weighting, Sentinel-2 satellite data.",
@@ -148,9 +158,13 @@ const allJobs: Job[] = [
       },
       impact: {
         en: "Delivered an automated fire index map that updates daily based on field input.",
-        es: "Entregué un mapa automatizado de índice de incendio que se actualiza a diario con información de campo.",
+        es: "Entregué un mapa de índice de incendio que se actualiza solo, todos los días, con información de campo.",
       },
     },
+    stats: [
+      { value: { en: "Daily", es: "A diario" }, label: { en: "fire-risk updates for tiger reserve teams", es: "actualizaciones de riesgo de incendio para las reservas" } },
+    ],
+    stack: ["Python", "Sentinel-2", "AHP", "Field data"],
     methods: [
       { en: "Multi-source fusion", es: "Fusión de múltiples fuentes" },
       { en: "AHP weighting", es: "Ponderación AHP" },
@@ -179,8 +193,8 @@ const allJobs: Job[] = [
     // Prose rather than bullets: this role was one sustained piece of work,
     // and splitting it into three achievement lines would pad it.
     summary: {
-      en: "Built a continuously updating fire-index map for a team without the resources to assess fire potential on their own, using AHP (analytic hierarchy process) to weight the factors feeding the index — shaped throughout by conversations with the people who would end up relying on it.",
-      es: "Construí un mapa de índice de incendio en actualización continua para un equipo sin recursos para evaluar el potencial de fuego por su cuenta, usando AHP (proceso analítico jerárquico) para ponderar los factores que alimentan el índice — moldeado de principio a fin por las conversaciones con quienes terminarían dependiendo de él.",
+      en: "Built a continuously updating fire-index map for a team without the resources to assess fire potential on their own, using AHP (analytic hierarchy process) to weight the factors feeding the index, and shaped it throughout with the people who would end up relying on it.",
+      es: "Construí un mapa de índice de incendio en actualización continua para un equipo sin recursos para evaluar el potencial de fuego por su cuenta, usando AHP (proceso analítico jerárquico) para ponderar los factores del índice. Lo diseñé de principio a fin junto con las personas que iban a depender de él.",
     },
     bullets: [],
   },
@@ -191,13 +205,13 @@ const allJobs: Job[] = [
       label: { en: "Full-Stack Simulation", es: "Simulación full-stack" },
       line: {
         en: "Connecting 5+ APIs to run and display live fire-spread models.",
-        es: "Conectando más de 5 APIs para correr y mostrar modelos de propagación de incendios en vivo.",
+        es: "Más de 5 APIs conectadas para correr y mostrar en vivo modelos de propagación de incendios.",
       },
     },
     details: {
       problem: {
         en: "Fire spread models were locked in raw data formats that field teams couldn't use.",
-        es: "Los modelos de propagación estaban atrapados en formatos de datos crudos que los equipos de campo no podían usar.",
+        es: "Los modelos de propagación solo existían en formatos de datos crudos que los equipos de campo no podían usar.",
       },
       tech: {
         en: "React, D3.js, Python, 5 external APIs (Copernicus, LANDFIRE, Sentinel-2).",
@@ -205,9 +219,14 @@ const allJobs: Job[] = [
       },
       impact: {
         en: "Built a modular backend runner and UI processing 1,000+ daily simulation runs.",
-        es: "Construí un ejecutor backend modular y una interfaz que procesan más de 1,000 simulaciones al día.",
+        es: "Construí un backend modular y una interfaz que procesan más de 1,000 simulaciones al día.",
       },
     },
+    stats: [
+      { value: "1,000+", label: { en: "fire-spread simulations a day", es: "simulaciones de propagación al día" } },
+      { value: "5+", label: { en: "data APIs connected", es: "APIs de datos conectadas" } },
+    ],
+    stack: ["React", "D3.js", "Python", "Docker", "LANDFIRE", "ERA5", "Copernicus"],
     methods: [
       { en: "Cloud infrastructure", es: "Infraestructura en la nube" },
       { en: "Full stack", es: "Full stack" },
@@ -268,9 +287,14 @@ const allJobs: Job[] = [
       },
       impact: {
         en: "Flagged line anomalies early so crews could repair grid issues before blackouts hit.",
-        es: "Marqué anomalías en las líneas a tiempo para que las cuadrillas repararan antes de los apagones.",
+        es: "Detecté anomalías en las líneas a tiempo para que las cuadrillas repararan antes de un apagón.",
       },
     },
+    stats: [
+      { value: "2,000+", label: { en: "grid anomaly alerts investigated", es: "alertas de anomalías en la red investigadas" } },
+      { value: "100+", label: { en: "critical events escalated to on-call", es: "eventos críticos escalados a guardia" } },
+    ],
+    stack: ["Python", "Pandas", "Grafana", "Time series"],
     methods: [
       { en: "Sensor data", es: "Datos de sensores" },
       { en: "Statistical diagnosis", es: "Diagnóstico estadístico" },

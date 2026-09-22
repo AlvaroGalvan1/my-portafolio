@@ -1,8 +1,8 @@
 "use client";
 
+import { cityName } from "@/content/cityNames";
 import { useState } from "react";
-import { MINE_LABEL, nearestByElevation, type ElevationCity } from "@/content/elevations";
-import { places } from "@/content/places";
+import { MINE_LABEL } from "@/content/elevations";
 import { fill, type Locale } from "@/content/i18n";
 import type { UiStrings } from "@/content/ui";
 import { useUnitSystem } from "@/lib/useUnitSystem";
@@ -23,18 +23,21 @@ import {
   distanceKm,
   distanceToEquatorKm,
   formatDuration,
-  skyKind,
   solarNoon,
   spinSpeedKmh,
   toDms,
   utmZone,
   type AqiBand,
-  type SkyKind,
 } from "./stats";
+import { Caption, Compass, Dial, Figure, Globe, Icons, Moon, Progress, RampBar, Ring, SunArc, TerrainMap, Tile } from "./tiles";
+import { moonPhase, readGround, type Reading } from "./reading";
 
 // The one thing on this site that is about the visitor rather than about
 // me. Everything else here says "I work with location data"; this does it
-// to you.
+// to you. It reads one coordinate pair against public data and lays out
+// what comes back as space (terrain, rock, place), time (clock, sun, moon,
+// year, 1950) and air (the weather), in that order: the weather is the
+// least surprising thing a location can tell you, so it goes last.
 //
 // Four rules, and they are the difference between a demonstration and an
 // annoyance:
@@ -52,48 +55,14 @@ import {
 //      see lib/units.ts for how the guess is made and lib/useUnitSystem.ts
 //      for how the override is kept.
 
-const ELEVATION_API = "https://api.open-meteo.com/v1/elevation";
-const FORECAST_API = "https://api.open-meteo.com/v1/forecast";
-const AIR_QUALITY_API = "https://air-quality-api.open-meteo.com/v1/air-quality";
-
-/** Home, for the distance line. Not a pin in places.ts, which holds the
- *  campuses and the ports: Oaxaca is where I am from rather than somewhere
- *  I went, so it has never needed a marker. */
+/** Home, for the distance line. */
 const OAXACA = { name: "Oaxaca", lat: 17.0732, lon: -96.7266 };
 
-/** Where the fallback runs. The Mission, which the hero has already told
- *  the reader is where I live, so declining the permission still gives a
- *  real readout of a real place. */
+/** Where the fallback runs: the Mission, which the hero has already told
+ *  the reader is where I live. */
 export const FALLBACK = { lat: 37.7599, lon: -122.4148 };
 
 type Strings = UiStrings["aboutYou"];
-
-type Reading = {
-  lat: number;
-  lon: number;
-  accuracy?: number;
-  /** "you" or "my street", already in the reader's language. */
-  place: string;
-  elevation: number;
-  twin: ElevationCity;
-  utcOffsetSeconds: number;
-  temperature: number;
-  feelsLike: number;
-  humidity: number;
-  wind: number;
-  windDirection: number;
-  cloud: number;
-  pressure: number;
-  sky: SkyKind;
-  isDay: boolean;
-  sunrise: string;
-  sunset: string;
-  daylightSeconds: number;
-  uvMax: number;
-  /** Absent when the air-quality host is the one that fails. The rest of
-   *  the readout is worth showing without it. */
-  air?: { pm25: number; pm10: number; usAqi: number };
-};
 
 type Status =
   | { kind: "idle" }
@@ -103,112 +72,14 @@ type Status =
   | { kind: "denied" }
   | { kind: "error" };
 
-async function readGround(
-  lat: number,
-  lon: number,
-  place: string,
-  accuracy?: number,
-): Promise<Reading> {
-  // Elevation is its own request rather than the one the forecast carries.
-  // The forecast's figure is the weather model's grid cell, tens of
-  // kilometres across, and in mountains it can be a thousand metres out.
-  // This endpoint reads a 90m digital elevation model at the point.
-  const [elevationRes, forecastRes, airRes] = await Promise.all([
-    fetch(`${ELEVATION_API}?latitude=${lat}&longitude=${lon}`),
-    fetch(
-      `${FORECAST_API}?latitude=${lat}&longitude=${lon}` +
-        "&current=temperature_2m,apparent_temperature,relative_humidity_2m," +
-        "wind_speed_10m,wind_direction_10m,cloud_cover,pressure_msl,weather_code,is_day" +
-        "&daily=sunrise,sunset,daylight_duration,uv_index_max" +
-        "&timezone=auto&forecast_days=1",
-    ),
-    // Allowed to fail on its own: air quality is a different host, and a
-    // readout missing one row beats a readout that refused to appear.
-    fetch(
-      `${AIR_QUALITY_API}?latitude=${lat}&longitude=${lon}&current=pm2_5,pm10,us_aqi`,
-    ).catch(() => null),
-  ]);
-
-  if (!elevationRes.ok || !forecastRes.ok) throw new Error("lookup failed");
-
-  const elevationJson = (await elevationRes.json()) as { elevation: number[] };
-  const forecast = (await forecastRes.json()) as {
-    utc_offset_seconds: number;
-    current: {
-      temperature_2m: number;
-      apparent_temperature: number;
-      relative_humidity_2m: number;
-      wind_speed_10m: number;
-      wind_direction_10m: number;
-      cloud_cover: number;
-      pressure_msl: number;
-      weather_code: number;
-      is_day: number;
-    };
-    daily: {
-      sunrise: string[];
-      sunset: string[];
-      daylight_duration: number[];
-      uv_index_max: number[];
-    };
-  };
-
-  let air: Reading["air"];
-  if (airRes && airRes.ok) {
-    const airJson = (await airRes.json()) as {
-      current: { pm2_5: number; pm10: number; us_aqi: number };
-    };
-    air = {
-      pm25: airJson.current.pm2_5,
-      pm10: airJson.current.pm10,
-      usAqi: airJson.current.us_aqi,
-    };
-  }
-
-  const elevation = elevationJson.elevation?.[0] ?? 0;
-
-  return {
-    lat,
-    lon,
-    accuracy,
-    place,
-    elevation,
-    twin: nearestByElevation(elevation),
-    utcOffsetSeconds: forecast.utc_offset_seconds,
-    // Always requested in Celsius, km/h and hPa, and converted at render.
-    // Asking Open-Meteo for imperial units instead would mean refetching
-    // the whole readout every time the toggle is pressed.
-    temperature: forecast.current.temperature_2m,
-    feelsLike: forecast.current.apparent_temperature,
-    humidity: forecast.current.relative_humidity_2m,
-    wind: forecast.current.wind_speed_10m,
-    windDirection: forecast.current.wind_direction_10m,
-    cloud: forecast.current.cloud_cover,
-    pressure: forecast.current.pressure_msl,
-    sky: skyKind(forecast.current.weather_code),
-    isDay: forecast.current.is_day === 1,
-    sunrise: forecast.daily.sunrise[0],
-    sunset: forecast.daily.sunset[0],
-    daylightSeconds: forecast.daily.daylight_duration[0],
-    uvMax: forecast.daily.uv_index_max[0],
-    air,
-  };
-}
-
-export default function WhereYouAre({
-  locale,
-  strings,
-}: {
-  locale: Locale;
-  strings: Strings;
-}) {
+export default function WhereYouAre({ locale, strings }: { locale: Locale; strings: Strings }) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [units, setUnits] = useUnitSystem();
 
   const run = async (lat: number, lon: number, place: string, accuracy?: number) => {
     setStatus({ kind: "reading" });
     try {
-      setStatus({ kind: "ready", reading: await readGround(lat, lon, place, accuracy) });
+      setStatus({ kind: "ready", reading: await readGround(lat, lon, place, locale, accuracy) });
     } catch {
       setStatus({ kind: "error" });
     }
@@ -222,19 +93,10 @@ export default function WhereYouAre({
     setStatus({ kind: "locating" });
     navigator.geolocation.getCurrentPosition(
       (position) =>
-        run(
-          position.coords.latitude,
-          position.coords.longitude,
-          strings.you,
-          position.coords.accuracy,
-        ),
-      // Refused, unavailable, timed out: all the same to this panel, which
-      // is no coordinates, so offer the fallback.
+        run(position.coords.latitude, position.coords.longitude, strings.you, position.coords.accuracy),
       () => setStatus({ kind: "denied" }),
-      // High accuracy because the precision is the point. The long timeout
-      // is for a cold GPS fix on a phone, which genuinely takes fifteen
-      // seconds outdoors and never resolves indoors; the cache window stops
-      // a second press waiting on the satellites twice.
+      // High accuracy because the precision is the point; the long timeout
+      // is for a cold GPS fix on a phone.
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
     );
   };
@@ -255,14 +117,19 @@ export default function WhereYouAre({
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <p className="max-w-[52ch] font-sans text-base leading-relaxed text-brand-maroon">
-        {status.kind === "denied"
-          ? strings.denied
-          : status.kind === "error"
-            ? strings.error
-            : strings.intro}
-      </p>
+    <div className="flex max-w-3xl flex-col gap-6">
+      {status.kind === "idle" || status.kind === "locating" || status.kind === "reading" ? (
+        <>
+          <p className="font-sans text-lg leading-relaxed text-brand-maroon">{strings.intro}</p>
+          <p className="border-l-4 border-brand-red pl-4 font-sans text-base font-semibold leading-snug text-brand-maroon">
+            {strings.notCollected}
+          </p>
+        </>
+      ) : (
+        <p className="font-sans text-base leading-relaxed text-brand-maroon">
+          {status.kind === "denied" ? strings.denied : strings.error}
+        </p>
+      )}
 
       <div className="flex flex-wrap gap-3">
         {status.kind !== "denied" && (
@@ -272,11 +139,7 @@ export default function WhereYouAre({
             disabled={status.kind === "locating" || status.kind === "reading"}
             className="border-2 border-brand-maroon bg-brand-maroon px-5 py-2.5 font-sans text-sm font-semibold text-brand-cream transition-colors hover:bg-transparent hover:text-brand-maroon disabled:opacity-60"
           >
-            {status.kind === "locating"
-              ? strings.locating
-              : status.kind === "reading"
-                ? strings.reading
-                : strings.locate}
+            {status.kind === "locating" ? strings.locating : status.kind === "reading" ? strings.reading : strings.locate}
           </button>
         )}
         <button
@@ -288,8 +151,29 @@ export default function WhereYouAre({
         </button>
       </div>
 
-      <Privacy text={strings.privacy} />
+      <Sources strings={strings} />
     </div>
+  );
+}
+
+function Sources({ strings }: { strings: Strings }) {
+  return (
+    <p className="font-sans text-xs leading-relaxed text-brand-maroon/60">
+      <span className="eyebrow mr-2 text-brand-maroon/70">{strings.sourcesLabel}</span>
+      {strings.sources}
+    </p>
+  );
+}
+
+function Section({ title, note, children }: { title: string; note: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-brand-maroon/15 pb-2">
+        <h3 className="font-[family-name:var(--font-display)] text-2xl text-brand-maroon">{title}</h3>
+        <p className="font-sans text-sm text-neutral-600">{note}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{children}</div>
+    </section>
   );
 }
 
@@ -308,160 +192,354 @@ function Readout({
   onUnits: (next: UnitSystem) => void;
   onReset: () => void;
 }) {
-  const { lat, lon, elevation, twin, accuracy, place, utcOffsetSeconds, air } = reading;
+  const { lat, lon, elevation, twin, accuracy, place, utcOffsetSeconds, air, terrain, bedrock, nearby } = reading;
+  const day = reading.isDay;
 
   const other = antipode(lat, lon);
   const twinGap = Math.abs(elevation - twin.metres);
   const headline = formatElevation(elevation, units, locale);
+  const dir = (deg: number) => compassPoint(deg).replace(/W/g, locale === "es" ? "O" : "W");
+  const cardinal = (locale === "es" ? ["N", "E", "S", "O"] : ["N", "E", "S", "W"]) as [string, string, string, string];
 
-  // The nearest pin on my own map. Ports and campuses both count: the
-  // question is which place in my life you are closest to, and a port I
-  // spent a day in is still an answer to that.
-  const mine = places.filter((p) => p.group !== "friends");
-  const nearest = mine.reduce((best, candidate) =>
-    distanceKm(lat, lon, candidate.lat, candidate.lon) <
-    distanceKm(lat, lon, best.lat, best.lon)
-      ? candidate
-      : best,
-  );
+  // ── Time, all on the reader's local clock ─────────────────────────
+  const minutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+  const local = new Date(reading.fetchedAt + utcOffsetSeconds * 1000);
+  const nowMin = local.getUTCHours() * 60 + local.getUTCMinutes();
+  const clock = `${String(local.getUTCHours()).padStart(2, "0")}:${String(local.getUTCMinutes()).padStart(2, "0")}`;
+  const rise = minutes(clockTime(reading.sunrise));
+  const set = minutes(clockTime(reading.sunset));
+  const dayProgress = set > rise ? (nowMin - rise) / (set - rise) : 0;
+  const noon = solarNoon(lon, utcOffsetSeconds, new Date(reading.fetchedAt));
+  const sunLag = minutes(noon) - 12 * 60;
+  const offsetH = utcOffsetSeconds / 3600;
+  const utc = `UTC${offsetH >= 0 ? "+" : "−"}${Math.abs(offsetH)}`;
+
+  const year = local.getUTCFullYear();
+  const startOfYear = Date.UTC(year, 0, 1);
+  const dayOfYear = Math.floor((Date.UTC(year, local.getUTCMonth(), local.getUTCDate()) - startOfYear) / 86_400_000) + 1;
+  const daysInYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 366 : 365;
+
+  const moon = moonPhase(reading.fetchedAt);
+
+  // Differences of temperature convert by the factor alone, not the offset.
+  const tempDiff = (c: number) => {
+    const v = units === "imperial" ? c * 1.8 : c;
+    return `${Math.abs(v).toFixed(1)}°`;
+  };
+
+  const uvBand =
+    reading.uvMax < 3 ? "low" : reading.uvMax < 6 ? "moderate" : reading.uvMax < 8 ? "high" : reading.uvMax < 11 ? "veryHigh" : "extreme";
+
+  const grade = (deg: number) =>
+    deg < 2 ? strings.terrain.flat : `${deg.toFixed(0)}°, ${strings.terrain.grades[deg < 5 ? "gentle" : deg < 15 ? "moderate" : deg < 30 ? "steep" : "verySteep"]}`;
+
+  const rockKind = (lith: string): keyof Strings["bedrock"]["kinds"] => {
+    const l = lith.toLowerCase();
+    if (l.includes("sediment")) return "sedimentary";
+    if (l.includes("volcan")) return "volcanic";
+    if (l.includes("plutonic") || l.includes("granit")) return "plutonic";
+    if (l.includes("metamorph")) return "metamorphic";
+    if (l.includes("igneous")) return "igneous";
+    return "other";
+  };
+  const age = (ma: number) =>
+    ma >= 1
+      ? { value: ma < 10 ? ma.toFixed(1) : Math.round(ma).toLocaleString(locale), unit: strings.bedrock.million }
+      : { value: Math.max(1, Math.round(ma * 1000)).toLocaleString(locale), unit: strings.bedrock.thousand };
 
   return (
-    <div className="flex flex-col gap-7">
-      {/* The headline: one number, and the sentence that makes it mean
-          something. A height is a fact nobody has intuition for until it is
-          a place — and, since this pass, until it is in the units the
-          reader grew up with. */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,8vw,4rem)] leading-none text-brand-red">
-            {headline.value}
-            <span className="ml-2 text-2xl text-brand-maroon/70">{headline.unit}</span>
+    <div className="flex flex-col gap-8">
+      {/* ── Where you are ───────────────────────────────────────────
+          The one card that answers the title: the place's name, the height
+          of the ground, and the city in my life at that same height.
+          Yellow by day, maroon at night. */}
+      <div
+        className={`grid gap-6 border-2 border-brand-maroon p-5 shadow-[5px_5px_0_var(--color-brand-maroon)] sm:grid-cols-[1.2fr_1fr] sm:p-6 ${
+          day ? "bg-brand-yellow text-brand-maroon" : "bg-brand-maroon text-brand-cream"
+        }`}
+      >
+        <div className="min-w-0">
+          <p className={`eyebrow ${day ? "text-brand-red" : "text-brand-yellow"}`}>
+            {place} · {day ? strings.daytime : strings.night}
           </p>
-          <p className="mt-3 max-w-[46ch] font-sans text-base leading-relaxed text-brand-maroon">
-            {strings.aboveSeaLevel}{" "}
-            <span className="font-semibold">{twin.name}</span>
-            {twin.mine ? `, ${MINE_LABEL[locale][twin.mine]}` : ""}
-            {/* "to the metre" is only true to the metre. Rounded into feet
-                a one-metre gap becomes three, so the exact-match sentence
-                is claimed on the underlying figure rather than the shown
-                one. */}
-            {Math.round(twinGap) === 0
-              ? strings.toTheMetre
-              : fill(strings.apart, {
-                  gap: formatHeightGap(twinGap, units, locale),
-                })}
+          <p className="mt-2 font-[family-name:var(--font-display)] text-[clamp(1.9rem,6vw,3rem)] leading-[1.05]">
+            {reading.placeName?.title ?? `${lat.toFixed(3)}, ${lon.toFixed(3)}`}
+          </p>
+          {reading.placeName?.line && <p className="mt-1 font-sans text-sm opacity-80">{reading.placeName.line}</p>}
+          <p className="mt-3 font-mono text-xs opacity-70">
+            {lat.toFixed(5)}, {lon.toFixed(5)}
           </p>
         </div>
-
-        <UnitToggle units={units} onUnits={onUnits} strings={strings} />
+        <div className={`sm:border-l-2 sm:pl-6 ${day ? "sm:border-brand-maroon/20" : "sm:border-brand-cream/20"}`}>
+          <p className={`eyebrow ${day ? "text-brand-red" : "text-brand-yellow"}`}>{strings.groups.ground}</p>
+          <p className="mt-2 font-[family-name:var(--font-display)] text-[clamp(2.25rem,7vw,3.25rem)] leading-none">
+            {headline.value}
+            <span className="ml-1.5 text-xl opacity-70">{headline.unit}</span>
+          </p>
+          <p className="mt-2 font-sans text-sm leading-snug">
+            {strings.aboveSeaLevel} <span className="font-semibold">{cityName(twin.name, locale)}</span>
+            {twin.mine ? `, ${MINE_LABEL[locale][twin.mine]}` : ""}
+            {/* "to the metre" is only true to the metre, so it is claimed on
+                the underlying figure rather than the rounded one shown. */}
+            {Math.round(twinGap) === 0 ? strings.toTheMetre : fill(strings.apart, { gap: formatHeightGap(twinGap, units, locale) })}
+          </p>
+        </div>
       </div>
 
-      <Group title={strings.groups.ground}>
-        <Stat label={strings.stat.coordinates} value={`${lat.toFixed(5)}, ${lon.toFixed(5)}`} />
-        <Stat label={strings.stat.inDegrees} value={`${toDms(lat, "lat")} ${toDms(lon, "lon")}`} />
-        <Stat label={strings.stat.utm} value={utmZone(lat, lon)} />
-        <Stat
-          label={strings.stat.fix}
-          value={
-            accuracy === undefined
-              ? place
-              : `${place}, ${formatHeightGap(accuracy, units, locale)}`
-          }
-        />
-      </Group>
-
-      <Group title={strings.groups.air}>
-        <Stat
-          label={strings.stat.temperature}
-          value={formatTemperature(reading.temperature, units, locale)}
-        />
-        <Stat
-          label={strings.stat.feelsLike}
-          value={formatTemperature(reading.feelsLike, units, locale)}
-        />
-        <Stat label={strings.stat.humidity} value={`${Math.round(reading.humidity)}%`} />
-        <Stat
-          label={strings.stat.wind}
-          value={`${formatSpeed(reading.wind, units, locale)} ${compassPoint(reading.windDirection)}`}
-        />
-        <Stat label={strings.stat.cloud} value={`${Math.round(reading.cloud)}%`} />
-        <Stat
-          label={strings.stat.pressure}
-          value={formatPressure(reading.pressure, units, locale)}
-        />
-        <Stat label={strings.stat.sky} value={strings.sky[reading.sky]} />
-        {air && (
-          <Stat
-            label={strings.stat.airQuality}
-            value={`${strings.aqi[aqiBand(air.usAqi) as AqiBand]}, AQI ${Math.round(air.usAqi)}`}
-          />
-        )}
-        {/* Micrograms per cubic metre in both systems, deliberately. There
-            is no imperial unit for particulate mass concentration that
-            anyone uses; every US air-quality source quotes µg/m³ too. */}
-        {air && (
-          <Stat
-            label={strings.stat.fineParticles}
-            value={`${air.pm25.toFixed(1)} µg/m³ PM2.5`}
-          />
-        )}
-      </Group>
-
-      <Group title={strings.groups.day}>
-        <Stat label={strings.stat.sunrise} value={clockTime(reading.sunrise)} />
-        <Stat label={strings.stat.sunset} value={clockTime(reading.sunset)} />
-        <Stat
-          label={strings.stat.daylight}
-          value={formatDuration(reading.daylightSeconds, locale)}
-        />
-        <Stat label={strings.stat.solarNoon} value={solarNoon(lon, utcOffsetSeconds)} />
-        <Stat
-          label={strings.stat.rightNow}
-          value={reading.isDay ? strings.daytime : strings.night}
-        />
-        <Stat label={strings.stat.peakUv} value={reading.uvMax.toFixed(1)} />
-      </Group>
-
-      <Group title={strings.groups.planet}>
-        <Stat
-          label={strings.stat.spinSpeed}
-          value={`${formatSpeed(spinSpeedKmh(lat), units, locale)} ${strings.east}`}
-        />
-        <Stat
-          label={strings.stat.toEquator}
-          value={formatDistance(distanceToEquatorKm(lat), units, locale)}
-        />
-        <Stat
-          label={strings.stat.toOaxaca}
-          value={formatDistance(distanceKm(lat, lon, OAXACA.lat, OAXACA.lon), units, locale)}
-        />
-        <Stat
-          label={strings.stat.nearestMine}
-          value={`${nearest.name}, ${formatDistance(
-            distanceKm(lat, lon, nearest.lat, nearest.lon),
-            units,
-            locale,
-          )}`}
-        />
-        <Stat
-          label={strings.stat.antipode}
-          value={`${other.lat.toFixed(2)}, ${other.lon.toFixed(2)}`}
-        />
-      </Group>
-
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="-mt-3 flex flex-wrap items-end justify-between gap-3">
+        <UnitToggle units={units} onUnits={onUnits} strings={strings} />
         <button
           type="button"
           onClick={onReset}
-          className="border-2 border-brand-maroon/40 px-4 py-2 font-sans text-sm font-semibold text-brand-maroon transition-colors hover:border-brand-maroon"
+          className="border-2 border-brand-maroon/40 px-4 py-1.5 font-sans text-sm font-semibold text-brand-maroon transition-colors hover:border-brand-maroon"
         >
           {strings.clear}
         </button>
       </div>
 
-      <Privacy text={strings.privacy} />
+      {/* ── Space ──────────────────────────────────────────────────── */}
+      <Section title={strings.sections.space.title} note={strings.sections.space.note}>
+        {terrain && (
+          <Tile label={strings.terrain.title} icon={Icons.mountain} className="col-span-2">
+            <div className="flex gap-4">
+              <TerrainMap grid={terrain.grid} />
+              <dl className="grid flex-1 content-start gap-y-2.5">
+                <Stat label={strings.terrain.slope} value={grade(terrain.slopeDeg)} />
+                <Stat label={strings.terrain.facing} value={terrain.slopeDeg < 2 ? strings.terrain.flat : dir(terrain.aspectDeg)} />
+                <Stat label={strings.terrain.relief} value={formatHeightGap(terrain.relief, units, locale)} />
+                <Stat
+                  label={strings.terrain.highest}
+                  value={`${formatHeightGap(terrain.highest.metres, units, locale)}, ${
+                    terrain.highest.distanceM < 100
+                      ? strings.terrain.here
+                      : fill(strings.terrain.away, {
+                          d: formatDistance(terrain.highest.distanceM / 1000, units, locale),
+                          dir: dir(terrain.highest.bearing),
+                        })
+                  }`}
+                />
+              </dl>
+            </div>
+            <p className="mt-3 font-sans text-xs text-neutral-500">{strings.terrain.caption}</p>
+          </Tile>
+        )}
+
+        {bedrock !== undefined && (
+          <Tile label={strings.bedrock.title} icon={Icons.rock} className="col-span-2">
+            {bedrock ? (
+              <>
+                <p className="eyebrow text-brand-maroon/60">{strings.bedrock.upTo}</p>
+                <Figure {...age(bedrock.maxAgeMa)} />
+                <Caption>
+                  {strings.bedrock.kinds[rockKind(bedrock.lith)]}
+                  {bedrock.period && ` ${strings.bedrock.from} ${periodName(bedrock.period, locale)}`}
+                  <span className="mt-1 block text-xs text-neutral-500">{bedrock.name}</span>
+                </Caption>
+              </>
+            ) : (
+              <Caption>{strings.bedrock.none}</Caption>
+            )}
+          </Tile>
+        )}
+
+        <Tile label={strings.stat.location} icon={Icons.pin} className="col-span-2">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+            <Stat label={strings.stat.coordinates} value={`${lat.toFixed(5)}, ${lon.toFixed(5)}`} />
+            <Stat label={strings.stat.utm} value={utmZone(lat, lon)} />
+            <Stat label={strings.stat.inDegrees} value={`${toDms(lat, "lat")} ${toDms(lon, "lon")}`} />
+            <Stat
+              label={strings.stat.fix}
+              value={accuracy === undefined ? place : `± ${formatHeightGap(accuracy, units, locale)}`}
+            />
+          </dl>
+        </Tile>
+
+        <Tile label={strings.groups.planet} icon={Icons.globe} className="col-span-2">
+          <div className="flex items-start gap-4">
+            <Globe lat={lat} />
+            <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-2.5">
+              <Stat label={strings.stat.spinSpeed} value={`${formatSpeed(spinSpeedKmh(lat), units, locale)} ${strings.east}`} />
+              <Stat label={strings.stat.toEquator} value={formatDistance(distanceToEquatorKm(lat), units, locale)} />
+              <Stat label={strings.stat.toOaxaca} value={formatDistance(distanceKm(lat, lon, OAXACA.lat, OAXACA.lon), units, locale)} />
+              <Stat label={strings.stat.antipode} value={`${other.lat.toFixed(2)}, ${other.lon.toFixed(2)}`} />
+            </dl>
+          </div>
+        </Tile>
+
+        {nearby && (
+          <Tile label={strings.nearby.title} icon={Icons.book} className="col-span-2 lg:col-span-4">
+            {nearby.length === 0 ? (
+              <Caption>{strings.nearby.none}</Caption>
+            ) : (
+              <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+                {nearby.map((n) => (
+                  <li key={n.url} className="flex items-baseline justify-between gap-3 border-b border-brand-maroon/10 pb-1.5">
+                    <a
+                      href={n.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="min-w-0 truncate font-sans text-sm font-semibold text-brand-maroon underline decoration-brand-red/40 underline-offset-4 hover:decoration-brand-red"
+                    >
+                      {n.title}
+                    </a>
+                    <span className="shrink-0 font-mono text-xs text-neutral-500">
+                      {formatDistance(n.distanceM / 1000, units, locale)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Tile>
+        )}
+      </Section>
+
+      {/* ── Time ───────────────────────────────────────────────────── */}
+      <Section title={strings.sections.time.title} note={strings.sections.time.note}>
+        <Tile label={strings.groups.day} icon={Icons.sun} className="col-span-2">
+          <SunArc progress={dayProgress} up={day} />
+          <div className="mt-2 flex justify-between font-sans text-sm text-brand-maroon">
+            <span>
+              <span className="block text-xs text-neutral-500">{strings.stat.sunrise}</span>
+              <span className="font-semibold">{clockTime(reading.sunrise)}</span>
+            </span>
+            <span className="text-center">
+              <span className="block text-xs text-neutral-500">{strings.stat.daylight}</span>
+              <span className="font-semibold">{formatDuration(reading.daylightSeconds, locale)}</span>
+            </span>
+            <span className="text-right">
+              <span className="block text-xs text-neutral-500">{strings.stat.sunset}</span>
+              <span className="font-semibold">{clockTime(reading.sunset)}</span>
+            </span>
+          </div>
+        </Tile>
+
+        <Tile label={strings.clock.title} icon={Icons.clock}>
+          <Figure value={clock} />
+          <Caption>
+            {utc} · {reading.timezone.replace(/_/g, " ")}
+            <span className="mt-1 block text-xs text-neutral-500">
+              {Math.abs(sunLag) < 2
+                ? strings.clock.even
+                : fill(sunLag > 0 ? strings.clock.ahead : strings.clock.behind, { n: String(Math.abs(sunLag)) })}
+            </span>
+          </Caption>
+        </Tile>
+
+        <Tile label={strings.moon.title} icon={Icons.moon}>
+          <Moon fraction={moon.fraction} />
+          <p className="mt-2 text-center font-sans text-sm font-semibold text-brand-maroon">
+            {strings.moon.phases[moon.index]}
+          </p>
+          <p className="text-center font-sans text-xs text-neutral-500">
+            {fill(strings.moon.lit, { n: String(Math.round(moon.illumination * 100)) })}
+          </p>
+        </Tile>
+
+        {reading.high1950 !== undefined && (
+          <Tile label={strings.then.title} icon={Icons.calendar} className="col-span-2">
+            <Figure
+              value={
+                Math.abs(reading.todayHigh - reading.high1950) < 0.5
+                  ? strings.then.same
+                  : fill(reading.todayHigh > reading.high1950 ? strings.then.warmer : strings.then.cooler, {
+                      d: tempDiff(reading.todayHigh - reading.high1950),
+                    })
+              }
+            />
+            <Caption>
+              {fill(strings.then.body, {
+                then: formatTemperature(reading.high1950, units, locale),
+                now: formatTemperature(reading.todayHigh, units, locale),
+              })}
+            </Caption>
+          </Tile>
+        )}
+
+        <Tile label={strings.year.title} icon={Icons.calendar} className="col-span-2">
+          <Figure value={`${Math.round((dayOfYear / daysInYear) * 100)}%`} />
+          <Caption>{fill(strings.year.body, { n: String(dayOfYear), total: String(daysInYear) })}</Caption>
+          <Progress fraction={dayOfYear / daysInYear} />
+        </Tile>
+      </Section>
+
+      {/* ── Air ────────────────────────────────────────────────────── */}
+      <Section title={strings.sections.air.title} note={strings.sections.air.note}>
+        <Tile label={strings.stat.rightNow} icon={Icons.thermo} className="col-span-2">
+          <Figure value={formatTemperature(reading.temperature, units, locale)} />
+          <Caption>
+            {strings.sky[reading.sky]} · {strings.stat.feelsLike} {formatTemperature(reading.feelsLike, units, locale)}
+          </Caption>
+        </Tile>
+
+        <Tile label={strings.stat.wind} icon={Icons.wind}>
+          <Compass from={reading.windDirection} cardinal={cardinal} />
+          <p className="mt-1 text-center font-sans text-sm font-semibold text-brand-maroon">
+            {formatSpeed(reading.wind, units, locale)}
+            <span className="font-normal text-neutral-500"> · {strings.windFrom} {dir(reading.windDirection)}</span>
+          </p>
+        </Tile>
+
+        <Tile label={strings.stat.peakUv} icon={Icons.uv}>
+          <Figure value={reading.uvMax.toFixed(0)} />
+          <Caption>{strings.uvLevel[uvBand]}</Caption>
+          <RampBar fraction={reading.uvMax / 11} />
+        </Tile>
+
+        {air && (
+          <Tile label={strings.stat.airQuality} icon={Icons.air}>
+            <Figure value={String(Math.round(air.usAqi))} />
+            <Caption>
+              {strings.aqi[aqiBand(air.usAqi) as AqiBand]}
+              <span className="block text-xs text-neutral-500">{air.pm25.toFixed(1)} µg/m³ PM2.5</span>
+            </Caption>
+            <RampBar fraction={air.usAqi / 300} />
+          </Tile>
+        )}
+
+        <Tile label={strings.stat.humidity} icon={Icons.drop}>
+          <Ring percent={reading.humidity}>
+            <span className="font-sans text-sm font-semibold text-brand-maroon">{Math.round(reading.humidity)}%</span>
+          </Ring>
+        </Tile>
+
+        <Tile label={strings.stat.pressure} icon={Icons.gauge}>
+          <Dial fraction={(reading.pressure - 960) / 90} />
+          <p className="-mt-2 text-center font-sans text-sm font-semibold text-brand-maroon">
+            {formatPressure(reading.pressure, units, locale)}
+          </p>
+        </Tile>
+
+        <Tile label={strings.stat.cloud} icon={Icons.cloud}>
+          <Ring percent={reading.cloud}>
+            <span className="font-sans text-sm font-semibold text-brand-maroon">{Math.round(reading.cloud)}%</span>
+          </Ring>
+        </Tile>
+      </Section>
+
+      <div className="flex flex-col gap-2">
+        <Privacy text={strings.privacy} />
+        <Sources strings={strings} />
+      </div>
     </div>
   );
+}
+
+// Geologic time names, which Macrostrat returns in English.
+const PERIOD_ES: Record<string, string> = {
+  Holocene: "Holoceno", Pleistocene: "Pleistoceno", Pliocene: "Plioceno", Miocene: "Mioceno",
+  Oligocene: "Oligoceno", Eocene: "Eoceno", Paleocene: "Paleoceno", Quaternary: "Cuaternario",
+  Neogene: "Neógeno", Paleogene: "Paleógeno", Tertiary: "Terciario", Cretaceous: "Cretácico",
+  Jurassic: "Jurásico", Triassic: "Triásico", Permian: "Pérmico", Carboniferous: "Carbonífero",
+  Pennsylvanian: "Pensilvánico", Mississippian: "Misisípico", Devonian: "Devónico", Silurian: "Silúrico",
+  Ordovician: "Ordovícico", Cambrian: "Cámbrico", Precambrian: "Precámbrico", Proterozoic: "Proterozoico",
+  Archean: "Arcaico", Cenozoic: "Cenozoico", Mesozoic: "Mesozoico", Paleozoic: "Paleozoico",
+};
+function periodName(name: string, locale: Locale): string {
+  if (locale !== "es") return name;
+  return name
+    .split(" ")
+    .map((w) => PERIOD_ES[w] ?? ({ Early: "Temprano", Middle: "Medio", Late: "Tardío", Upper: "Superior", Lower: "Inferior" } as Record<string, string>)[w] ?? w)
+    .join(" ");
 }
 
 // A segmented pair rather than a switch: a switch has an implied "off",
@@ -510,31 +588,13 @@ function UnitToggle({
   );
 }
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h4 className="eyebrow text-brand-red">
-        {title}
-      </h4>
-      {/* Label-over-value, two columns on a phone and four where there is
-          room. A definition list is what this is, so it is a definition
-          list: the label is the term and the figure is the definition, and
-          a screen reader reads them paired rather than as ten loose
-          strings. */}
-      <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-4">
-        {children}
-      </dl>
-    </div>
-  );
-}
-
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
       <dt className="font-sans text-[0.6rem] uppercase tracking-[0.18em] text-brand-maroon/55">
         {label}
       </dt>
-      <dd className="mt-0.5 break-words font-mono text-sm text-brand-maroon">{value}</dd>
+      <dd className="mt-0.5 break-words font-mono text-[0.8rem] text-brand-maroon">{value}</dd>
     </div>
   );
 }

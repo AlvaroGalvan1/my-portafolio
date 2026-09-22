@@ -34,13 +34,11 @@ export type { FrameData } from "./frames/registry";
 // mid-scroll. `svh` is the small viewport: the one that is actually
 // visible on load, and which never changes.
 //
-// 18 and three rows, where it was 36 and two. Every piece is half as tall
-// and half as wide as it was — a quarter of the area — so they read as
-// postcards and prints stuck to a wall rather than as posters hung in a
-// row. The Wall itself only lost a quarter of its height, because the
-// extra row takes most of it back.
-const ROW_H_VH = 18;
-const ROWS = 3;
+// 27 and two rows. Three rows of 18 made every piece a postcard and the
+// Wall read as crowded: the visuals are the point, so fewer, larger pieces
+// with air between them. The Wall's total height is unchanged.
+const ROW_H_VH = 27;
+const ROWS = 2;
 // Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
 // (see globals.css) rather than here, because it has to change with the
 // viewport. `--wall-tile-max` caps every tile to just under the viewport.
@@ -48,10 +46,9 @@ const ROWS = 3;
 // The space between pieces, horizontally and vertically. `tileWidth` and
 // `tileHeight` add it back for every track and row a tile spans, so a
 // 2-row piece lines up with two 1-row pieces stacked beside it.
-// 0.5rem, down from 1 and from 2.5 before that: the pieces should read as
-// one wall of things pinned edge to edge, a collection that grows, rather
-// than as separate prints each with its own air.
-const GAP_REM = 0.5;
+// 1.25rem: enough air that each piece reads on its own, still close
+// enough that the row reads as one wall.
+const GAP_REM = 1.25;
 
 // How wide one tile is. Two cases:
 //   - A piece with a real-world shape (a map print, a book cover) states an

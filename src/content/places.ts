@@ -139,8 +139,8 @@ export const GROUPS: Record<PlaceGroup, GroupDef> = {
     // institution is the kind of error a reader who knows the field spots
     // instantly and cannot unsee.
     label: {
-      en: "Semester at Sea — Colorado State University",
-      es: "Semester at Sea — Colorado State University",
+      en: "Semester at Sea, Colorado State University",
+      es: "Semester at Sea, Colorado State University",
     },
     short: { en: "At sea", es: "En el mar" },
     // The programme's own wordmark. The pins on the route are dots either
@@ -155,7 +155,7 @@ export const GROUPS: Record<PlaceGroup, GroupDef> = {
     href: "https://www.semesteratsea.org/spring-2022-voyage-itinerary-update/",
   },
   home: {
-    label: { en: "Home, and the year between", es: "Casa, y el año intermedio" },
+    label: { en: "Home, and the year between", es: "Casa y el año intermedio" },
     short: { en: "Home", es: "Casa" },
     logo: "",
     color: "#d92b1c",
@@ -185,7 +185,7 @@ const allPlaces: Place[] = [
     step: 1,
     note: {
       en: "Where it starts. Everything below is the order it actually happened in.",
-      es: "Donde empieza. Todo lo de abajo está en el orden en que de verdad pasó.",
+      es: "Aquí empieza todo. Lo demás sigue el orden en que pasó.",
     },
   },
 
@@ -239,7 +239,7 @@ const allPlaces: Place[] = [
     lat: 37.78354,
     lon: -122.40941,
     credential: { en: "B.S. Computational Sciences", es: "Lic. en Ciencias Computacionales" },
-    dates: { en: "Expected May 2026", es: "Prevista mayo 2026" },
+    dates: { en: "May 2026", es: "Mayo 2026" },
   },
   {
     id: "minerva-seoul",
@@ -330,7 +330,7 @@ const allPlaces: Place[] = [
   //
   // The itinerary is the published one for this voyage, linked from every
   // popup in the group (GROUPS.voyage.href).
-  { id: "sea-naples", name: "Naples", detail: { en: "Embarkation", es: "Embarque" }, country: { en: "Italy", es: "Italia" }, group: "voyage", step: 6, lat: 40.8518, lon: 14.2681, dates: { en: "Jan – Apr 2022", es: "Ene – Abr 2022" }, note: { en: "Where the voyage began: 106 days, thirteen ports, one term of coursework carried between them.", es: "Donde empezó el viaje: 106 días, trece puertos, un semestre de clases cargado entre ellos." } },
+  { id: "sea-naples", name: "Naples", detail: { en: "Embarkation", es: "Embarque" }, country: { en: "Italy", es: "Italia" }, group: "voyage", step: 6, lat: 40.8518, lon: 14.2681, dates: { en: "Jan – Apr 2022", es: "Ene – Abr 2022" }, note: { en: "Where the voyage began: 106 days, thirteen ports, one term of coursework carried between them.", es: "Aquí empezó el viaje: 106 días, trece puertos y un semestre de clases a bordo." } },
   { id: "sea-piraeus", name: "Piraeus", detail: { en: "Port call", es: "Escala" }, country: { en: "Greece", es: "Grecia" }, group: "voyage", step: 7, lat: 37.9470, lon: 23.6370, dates: { en: "Jan – Apr 2022", es: "Ene – Abr 2022" } },
   { id: "sea-haifa", name: "Haifa", detail: { en: "Port call", es: "Escala" }, country: { en: "Israel", es: "Israel" }, group: "voyage", step: 8, lat: 32.7940, lon: 34.9896, dates: { en: "Jan – Apr 2022", es: "Ene – Abr 2022" } },
   { id: "sea-dubrovnik", name: "Dubrovnik", detail: { en: "Port call", es: "Escala" }, country: { en: "Croatia", es: "Croacia" }, group: "voyage", step: 9, lat: 42.6507, lon: 18.0944, dates: { en: "Jan – Apr 2022", es: "Ene – Abr 2022" } },

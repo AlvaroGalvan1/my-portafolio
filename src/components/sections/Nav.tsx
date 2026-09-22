@@ -30,8 +30,11 @@ export default function Nav({
   lang: Locale;
   strings: UiStrings["nav"];
 }) {
-  const [active, setActive] = useState<string>("home");
   const pathname = usePathname();
+  // Pricing is a route of its own. The other links are anchors into the
+  // home page's scroll, so on Pricing they carry the path too.
+  const onPricing = pathname.startsWith(`/${lang}/pricing`);
+  const [active, setActive] = useState<string>(onPricing ? "" : "home");
 
   // Which section the bar should be pointing at. The band is the slice of
   // viewport between 15% and 45% down — high enough to be under the nav
@@ -77,10 +80,11 @@ export default function Nav({
       <div className="flex min-w-0 gap-3 sm:gap-8">
         {LINKS.map((link) => {
           const isActive = active === link.id;
+          const Anchor = onPricing ? Link : "a";
           return (
-            <a
+            <Anchor
               key={link.id}
-              href={`#${link.id}`}
+              href={onPricing ? `/${lang}#${link.id}` : `#${link.id}`}
               // "location", not "page": every one of these is an anchor
               // within this document, not a link to a different page.
               aria-current={isActive ? "location" : undefined}
@@ -89,20 +93,20 @@ export default function Nav({
               }`}
             >
               {strings[link.key]}
-              {/* A painted rule under the current label rather than colour
-                  alone — colour alone is the same signal the bar already
-                  spends on hover, so the two would be indistinguishable.
-                  Always in the DOM and faded, so nothing reflows when the
-                  active section changes. */}
-              <span
-                aria-hidden
-                className={`absolute -bottom-1.5 left-0 h-[2px] w-full bg-brand-yellow transition-opacity duration-200 ${
-                  isActive ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            </a>
+              <ActiveRule on={isActive} />
+            </Anchor>
           );
         })}
+        <Link
+          href={`/${lang}/pricing`}
+          aria-current={onPricing ? "page" : undefined}
+          className={`relative whitespace-nowrap hover:text-brand-yellow ${
+            onPricing ? "text-brand-yellow" : ""
+          }`}
+        >
+          {strings.pricing}
+          <ActiveRule on={onPricing} />
+        </Link>
       </div>
 
       {/* The corner is the language control and nothing else.
@@ -116,6 +120,20 @@ export default function Nav({
           is exactly one place to change the language. */}
       <LanguageToggle current={lang} pathname={pathname} label={strings.language} />
     </nav>
+  );
+}
+
+// A painted rule under the current label rather than colour alone — colour
+// alone is the same signal the bar already spends on hover. Always in the
+// DOM and faded, so nothing reflows when the active label changes.
+function ActiveRule({ on }: { on: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`absolute -bottom-1.5 left-0 h-[2px] w-full bg-brand-yellow transition-opacity duration-200 ${
+        on ? "opacity-100" : "opacity-0"
+      }`}
+    />
   );
 }
 
@@ -137,8 +155,8 @@ export default function Nav({
 // with the corner to itself, yellow is just the bar's accent, and this is
 // the only thing in the bar worth accenting.
 //
-// It keeps the rest of the path, which matters less today (there is one
-// page) than it will the first time there is a second one.
+// It keeps the rest of the path, so /en/pricing switches to /es/pricing
+// rather than dropping the reader back on the home page.
 function LanguageToggle({
   current,
   pathname,

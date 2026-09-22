@@ -2,6 +2,7 @@ import HeroArt from "./HeroArt";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
+import { experience } from "@/content/experience";
 import { socials, CONTACT_EMAIL, CALENDLY_URL } from "@/content/socials";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
@@ -77,14 +78,6 @@ export default async function Hero() {
           refuses to shrink below its content and the row blows past the
           100svh the section was given. */}
       <div className="hero-words flex min-h-0 flex-col justify-center bg-brand-cream px-6 py-8 sm:px-16 lg:py-12">
-        {/* The dateline. Small caps over a huge name is the oldest trick in
-            editorial layout and it works because the contrast is enormous:
-            10px of tracked-out sans against 100px of display face. */}
-        <p className="eyebrow flex items-center gap-3 text-brand-maroon">
-          <span className="location-dot" aria-hidden />
-          {profile.location.label}
-        </p>
-
         {/* ── The name ──────────────────────────────────────────────────
             The whole left half, and sized like it. `clamp` takes the
             smaller of a width-derived and a height-derived figure, so the
@@ -111,13 +104,20 @@ export default async function Hero() {
             .text-signpainted-display in globals.css): at fixed pixels it
             was a heavy slab under a 44px phone name and a hairline under a
             104px desktop one. */}
-        <h1 className="text-signpainted-display mt-[clamp(1rem,3vh,2rem)] font-[family-name:var(--font-display)] text-[clamp(2.6rem,min(13.5vw,13vh),8rem)] leading-[1.02] tracking-[-0.015em] text-brand-maroon">
+        <h1 className="text-signpainted-display font-[family-name:var(--font-display)] text-[clamp(2.6rem,min(13.5vw,13vh),8rem)] leading-[1.02] tracking-[-0.015em] text-brand-maroon">
           {profile.nameLines.map((line) => (
             <span key={line} className="block whitespace-nowrap">
               {line}
             </span>
           ))}
         </h1>
+
+        {/* The dateline, under the name it belongs to: tracked-out small
+            caps against the display face. */}
+        <p className="eyebrow mt-[clamp(0.6rem,1.8vh,1.1rem)] flex items-center gap-3 text-brand-maroon">
+          <span className="location-dot" aria-hidden />
+          {profile.location.label}
+        </p>
 
         {/* The site's one repeated mark, at the stub width it has in every
             other section. It was run out to the full 46ch measure for one
@@ -181,12 +181,33 @@ export default async function Hero() {
           </a>
         </div>
 
+        {/* Where I've worked, as marks: the fastest credibility signal a
+            hiring manager gets. Only on screens tall enough to hold it, so
+            the one-screen rule above still holds on a short laptop. */}
+        <div className="mt-[clamp(1.25rem,3.5vh,2.25rem)] hidden flex-col gap-2.5 print:hidden [@media(min-width:1024px)_and_(min-height:760px)]:flex">
+          <p className="eyebrow text-brand-maroon/60">{ui.hero.workedWith}</p>
+          <ul className="flex flex-wrap items-center gap-2.5">
+            {experience
+              .filter((job) => job.logoSrc)
+              .map((job) => (
+                <li
+                  key={job.org}
+                  title={job.org}
+                  className="flex h-11 w-[5.5rem] items-center justify-center border-2 border-brand-maroon/15 bg-white px-2"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={job.logoSrc} alt={job.org} className="max-h-7 max-w-full object-contain" />
+                </li>
+              ))}
+          </ul>
+        </div>
+
         {/* Paper only. On screen the contact routes are the bar's button and
             the footer's marks, both of which are things you click; a printed
             page has to spell them out or it is a CV nobody can answer. */}
         <p className="mt-6 hidden font-sans text-sm text-brand-maroon print:block">
           {ui.hero.reachMe} {CONTACT_EMAIL}
-          {socials.map((social) => (
+          {socials.filter((social) => !social.footerOnly).map((social) => (
             <span key={social.name}> · {social.href.replace(/^https?:\/\//, "")}</span>
           ))}
         </p>

@@ -1,81 +1,103 @@
 import type { Phrase } from "./i18n";
 
-// What someone can actually hire me for, in their words rather than mine.
+// What someone can hire me for, and what it costs. The services render in
+// Work with me on the home page; the rates render on the Pricing page, the
+// one route outside the home page's scroll.
 //
-// Three, not eight. A list long enough to cover everything reads as a list
-// of things I've heard of; three reads as the things I'd take money for.
-//
-// They're named by the shape of the problem, not by the tool — "wildfire
-// modelling" and "satellite pipelines" described a stack, and a reader
-// whose problem isn't literally either one has to work out whether they
-// count. Each one still ends in something you'd actually receive, because
-// "geospatial consulting" is not something anyone can picture buying.
-//
-// Kept as data for the same reason the rest of `content/` is: this list
-// will change faster than the section that renders it, and it should be
-// possible to change it without opening a component.
+// The three stages of one end-to-end product: working out what to build,
+// building and deploying it, and designing what people see. Shown in that
+// order on purpose, so the row reads as one pipeline rather than a menu.
 export type Service = {
   title: Phrase;
-  /** What you get, concretely enough to price. */
   body: Phrase;
+  includes: Phrase[];
 };
 
 export const services: Service[] = [
   {
-    title: {
-      en: "Data to decision",
-      es: "De los datos a la decisión",
-    },
+    title: { en: "Research", es: "Investigación" },
     body: {
-      en: "Environmental data is messy. I work out which sources actually carry signal for your problem, build the pipeline, and give you something repeatable — not a one-time answer.",
-      es: "Los datos ambientales son un desastre. Averiguo qué fuentes llevan de verdad señal para tu problema, construyo el flujo, y te doy algo repetible, no una respuesta de una sola vez.",
+      en: "Working out what to build before anyone writes code.",
+      es: "Definir qué construir antes de escribir código.",
+    },
+    includes: [
+      { en: "Who is building what in wildfire and climate", es: "Quién construye qué en incendios y clima" },
+      { en: "Which data sources are worth using", es: "Qué fuentes de datos vale la pena usar" },
+      { en: "A plan you can take to your team or funders", es: "Un plan para presentar a tu equipo o a quien te financia" },
+    ],
+  },
+  {
+    title: { en: "Build & deploy", es: "Desarrollo y despliegue" },
+    body: {
+      en: "The pipelines, backend and infrastructure, shipped and running in production.",
+      es: "Los pipelines, el backend y la infraestructura, en producción y funcionando.",
+    },
+    includes: [
+      { en: "Satellite, terrain and sensor data pipelines", es: "Pipelines de datos satelitales, de terreno y de sensores" },
+      { en: "Models, APIs and geospatial processing", es: "Modelos, APIs y procesamiento geoespacial" },
+      { en: "Cloud deployment, docs and handover", es: "Despliegue en la nube, documentación y entrega" },
+    ],
+  },
+  {
+    title: { en: "Design", es: "Diseño" },
+    body: {
+      en: "The maps, interfaces and visuals people actually use.",
+      es: "Los mapas, interfaces y visualizaciones que la gente de verdad usa.",
+    },
+    includes: [
+      { en: "Cartography for reports and public pages", es: "Cartografía para reportes y páginas públicas" },
+      { en: "Interactive maps, dashboards and frontends", es: "Mapas interactivos, tableros y frontends" },
+      { en: "Figures for experts and the public", es: "Figuras para especialistas y para el público" },
+    ],
+  },
+];
+
+// The ways to pay, from the base rate down to free. Ordered so the price
+// falls left to right and the row ends on pro bono and the reason for it.
+// No dollar figure is invented for the NGO rate or fixed-term work: both
+// are settled on the call, and the card says so.
+export type Rate = {
+  label: Phrase;
+  price: Phrase;
+  body: Phrase;
+};
+
+export const rates: Rate[] = [
+  {
+    label: { en: "Base rate", es: "Tarifa base" },
+    price: { en: "$65 USD/hour", es: "65 USD/hora" },
+    body: {
+      en: "For companies and startups. Billed hourly.",
+      es: "Para empresas y startups. Se cobra por hora.",
     },
   },
   {
-    title: {
-      en: "Cartography & design",
-      es: "Cartografía y diseño",
-    },
+    label: { en: "Fixed-term projects", es: "Proyectos a plazo fijo" },
+    price: { en: "Fixed price", es: "Precio cerrado" },
     body: {
-      en: "Cartography and design as one thing. Maps and figures built to communicate precisely to people who know the subject — for reports, decks, or public pages.",
-      es: "Cartografía y diseño como una sola cosa. Mapas y figuras hechos para comunicar con precisión a quien sabe del tema — para reportes, presentaciones o páginas públicas.",
+      en: "A set scope and timeline, with the total agreed before we start.",
+      es: "Alcance y plazo definidos, con el total acordado antes de empezar.",
     },
   },
   {
-    title: {
-      en: "0 to 1",
-      es: "0 a 1",
-    },
+    label: { en: "NGOs & nonprofits", es: "ONG y organizaciones sociales" },
+    price: { en: "Reduced rate", es: "Tarifa reducida" },
     body: {
-      en: "You have a problem and no infrastructure. I take it from the first question to a working output — data, model, map, pipeline — and hand it over as something you own.",
-      es: "Tienes un problema y ninguna infraestructura. Lo llevo desde la primera pregunta hasta algo que funciona —datos, modelo, mapa, flujo— y te lo entrego como algo tuyo.",
+      en: "Lower rates for NGOs, nonprofits and research groups.",
+      es: "Tarifas más bajas para ONG, organizaciones sin fines de lucro y grupos de investigación.",
+    },
+  },
+  {
+    label: { en: "Pro bono", es: "Pro bono" },
+    price: { en: "$0", es: "0 USD" },
+    body: {
+      en: "For climate and conservation projects I believe in. We need to solve the climate crisis together.",
+      es: "Para proyectos de clima y conservación en los que creo. La crisis climática la tenemos que resolver entre todos.",
     },
   },
 ];
 
-// The line beside the two actions at the top of the section: the rate,
-// how far it bends, why, and what kind of work I'm open to.
-//
-// ONE statement, on purpose, and it stays one — no tiers, no packages, no
-// pricing table. A single rate and a single reason it drops is simpler to
-// read and more honest than a grid of options, and it says the thing a
-// grid can't, which is that the price is not the point for the right
-// project. It always names both kinds of work, consulting and full-time,
-// so neither kind of reader leaves thinking the other is all that's on
-// offer.
-//
-// Split into a headline and a body rather than one run-on paragraph: the
-// number is the fact a skimming reader needs first, and the belief plus
-// the availability are the reasoning that only the reader who stops to
-// read gets. Still one statement — a lead sentence and its support, not
-// separate options.
-export const RATES_NOTE: { headline: Phrase; body: Phrase } = {
-  headline: {
-    en: "$85 USD/hour — flexible to $0 for mission-aligned work",
-    es: "85 USD/hora — flexible hasta 0 USD para proyectos alineados con la misión",
-  },
-  body: {
-    en: "Pro bono for climate, environmental and field-conservation projects. We need to solve the climate crisis together, so I'm open to both consulting contracts and full-time geospatial roles.",
-    es: "Pro bono para proyectos climáticos, ambientales y de conservación en campo. Tenemos que resolver la crisis climática juntos, así que estoy abierto tanto a contratos de consultoría como a puestos de tiempo completo en ingeniería geoespacial.",
-  },
+export const AVAILABILITY: Phrase = {
+  en: "Open to consulting contracts and full-time geospatial roles.",
+  es: "Disponible para contratos de consultoría y puestos de tiempo completo en ingeniería geoespacial.",
 };

@@ -262,12 +262,11 @@ footer :focus-visible,
    which also leaves a slice of the next piece showing at the edge, doing
    the "there's more this way" job for free.
 
-   Half of what these were before the Wall went from posters to postcards —
-   a quarter of the area, with ROW_H_VH (18) in HorizontalGallery.tsx
-   halved alongside. Those two numbers are the whole scale of the Wall —
-   raise or lower them together. */
+   Scaled with ROW_H_VH (27) in HorizontalGallery.tsx, which sets the row
+   height. Those two numbers are the whole scale of the Wall: raise or
+   lower them together. */
 .wall-scroller {
-  --wall-col: 25vw;
+  --wall-col: 37.5vw;
   --wall-tile-max: 86vw;
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-yellow) rgba(0, 0, 0, 0.25);
@@ -275,14 +274,14 @@ footer :focus-visible,
 
 @media (min-width: 640px) {
   .wall-scroller {
-    --wall-col: 16.5vw;
+    --wall-col: 24.75vw;
     --wall-tile-max: 90vw;
   }
 }
 
 @media (min-width: 1024px) {
   .wall-scroller {
-    --wall-col: 12.5vw;
+    --wall-col: 18.75vw;
   }
 }
 
@@ -370,6 +369,33 @@ footer :focus-visible,
   height: 14px;
   background: var(--pin, var(--color-brand-red));
   border-color: var(--color-brand-cream);
+}
+
+/* The journey's traveller: a plane or a ship on a maroon disc, a size up
+   from the pins so it is the one thing moving the eye follows. The icon
+   turns inside the disc (see BaseMap), so the disc itself never rotates. */
+.map-traveller-wrap {
+  background: none;
+  border: 0;
+}
+
+.map-traveller {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: var(--color-brand-maroon);
+  border: 2px solid var(--color-brand-cream);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.6);
+}
+
+.map-traveller__icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--color-brand-yellow);
+  transform-origin: center;
 }
 
 .leaflet-marker-icon:hover .map-pin,

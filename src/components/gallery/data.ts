@@ -402,16 +402,6 @@ const allItems: FrameData[] = [
     work: "OL59863W",
     coverId: 6979680,
   }),
-  {
-    id: "papers",
-    title: "Papers",
-    type: "link",
-    href: "/papers", // TODO: point at a real PDF/paper index once one exists
-    linkLabel: "Read ↗",
-    credit: { who: "Álvaro Galván", relation: "mine" },
-    ...SHAPE.small,
-  },
-
   // No open slots. Twenty dashed placeholders held the Wall's shape while it
   // was being built, but twenty empty boxes is the first thing a visitor
   // would have counted. The `placeholder` frame kind stays registered — add
@@ -481,7 +471,6 @@ const GALLERY_ES: Record<string, FrameText> = {
     linkLabel: "Léelo en LinkedIn ↗",
   },
   "how-to-do-nothing": { title: "How to Do Nothing" },
-  papers: { title: "Artículos", linkLabel: "Leer ↗" },
 };
 
 /**

@@ -69,11 +69,13 @@ export function TileCredit({ credit }: { credit?: Credit }) {
   if (!credit) return null;
   const line = creditLine(credit);
   // `mine` states authorship in the data without putting a byline on my
-  // own work.
+  // own work. On a device with hover the credit waits for the pointer or
+  // focus, so the Wall reads as pictures first; on touch it stays up,
+  // since there is no hover to reveal it.
   if (!line) return null;
 
   const base =
-    "pointer-events-none absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/55 px-1.5 py-0.5 text-[11px] font-medium leading-tight text-white/85 backdrop-blur-[2px]";
+    "pointer-events-none absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/55 px-1.5 py-0.5 text-[11px] font-medium leading-tight text-white/85 backdrop-blur-[2px] transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100";
   const layer = { zIndex: Z.CARD_OVERLAY_CONTROL };
 
   if (!credit.href) return <span style={layer} className={base}>{line}</span>;

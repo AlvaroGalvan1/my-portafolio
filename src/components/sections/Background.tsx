@@ -115,6 +115,8 @@ export default async function Background() {
                 stop: ui.stopJourney,
                 ports: ui.ports,
                 cities: ui.cities,
+                flight: ui.flight,
+                sea: ui.sea,
               }}
             />
           </div>

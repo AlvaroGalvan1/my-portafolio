@@ -1,134 +1,168 @@
 import { distanceKm } from "@/components/geo/stats";
+import type { JourneyStop } from "@/content/places";
 
 // The journey, played rather than drawn.
 //
-// The section is called My Journey and for a long time it was not one. It
-// was nine campuses coloured by institution and a dashed line through
-// thirteen ports: a map of WHERE, with no WHEN anywhere in it. A reader
-// could not tell from looking whether Berlin came before Buenos Aires, or
-// where the ship fits, or that the whole thing starts in Oaxaca and ends
-// in the city the hero says he lives in.
-//
 // A journey is an order. `step` in places.ts is that order, and this file
-// is what walks it.
+// is what walks it: leg by leg, each one flown or sailed, with a beat at
+// every stop.
 //
 // ── Why the camera never moves ────────────────────────────────────────
-// The obvious build is a camera that flies from stop to stop. It was not
-// built that way on purpose: `flyTo` is one to two seconds per leg, ~25
-// legs is a minute of somebody else's holiday slideshow, and a reader who
-// looks away for four seconds comes back with no idea where they are.
-// Worse, it takes the map away from anyone who only wanted to look at it.
-//
-// So the view is fitted once, to everything, and what animates is a marker
-// travelling the route with the line drawing in behind it. The whole story
-// stays legible at any moment, including to someone who missed the start.
+// `flyTo` is one to two seconds per leg, ~25 legs is a minute of somebody
+// else's holiday slideshow, and a reader who looks away comes back with no
+// idea where they are. So the view is fitted once, to everything, and what
+// animates is the traveller and the line drawing in behind it.
 
-/** How long the whole journey takes to play, in milliseconds.
- *
- *  Ten seconds, and the control says so. The point of the player is that
- *  the whole story — home, three schools, a ship, six cities — can be told
- *  in the time a reader gives a map they did not come for. */
-export const JOURNEY_DURATION_MS = 10_000;
+/** How long the whole journey takes to play, in milliseconds. */
+export const JOURNEY_DURATION_MS = 14_000;
 
-export type LatLon = { lat: number; lon: number };
+export type Mode = "air" | "sea";
 
-export type JourneyPath = {
-  points: LatLon[];
-  /** Cumulative *weighted* distance to each stop, starting at 0. */
-  cumulative: number[];
-  total: number;
-};
-
-/**
- * Pre-compute the route's pacing once.
- *
- * ── The one interesting decision in this file ──
- * Two obvious pacings, and both are wrong:
- *
- *   - Equal time per leg. The ship crawls from Piraeus to Haifa (250 km)
- *     and teleports from Taipei to Hyderabad (4,700 km), so the animation
- *     claims the two were the same journey. They were not.
- *   - Time proportional to distance. The six Minerva hops are most of the
- *     route's total length, so they eat the clock and the thirteen ports —
- *     the densest and most interesting part of the whole story — flash
- *     past in under a second.
- *
- * So: the square root of distance. It keeps the ordering (a long leg still
- * takes longer than a short one) while compressing the extremes, which is
- * what lets one animation hold both a 250 km port call and a transpacific
- * flight. A 4,700 km leg takes about 4.3x the time of a 250 km one rather
- * than 19x.
- */
-export function buildJourneyPath(points: LatLon[]): JourneyPath {
-  const cumulative: number[] = [0];
-  for (let i = 1; i < points.length; i++) {
-    const leg = distanceKm(
-      points[i - 1].lat,
-      points[i - 1].lon,
-      points[i].lat,
-      points[i].lon,
-    );
-    cumulative.push(cumulative[i - 1] + Math.sqrt(leg));
-  }
-  return { points, cumulative, total: cumulative[cumulative.length - 1] ?? 0 };
+/** Port to port on Semester at Sea is the ship; everything else flew. */
+export function legMode(from: JourneyStop, to: JourneyStop): Mode {
+  return from.group === "voyage" && to.group === "voyage" ? "sea" : "air";
 }
 
-export type JourneyFrame = {
-  /** Every stop reached so far, plus the current position — the polyline
-   *  to draw. */
-  trail: [number, number][];
-  /** Where the marker is right now. */
-  position: [number, number];
-  /** Index of the stop the label should name. */
-  stopIndex: number;
-  /** True while the marker is within a whisker of a stop, which is when
-   *  its name is worth showing. */
-  atStop: boolean;
+type LatLng = [number, number];
+
+export type Leg = {
+  mode: Mode;
+  from: number;
+  to: number;
+  /** Point on the leg at u in [0, 1]. */
+  at: (u: number) => LatLng;
+  /** The leg sampled end to end, for drawing it whole. */
+  samples: LatLng[];
+  /** Share of the clock, in the units of `total`. */
+  weight: number;
 };
 
-/** Within this fraction of a leg either side of a stop, call it "at" that
- *  stop. Small: it is a label trigger, not a pause. */
-const STOP_SNAP = 0.08;
+export type JourneyPath = { legs: Leg[]; starts: number[]; total: number };
+
+// A beat at each stop, in the same units as a leg's travel weight
+// (sqrt-km). About the time it takes to read a city name.
+const DWELL = 9;
+const AIR_SAMPLES = 40;
 
 /**
- * Where the journey is at progress `t`, from 0 to 1.
+ * Pace: each leg's travel time is the square root of its distance. Equal
+ * time per leg claims a 250 km port call and a transpacific flight were
+ * the same trip; time proportional to distance lets the six Minerva
+ * flights eat the clock and flashes the thirteen ports past in a second.
+ * The square root keeps the order and compresses the extremes.
  *
- * Linear interpolation between consecutive stops rather than a great
- * circle. The route is *drawn* as straight segments between stops, so
- * interpolating along anything else would put the marker beside its own
- * trail — the one thing an animation like this cannot do.
+ * Flights are drawn as arcs, bowed toward the pole the way a great circle
+ * looks on this projection; the ship's legs stay straight, port to port,
+ * like the published itinerary.
  */
+export function buildJourneyPath(stops: JourneyStop[]): JourneyPath {
+  const legs: Leg[] = [];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const a = stops[i];
+    const b = stops[i + 1];
+    const mode = legMode(a, b);
+    const km = distanceKm(a.lat, a.lon, b.lat, b.lon);
+    const p0: LatLng = [a.lat, a.lon];
+    const p2: LatLng = [b.lat, b.lon];
+
+    let at: (u: number) => LatLng;
+    if (mode === "sea") {
+      at = (u) => [p0[0] + (p2[0] - p0[0]) * u, p0[1] + (p2[1] - p0[1]) * u];
+    } else {
+      // Control point: the midpoint, pushed sideways by a fifth of the
+      // leg's length, on whichever side is poleward.
+      const dLat = p2[0] - p0[0];
+      const dLon = p2[1] - p0[1];
+      const len = Math.hypot(dLat, dLon) || 1;
+      let nLat = -dLon / len;
+      let nLon = dLat / len;
+      const mid: LatLng = [(p0[0] + p2[0]) / 2, (p0[1] + p2[1]) / 2];
+      const poleward = mid[0] >= 0 ? 1 : -1;
+      if (nLat * poleward < 0) {
+        nLat = -nLat;
+        nLon = -nLon;
+      }
+      const bow = len * 0.2;
+      const p1: LatLng = [
+        Math.max(-80, Math.min(80, mid[0] + nLat * bow)),
+        mid[1] + nLon * bow,
+      ];
+      at = (u) => {
+        const v = 1 - u;
+        return [
+          v * v * p0[0] + 2 * v * u * p1[0] + u * u * p2[0],
+          v * v * p0[1] + 2 * v * u * p1[1] + u * u * p2[1],
+        ];
+      };
+    }
+
+    const n = mode === "air" ? AIR_SAMPLES : 1;
+    const samples = Array.from({ length: n + 1 }, (_, k) => at(k / n));
+    legs.push({ mode, from: i, to: i + 1, at, samples, weight: DWELL + Math.sqrt(km) });
+  }
+
+  const starts: number[] = [];
+  let total = 0;
+  for (const leg of legs) {
+    starts.push(total);
+    total += leg.weight;
+  }
+  // A final beat on the last stop, so the story ends on a place rather
+  // than on the arrival.
+  total += DWELL;
+  return { legs, starts, total };
+}
+
+/** Slow out of the stop, cruise, slow into the next one. */
+const ease = (u: number) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+
+export type JourneyFrame = {
+  /** The leg in progress, or the last one once everything has arrived. */
+  legIndex: number;
+  /** True while the traveller sits at a stop. */
+  dwelling: boolean;
+  /** How far along the current leg's travel, 0 to 1, eased. */
+  along: number;
+  position: LatLng;
+  /** A point a little further on, for the heading. */
+  ahead: LatLng;
+  /** The furthest stop reached. */
+  stopIndex: number;
+};
+
 export function journeyFrame(path: JourneyPath, t: number): JourneyFrame {
-  const { points, cumulative, total } = path;
-  const clamped = Math.min(1, Math.max(0, t));
-  const travelled = clamped * total;
+  const { legs, starts, total } = path;
+  const clock = Math.min(1, Math.max(0, t)) * total;
 
   let i = 0;
-  while (i < cumulative.length - 2 && cumulative[i + 1] <= travelled) i++;
+  while (i < legs.length - 1 && starts[i + 1] <= clock) i++;
+  const leg = legs[i];
+  const into = clock - starts[i];
 
-  const legStart = cumulative[i];
-  const legLength = cumulative[i + 1] - legStart;
-  const along = legLength === 0 ? 0 : (travelled - legStart) / legLength;
+  // Past the end of the last leg: sitting on the final stop.
+  if (into >= leg.weight) {
+    const end = leg.at(1);
+    return { legIndex: i, dwelling: true, along: 1, position: end, ahead: leg.at(1), stopIndex: leg.to };
+  }
+  if (into < DWELL) {
+    return { legIndex: i, dwelling: true, along: 0, position: leg.at(0), ahead: leg.at(0.02), stopIndex: leg.from };
+  }
 
-  const from = points[i];
-  const to = points[i + 1] ?? points[i];
-  const position: [number, number] = [
-    from.lat + (to.lat - from.lat) * along,
-    from.lon + (to.lon - from.lon) * along,
-  ];
-
-  const trail: [number, number][] = points
-    .slice(0, i + 1)
-    .map((p) => [p.lat, p.lon] as [number, number]);
-  trail.push(position);
-
-  const atStart = along <= STOP_SNAP;
-  const atEnd = along >= 1 - STOP_SNAP;
-
+  const along = ease((into - DWELL) / (leg.weight - DWELL));
   return {
-    trail,
-    position,
-    stopIndex: atEnd ? i + 1 : i,
-    atStop: atStart || atEnd,
+    legIndex: i,
+    dwelling: false,
+    along,
+    position: leg.at(along),
+    ahead: leg.at(Math.min(1, along + 0.02)),
+    stopIndex: along > 0.97 ? leg.to : leg.from,
   };
+}
+
+/** The part of a leg already travelled, for the line behind the traveller. */
+export function travelled(leg: Leg, along: number): LatLng[] {
+  const n = leg.samples.length - 1;
+  const done = leg.samples.filter((_, k) => k / n < along);
+  done.push(leg.at(along));
+  return done;
 }

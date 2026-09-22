@@ -58,9 +58,9 @@ const PREFIX: Record<Locale, Record<CreditRelation, string>> = {
     author: "",
     data: "Datos: ",
     photo: "Foto: ",
-    footage: "Material: ",
+    footage: "Video: ",
     posted: "Publicado por ",
-    after: "Según ",
+    after: "A partir de ",
   },
 };
 

@@ -136,7 +136,7 @@ export default function ContactModal({ strings }: { strings: UiStrings["contact"
           </a>
 
           <div className="flex items-center gap-2">
-            {socials.map((s) => (
+            {socials.filter((s) => !s.footerOnly).map((s) => (
               <a
                 key={s.name}
                 href={s.href}
