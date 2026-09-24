@@ -31,6 +31,7 @@ const en = {
     // viewport. Shortened rather than hidden: the one thing this bar is
     // for does not get to disappear on the device most people read it on.
     ctaShort: "Let's talk",
+    about: "About",
     language: "Language",
   },
 
@@ -220,17 +221,13 @@ const en = {
 
   background: {
     heading: "Background",
-    education: "Education",
-    // One quiet line under the heading: how the education was paid for
-    // and what the classrooms were like. The map says where; this says how.
-    educationNote:
-      "I studied on scholarships the whole way, across seven countries, with classmates from more than 90 nationalities.",
     experience: "Experience",
     ports: "ports",
     cities: "cities",
     itinerary: "The itinerary ↗",
-    // The map's play control. It says what you get and how long it takes:
-    // a reader deciding whether to press something wants to know the cost.
+    // The map's play control, still used on the About page. It says what
+    // you get and how long it takes: a reader deciding whether to press
+    // something wants to know the cost.
     playJourney: "Play the journey · 14s",
     stopJourney: "Stop",
     // How each leg was travelled: the key on the map, and the start of the
@@ -294,6 +291,33 @@ const en = {
     brief: "or send a brief instead",
   },
 
+  process: {
+    heading: "Talk, plan, ship.",
+    lede: "Every project moves through the same three steps, in this order.",
+  },
+
+  about: {
+    metaTitle: "About",
+    metaDescription:
+      "Álvaro Galván: geospatial engineer from Oaxaca, working on wildfire and climate risk. Background, education and the journey that got him here.",
+    eyebrow: "Who I am",
+    heading: "About me",
+    // Moved here from `background.educationNote` — it renders on this page
+    // now, beside the photo, rather than sitting unused next to a map that
+    // has since moved here too.
+    scholarship:
+      "I studied on scholarships the whole way, across seven countries, with classmates from more than 90 nationalities.",
+    // The line that hands off to the map below: what it is, in one
+    // sentence, before the reader scrolls to it.
+    transition:
+      "That's the map below: where I studied, and the ports a semester at sea stopped in along the way.",
+    journeyHeading: "The journey",
+  },
+
+  faq: {
+    heading: "FAQ",
+  },
+
   pricing: {
     // The route's <title>, run through the layout's "%s — name" template.
     metaTitle: "Pricing",
@@ -354,6 +378,7 @@ const es: UiStrings = {
     pricing: "Tarifas",
     cta: "Trabajemos juntos",
     ctaShort: "Hablemos",
+    about: "Sobre mí",
     language: "Idioma",
   },
 
@@ -518,9 +543,6 @@ const es: UiStrings = {
 
   background: {
     heading: "Trayectoria",
-    education: "Formación",
-    educationNote:
-      "Estudié con becas de principio a fin, en siete países y con compañeros de más de 90 nacionalidades.",
     experience: "Experiencia",
     ports: "puertos",
     cities: "ciudades",
@@ -573,6 +595,28 @@ const es: UiStrings = {
     callAfter: ".",
     book: "Agenda una llamada de 30 minutos",
     brief: "o mándame un resumen del proyecto",
+  },
+
+  process: {
+    heading: "Hablamos, planeamos, entregamos.",
+    lede: "Todo proyecto pasa por los mismos tres pasos, en este orden.",
+  },
+
+  about: {
+    metaTitle: "Sobre mí",
+    metaDescription:
+      "Álvaro Galván: ingeniero geoespacial de Oaxaca, trabajando en riesgo de incendios forestales y clima. Trayectoria, formación y el recorrido que lo trajo hasta aquí.",
+    eyebrow: "Quién soy",
+    heading: "Sobre mí",
+    scholarship:
+      "Estudié con becas de principio a fin, en siete países y con compañeros de más de 90 nacionalidades.",
+    transition:
+      "Ese es el mapa de abajo: dónde estudié, y los puertos donde paró un semestre en barco por el camino.",
+    journeyHeading: "El recorrido",
+  },
+
+  faq: {
+    heading: "Preguntas frecuentes",
   },
 
   pricing: {

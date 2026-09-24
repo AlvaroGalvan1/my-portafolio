@@ -11,24 +11,18 @@ export const profile = {
   // The only line under the name. Add an `href` here and Hero will need a
   // link element again — left off deliberately, see the note there.
   location: { label: "Mission District, San Francisco" },
-  // The portrait. Nothing renders it today: it sat across the seam of the
-  // hero split until that composition turned out to work better as two
-  // things rather than three. Kept because the file is in the repo and the
-  // alt text is written — a `post` tile on the Wall is where it goes if it
-  // comes back, not the hero.
+  // The headshot, on the About page. A real one now — 800×800, square —
+  // rather than the graduation group shot this used to point at, which was
+  // kept only because a real cutout was expected to replace it eventually.
+  // The frame runs at the photo's own 1:1, so nothing is cropped.
   //
-  // Not a headshot, and the layout follows from that: three of us at the
-  // Minerva commencement, shot at 960×1280. The frame runs at the photo's
-  // own 3:4 so nothing is cropped out of it, and larger than a head-and
-  // -shoulders would need — at the 13rem the empty frame used to be, three
-  // faces came out about the size of the body copy beside them.
-  //
-  // `/profile.png`, which this used to point at, is a background-removed
-  // cutout and only 293×220 — too small for any size this frame runs at.
-  // It stays in `public/` for whenever a real cutout replaces it.
+  // The graduation photo (three of us at the Minerva commencement,
+  // 960×1280) is still in `public/` under the same folder if a candid ever
+  // belongs somewhere — a Wall tile, most likely — but nothing points at
+  // it now.
   photo: {
-    src: "/gallery/portraits/graduation-friends.jpeg",
-    alt: "Álvaro with two friends at their Minerva University commencement, in graduation stoles.",
+    src: "/gallery/portraits/headshot.jpeg",
+    alt: "Álvaro Galván",
   },
   // The loop playing behind the name. A 16:9 generative piece — 36 captured
   // variations of a sea-fan textile, played in sequence — so the hero's flat
@@ -57,10 +51,9 @@ export const profile = {
   // No em dashes here, on purpose. The rest of this file is full of them
   // and this is the one string a visitor reads as a voice.
   //
-  // Nothing renders this today. It stood under the name until the hero's
-  // left column took the pitch, then briefly sat behind an "About me"
-  // plate on the artwork, which came out. Kept for whatever About me
-  // becomes next.
+  // It stood under the name until the hero's left column took the pitch,
+  // then briefly sat behind an "About me" plate on the artwork, which came
+  // out. It's the opening line of the About page now — see About.tsx.
   bio: [
     {
       en: "Hey, I'm Álvaro from Oaxaca. If you're building toward a livable future, let's chat 🌸",

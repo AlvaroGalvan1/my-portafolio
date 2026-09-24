@@ -57,19 +57,18 @@ export default async function Services() {
         </div>
       </div>
 
-      {/* The three stages as one pipeline: a label, a rule with a stop at
-          each stage, and the columns under it. The number and title carry
-          the colour, the rest stays ink. */}
+      {/* The three stages as three cards, same offset-shadow frame the rate
+          cards on Pricing use — this row is a menu of what I do, not a
+          ruled progression, so it reads as one now. */}
       <p className="eyebrow mt-[clamp(2rem,5vh,3.5rem)] text-brand-red">{ui.pipeline}</p>
-      <ol className="mt-3 grid border-t-2 border-brand-maroon/25 md:grid-cols-3 md:divide-x-2 md:divide-brand-maroon/10">
+      <ol className="mt-3 grid gap-6 md:grid-cols-3">
         {services.map((service, i) => {
           const title = say(service.title, locale);
           return (
             <li
               key={title}
-              className="relative border-b-2 border-brand-maroon/10 py-7 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0"
+              className="flex flex-col border-2 border-brand-maroon bg-white p-6 shadow-[4px_4px_0_var(--color-brand-red)]"
             >
-              <span aria-hidden className={`absolute -top-[7px] left-0 h-3 w-3 rounded-full border-2 border-brand-cream bg-brand-red ${i === 0 ? "" : "md:left-8"}`} />
               <p className="font-[family-name:var(--font-display)] text-sm text-brand-red">0{i + 1}</p>
               <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl text-brand-maroon">
                 {title}

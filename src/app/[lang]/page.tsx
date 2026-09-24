@@ -5,6 +5,8 @@ import Background from "@/components/sections/Background";
 import Wall from "@/components/sections/Wall";
 import Testimonials from "@/components/sections/Testimonials";
 import Services from "@/components/sections/Services";
+import Process from "@/components/sections/Process";
+import Faq from "@/components/sections/Faq";
 import Footer from "@/components/sections/Footer";
 import ContactModal from "@/components/contact/ContactModal";
 import { isLocale } from "@/content/i18n";
@@ -40,14 +42,25 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                          and a list of tools read after the work is a
                          footnote where the same list read at the end of
                          the four problems it solved is an answer.
-            Testimonials — other people's words, which is the one claim I
-                         cannot make myself. Renders nothing until there
-                         are any; see content/testimonials.ts.
 
             Services   — what I do and how to start, once everything above
                          has earned it. The rates are not in this run:
                          they are the Pricing page, /[lang]/pricing, the
                          one route outside the scroll, linked from here.
+            Process    — what happens after the call: three steps, in
+                         order, so booking isn't a leap into the unknown.
+                         Right after Services on purpose: both are a row of
+                         three cards answering "what happens if I press the
+                         button", and Testimonials used to sit between them
+                         — which split one argument into two.
+            Testimonials — other people's words, which is the one claim I
+                         cannot make myself. Placed after Services and
+                         Process so it reads as proof that the pitch just
+                         made is true, right before Faq mops up what's
+                         left. Renders nothing until there are any; see
+                         content/testimonials.ts.
+            Faq        — the questions that would otherwise become an
+                         email, answered before they're asked.
 
             A "Capabilities" band sat between Background and the Wall for
             one deploy — a "Worked with" logo row and four what-I-do cards.
@@ -66,7 +79,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Background />
         <Wall />
         <Services />
+        <Process />
         <Testimonials />
+        <Faq />
       </main>
       <Footer />
       <ContactModal strings={ui.contact} />

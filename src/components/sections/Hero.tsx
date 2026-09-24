@@ -200,7 +200,7 @@ export default async function Hero() {
         src={profile.heroBackdrop.src}
         credit={backdropCredit}
         locale={locale}
-        strings={{ hero: ui.hero, aboutYou: ui.aboutYou }}
+        strings={{ hero: ui.hero, aboutYou: ui.aboutYou, about: ui.about }}
       />
     </section>
   );

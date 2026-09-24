@@ -1,37 +1,15 @@
 import type { ReactNode } from "react";
-import BaseMap from "@/components/map/BaseMap";
 import Experience from "./Experience";
 import SkillBadges from "./SkillBadges";
-import { places, GROUPS, journeyStats, type PlaceGroup } from "@/content/places";
-import { say } from "@/content/i18n";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
 
-// The voyage's dates, for the one printed line that stands in for its
-// thirteen ports. The same string is on every voyage pin in places.ts; it
-// is repeated here rather than read from one of them because picking "the
-// dates of the first port" to mean "the dates of the voyage" is a coupling
-// that breaks the moment a pin is reordered.
-const VOYAGE_DATES = { en: "Jan – Apr 2022", es: "Ene – Abr 2022" };
-
-// The groups that are schooling, as opposed to the voyage. Print lists
-// these as entries and the voyage as one line — see below.
-const STUDIED_GROUPS: PlaceGroup[] = ["minerva", "uwc", "uaa"];
-
-// The CV's top half: education, then work, then whatever comes next.
+// The CV's top half: work, then the toolkit it was built with.
 //
-// Two columns, one card each, and the right column starts lower than the
-// left. That offset is the whole layout. Level with each other, the two
-// cards ask to be read in parallel and neither wins; staggered, the page
-// hands them over one at a time — Education arrives, you scroll, Experience
-// comes up beside it — while both keep the half-measure they were designed
-// at. The map is still a half-width map and the roles are still one column
-// of four, which is what each of them was already sized for.
-//
-// Each column is a `space-y` stack rather than a single card, so a second
-// panel goes under either one without the layout being renegotiated. The
-// next one belongs on the left, under Education, where the shorter column
-// has the room.
+// Education used to stand here too, in a column of its own next to
+// Experience, carrying a map. It's on the About page now — the photo and
+// the bio that had nowhere to render moved with it (see About.tsx) — so
+// this section is Experience and Skills, one column, stacked.
 function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
   // Cream inside orange, which is what makes this much small type safe:
   // maroon on orange is 4.14:1 and fine for a heading, but body copy wants
@@ -93,89 +71,15 @@ export default async function Background() {
           </span>
         </a>
       </div>
-      <div className="mt-10 grid gap-6 lg:mt-[clamp(1rem,3vh,2rem)] lg:grid-cols-[11fr_13fr]">
-        {/* `min-w-0` on both columns: a grid item defaults to
-            `min-width: auto`, which means its content can push it wider
-            than its track. At 320px the longest institution name did
-            exactly that and gave the whole page a horizontal scrollbar. */}
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel className="flex-1">
-          <PanelHeading>{ui.education}</PanelHeading>
-
-          {/* The map, then the story under it in one line — see
-              JourneyStory.tsx. The school marks live in that line rather
-              than in a row of their own above the map: they are there to be
-              recognised, not to be the heading. */}
-          <div className="mt-6 print:hidden">
-            <BaseMap
-              locale={locale}
-              itineraryLabel={ui.itinerary}
-              journeyStrings={{
-                play: ui.playJourney,
-                stop: ui.stopJourney,
-                ports: ui.ports,
-                cities: ui.cities,
-                flight: ui.flight,
-                sea: ui.sea,
-              }}
-            />
-          </div>
-
-          {/* What replaces the map on paper. A Leaflet canvas prints as a
-              grey rectangle at best and nothing at all at worst, and the
-              education section of a CV is the one thing that cannot go
-              missing from it — so the campuses are set as a list, from the
-              same array that places them. */}
-          <ul className="mt-4 hidden font-sans text-sm text-neutral-700 print:block">
-            {places
-              .filter((place) => STUDIED_GROUPS.includes(place.group))
-              .map((place) => (
-                <li key={place.id} className="mb-2">
-                  <span className="font-semibold text-brand-maroon">
-                    {place.name}
-                  </span>{" "}
-                  · {say(GROUPS[place.group].short, locale)} ·{" "}
-                  {say(place.country, locale)}
-                  {place.credential && <> · {say(place.credential, locale)}</>}
-                  {place.dates && <> · {say(place.dates, locale)}</>}
-                </li>
-              ))}
-          </ul>
-
-          {/* The voyage as one line rather than thirteen. On the map its
-              thirteen ports are the whole point — a line drawn across Europe
-              is an argument no sentence makes — but thirteen list items on
-              paper would out-length the four degrees above them and say
-              less. So print gets the route, in order, as prose. */}
-          <p className="mt-4 hidden font-sans text-sm text-neutral-700 print:block">
-            <span className="font-semibold text-brand-maroon">
-              {say(GROUPS.voyage.label, locale)}
-            </span>{" "}
-            · {journeyStats.ports} {ui.ports} · {say(VOYAGE_DATES, locale)} ·{" "}
-            {places
-              .filter((place) => place.group === "voyage")
-              .map((place) => place.name)
-              .join(", ")}
-          </p>
-          </Panel>
-
-        </div>
-
-        {/* Experience, then Skills under it — the two halves of one claim,
-            what I did and what I did it with. Skills used to close the left
-            column under the map; it moved here because the map is the one
-            thing on this side that can give up height gracefully, and it
-            needs the room more than a list of tools does. */}
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel>
-            <PanelHeading>{ui.experience}</PanelHeading>
-            <Experience />
-          </Panel>
-          <Panel>
-            <PanelHeading>{skills.heading}</PanelHeading>
-            <SkillBadges />
-          </Panel>
-        </div>
+      <div className="mx-auto mt-10 flex w-full max-w-3xl min-w-0 flex-col gap-6 lg:mt-[clamp(1rem,3vh,2rem)]">
+        <Panel>
+          <PanelHeading>{ui.experience}</PanelHeading>
+          <Experience />
+        </Panel>
+        <Panel>
+          <PanelHeading>{skills.heading}</PanelHeading>
+          <SkillBadges />
+        </Panel>
       </div>
       </div>
 

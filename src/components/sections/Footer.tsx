@@ -1,4 +1,4 @@
-import { socials, CONTACT_EMAIL } from "@/content/socials";
+import { socials } from "@/content/socials";
 import { SITE_PURPOSE } from "@/content/site";
 import { say } from "@/content/i18n";
 import { currentLocale } from "@/content/locale.server";
@@ -82,16 +82,6 @@ export default async function Footer() {
         ))}
       </div>
 
-      {/* The address in plain text too: a hiring manager who wants to
-          write should not have to find the contact panel first. */}
-      <p className="mt-6 text-center font-sans text-sm">
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          className="text-brand-cream/85 underline decoration-brand-yellow/60 decoration-2 underline-offset-4 hover:text-white hover:decoration-brand-yellow"
-        >
-          {CONTACT_EMAIL}
-        </a>
-      </p>
     </footer>
   );
 }

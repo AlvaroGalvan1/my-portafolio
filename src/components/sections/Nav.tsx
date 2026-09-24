@@ -12,11 +12,12 @@ import { Z } from "@/lib/layers";
 // backwards and then forwards again as you scroll. Re-order this list with
 // the page, every time, rather than letting it drift.
 //
-// Three labels, and the bar is shorter than it was on purpose. `#about`
-// went when the hero stopped hiding the bio behind a scroll: the top of the
-// page IS the about now, so "Home" and "About" were two labels pointing at
-// one screen. `#skills` is the back half of About rather than a destination
-// of its own.
+// Three anchors into the home page's scroll, and the bar is shorter than
+// it was on purpose — `#about` went when the hero stopped hiding the bio
+// behind a scroll, because at the time "Home" and "About" were two labels
+// pointing at one screen. That's no longer true: About is a real page now,
+// with a photo and the journey map neither of these three anchors carries,
+// so it's back — as a route beside Pricing below, not a fourth entry here.
 const LINKS = [
   { id: "home", key: "home" },
   { id: "background", key: "background" },
@@ -31,10 +32,12 @@ export default function Nav({
   strings: UiStrings["nav"];
 }) {
   const pathname = usePathname();
-  // Pricing is a route of its own. The other links are anchors into the
-  // home page's scroll, so on Pricing they carry the path too.
+  // Pricing and About are routes of their own. The other links are anchors
+  // into the home page's scroll, so on either of those pages they carry
+  // the path too.
   const onPricing = pathname.startsWith(`/${lang}/pricing`);
-  const [active, setActive] = useState<string>(onPricing ? "" : "home");
+  const onAbout = pathname.startsWith(`/${lang}/about`);
+  const [active, setActive] = useState<string>(onPricing || onAbout ? "" : "home");
 
   // Which section the bar should be pointing at. The band is the slice of
   // viewport between 15% and 45% down — high enough to be under the nav
@@ -69,6 +72,32 @@ export default function Nav({
     return () => observer.disconnect();
   }, []);
 
+  const offHome = onPricing || onAbout;
+
+  // One of the three home-page anchors. Pulled out of the JSX below so it
+  // can render before AND after the About link — About sits right next to
+  // Home, ahead of Background and Wall, rather than at the end of the row
+  // with Pricing.
+  const renderAnchor = (link: (typeof LINKS)[number]) => {
+    const isActive = active === link.id;
+    const Anchor = offHome ? Link : "a";
+    return (
+      <Anchor
+        key={link.id}
+        href={offHome ? `/${lang}#${link.id}` : `#${link.id}`}
+        // "location", not "page": every one of these is an anchor
+        // within this document, not a link to a different page.
+        aria-current={isActive ? "location" : undefined}
+        className={`relative whitespace-nowrap hover:text-brand-yellow ${
+          isActive ? "text-brand-yellow" : ""
+        }`}
+      >
+        {strings[link.key]}
+        <ActiveRule on={isActive} />
+      </Anchor>
+    );
+  };
+
   return (
     <nav
       style={{ zIndex: Z.NAV }}
@@ -78,25 +107,18 @@ export default function Nav({
           Wall" was breaking onto two lines at 390px, which made the bar
           two rows tall and pushed the page down by 20px. */}
       <div className="flex min-w-0 gap-3 sm:gap-8">
-        {LINKS.map((link) => {
-          const isActive = active === link.id;
-          const Anchor = onPricing ? Link : "a";
-          return (
-            <Anchor
-              key={link.id}
-              href={onPricing ? `/${lang}#${link.id}` : `#${link.id}`}
-              // "location", not "page": every one of these is an anchor
-              // within this document, not a link to a different page.
-              aria-current={isActive ? "location" : undefined}
-              className={`relative whitespace-nowrap hover:text-brand-yellow ${
-                isActive ? "text-brand-yellow" : ""
-              }`}
-            >
-              {strings[link.key]}
-              <ActiveRule on={isActive} />
-            </Anchor>
-          );
-        })}
+        {renderAnchor(LINKS[0])}
+        <Link
+          href={`/${lang}/about`}
+          aria-current={onAbout ? "page" : undefined}
+          className={`relative whitespace-nowrap hover:text-brand-yellow ${
+            onAbout ? "text-brand-yellow" : ""
+          }`}
+        >
+          {strings.about}
+          <ActiveRule on={onAbout} />
+        </Link>
+        {LINKS.slice(1).map(renderAnchor)}
         <Link
           href={`/${lang}/pricing`}
           aria-current={onPricing ? "page" : undefined}
