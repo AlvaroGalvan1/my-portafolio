@@ -2,7 +2,7 @@ import HeroArt from "./HeroArt";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { creditLine } from "@/components/gallery/credit";
 import { profile } from "@/content/profile";
-import { socials, CONTACT_EMAIL, CALENDLY_URL } from "@/content/socials";
+import { socials, CONTACT_EMAIL } from "@/content/socials";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
 
@@ -156,12 +156,15 @@ export default async function Hero() {
           </p>
         </div>
 
-        {/* Two actions, side by side: talk to me (yellow, opens the
-            contact panel) and book a call (maroon, straight to the
-            calendar).
-            They are the same intent at two levels of commitment, and a
-            reader ready to book should not have to open a form to find
-            the calendar.
+        {/* One action, not two. This used to sit beside its own "Book a
+            30-minute call" button, straight to the calendar — but the
+            panel this opens leads with exactly that button (see
+            ContactModal.tsx: "booking first"), so the second button on the
+            hero wasn't a shortcut, it was the same click with the message
+            form removed. That left "Book a 30-minute call" appearing
+            twice within one scroll — here, and again at Work with me —
+            which reads as the page repeating itself rather than confirming
+            the offer.
 
             Screen only: on paper a button is a dead rectangle, and the
             print-only line under it carries the addresses instead. */}
@@ -169,15 +172,6 @@ export default async function Hero() {
           <ContactTrigger className="inline-block border-2 border-brand-yellow bg-brand-yellow px-6 py-3.5 font-sans text-base font-semibold text-brand-maroon transition-colors hover:bg-transparent hover:text-brand-maroon">
             {ui.nav.cta}
           </ContactTrigger>
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block border-2 border-brand-maroon bg-brand-maroon px-6 py-3.5 font-sans text-base font-semibold text-brand-cream transition-colors hover:bg-transparent hover:text-brand-maroon"
-          >
-            {ui.services.book}
-            <span className="sr-only">{ui.background.newTab}</span>
-          </a>
         </div>
 
         {/* Paper only. On screen the contact routes are the bar's button and

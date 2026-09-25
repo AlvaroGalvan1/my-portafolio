@@ -59,6 +59,7 @@ function book({
     id,
     title,
     type: "image",
+    section: "books",
     src: `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`,
     alt: `${title} — ${author}`,
     // The caption is the one place the author's name is spelled out next to
@@ -81,6 +82,14 @@ function book({
 // work: it renders no byline, but it still has to be stated, so nothing
 // ships uncredited by accident.
 //
+// Every piece also carries a `section` — "featured" (Álvaro built it),
+// "books" (via the `book()` helper, never set by hand) or "seen" (someone
+// else made it and it's here anyway). See WallSection in frames/base.ts.
+// This is the fix for "wait, is this yours?": `credit`'s absence-means-mine
+// convention is correct but easy to miss on a quick pass, and `section` is
+// what actually splits the Wall into three rows in Wall.tsx, each with a
+// heading that says outright whose work is in it.
+//
 // See TODO.md for the asset checklist (which files still need to be dropped
 // under public/) and frames/registry.tsx for how to add a whole new frame
 // *kind*. A tile whose file is missing simply doesn't render — it's safe to
@@ -93,6 +102,7 @@ const allItems: FrameData[] = [
     // a filename, not a title.
     title: "A one-man drama",
     type: "video",
+    section: "seen",
     // Not my footage. A video opens straight to the clip with no sidecard,
     // so the tile's credit badge is the only place attribution can live —
     // which is exactly why it can't be hover-only.
@@ -110,6 +120,7 @@ const allItems: FrameData[] = [
     id: "i-have-a-mission",
     title: "I have a Mission",
     type: "youtube",
+    section: "featured",
     credit: { who: "Álvaro Galván", relation: "mine" },
     videoId: "nwXOzVZqSVc",
     ...SHAPE.landscape,
@@ -119,6 +130,7 @@ const allItems: FrameData[] = [
     id: "life",
     title: "Cellular Automaton (Conway's Life)",
     type: "cellularAutomata",
+    section: "featured",
     // My implementation, his rules. No href — Conway died in 2020 and has
     // no page that is his; a Wikipedia link would credit the encyclopedia's
     // editors, not him. This is the case `href: optional` exists for.
@@ -139,6 +151,7 @@ const allItems: FrameData[] = [
     id: "brain",
     title: "Cellular Automaton (Brian's Brain)",
     type: "cellularAutomata",
+    section: "featured",
     rule: "brain",
     credit: { who: "Brian Silverman", relation: "after", context: "Brian's Brain" },
     ...SHAPE.small,
@@ -147,6 +160,7 @@ const allItems: FrameData[] = [
     id: "cyclic",
     title: "Cellular Automaton (Cyclic)",
     type: "cellularAutomata",
+    section: "featured",
     rule: "cyclic",
     credit: {
       who: "David Griffeath",
@@ -159,6 +173,7 @@ const allItems: FrameData[] = [
     id: "rule-30",
     title: "Cellular Automaton (Rule 30)",
     type: "cellularAutomata",
+    section: "featured",
     rule: "elementary",
     elementaryRule: 30,
     credit: {
@@ -182,6 +197,7 @@ const allItems: FrameData[] = [
     id: "map-rivers",
     title: "The Rivers of Mexico",
     type: "post",
+    section: "featured",
     src: "/gallery/maps/river_mexico.jpeg",
     alt: "A map of Mexico's river network, drawn as fine branching lines.",
     images: [
@@ -206,6 +222,7 @@ const allItems: FrameData[] = [
     id: "map-soils",
     title: "The Soils of Oaxaca",
     type: "post",
+    section: "featured",
     // Oaxaca leads the set. The piece is titled "The Soils of Oaxaca" and
     // the words below are about Oaxaca, but the sheet on the tile — and the
     // first one the lightbox opened on — was the national map, so the tile
@@ -235,6 +252,7 @@ const allItems: FrameData[] = [
     // one now and correcting it later.
     title: "Leopard Gecko",
     type: "video",
+    section: "seen",
     // Whose footage this is hasn't been established yet, and the prairie dog
     // next to it turned out not to be mine — so assuming is not safe. The
     // TODO credit keeps it off the live Wall (see the filter at the bottom)
@@ -251,6 +269,7 @@ const allItems: FrameData[] = [
     // published it under, not a description of it.
     title: "Satanizar el Fuego 🔥",
     type: "imageSet",
+    section: "seen",
     // The slides are 1920×1080, so `aspectRatio: 16/9` is doing real work:
     // without it the tile fills its cell at roughly 2.4:1 and `object-cover`
     // crops a quarter of every slide's height away, text included.
@@ -283,6 +302,7 @@ const allItems: FrameData[] = [
     id: "cuando-la-plataforma",
     title: "Cuando la plataforma me diga cuándo quemar",
     type: "imageSet",
+    section: "seen",
     // Rendered from Diana's PDF at 150dpi (US Letter landscape, 1650×1275),
     // hence the ratio — same reasoning as the Satanizar deck above.
     ...SHAPE.landscape,
@@ -316,6 +336,7 @@ const allItems: FrameData[] = [
     id: "growing-ca",
     title: "Wildfire Spread — drag to ignite",
     type: "fire",
+    section: "featured",
     href: "https://distill.pub/2020/growing-ca/",
     linkLabel: "Read on Distill ↗",
     ...SHAPE.landscape,
@@ -334,6 +355,7 @@ const allItems: FrameData[] = [
     id: "landfire-viewer",
     title: "LANDFIRE Vegetation Cover, 2024 (live)",
     type: "landfire",
+    section: "featured",
     // The one full-height piece on the Wall, and 2 tracks rather than 3.
     //
     // Everything else is half-height, so the two rows read as two clean
@@ -359,6 +381,7 @@ const allItems: FrameData[] = [
     id: "graduacion",
     title: "Un logro colectivo",
     type: "post",
+    section: "featured",
     src: "/gallery/portraits/graduation.jpeg",
     alt: "Álvaro at his university graduation.",
     credit: { who: "Álvaro Galván", relation: "mine" },

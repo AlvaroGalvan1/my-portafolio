@@ -1,12 +1,27 @@
 import type { LightboxContent } from "../Lightbox";
 import type { Credit } from "../credit";
 
+// Which shelf of the Wall a piece sits on — see Wall.tsx for how these
+// render as three separate rows, each with its own heading. Required for
+// the same reason `credit` is: a piece with no section is a piece nobody
+// decided where to put, and the three rows exist specifically to answer
+// "is this Álvaro's?" without a visitor having to read every byline to
+// find out.
+export type WallSection =
+  /** Built it. Rendered first — it's the point of the page. */
+  | "featured"
+  /** Read it. Book covers, via the `book()` helper in data.ts. */
+  | "books"
+  /** Someone else made it, and it's good enough to hang up anyway. */
+  | "seen";
+
 // Every frame kind extends this. Shared layout/attribution fields live
 // here; whatever makes a frame *that kind* (its media, its behavior) lives
 // in the frame's own file.
 export type FrameBase = {
   id: string;
   title: string;
+  section: WallSection;
   // Hand-picked per piece — how many tracks wide/tall it occupies in the
   // 2-row wall. 3-wide is for hero/showcase pieces (map, CA, a big reel).
   colSpan: 1 | 2 | 3;

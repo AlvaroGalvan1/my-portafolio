@@ -65,7 +65,7 @@ export type Rate = {
 export const rates: Rate[] = [
   {
     label: { en: "Base rate", es: "Tarifa base" },
-    price: { en: "$65 USD/hour", es: "65 USD/hora" },
+    price: { en: "$85 USD/hour", es: "85 USD/hora" },
     body: {
       en: "For companies and startups. Billed hourly.",
       es: "Para empresas y startups. Se cobra por hora.",

@@ -253,10 +253,25 @@ const en = {
     heading: "My Wall",
     skip: "Skip the Wall",
     // Under the title, visible, rather than behind an "i": it says what
-    // the Wall is, and that it grows.
-    note: "My own projects, pinned next to work I admire in wildfire and climate adaptation. I add to it as I go.",
-    scrollHint: "My Wall — scroll sideways to browse",
+    // the Wall is, and that it grows. Previews the three rows below it —
+    // see the *Heading/*Note pairs, one per row.
+    note: "My own projects first, then books I like and other people's work I've enjoyed. I add to it as I go.",
+    // Shared across all three rows now that there are three — see
+    // Wall.tsx. "My Wall" came out of it: identical to itself three times
+    // over said nothing a screen reader user could use to tell the rows
+    // apart, and the row's own heading is right above it either way.
+    scrollHint: "Scroll sideways to browse",
     readOriginal: "Read the original ↗",
+    // The three rows. Each heading names whose work is in it; each note
+    // says so again in a full sentence, because "Featured projects" alone
+    // still leaves "is the byline convention or the row title the thing
+    // I'm supposed to trust" as an open question for a first-time reader.
+    featuredHeading: "Featured projects",
+    featuredNote: "My own work.",
+    booksHeading: "Books I like",
+    booksNote: "What I've been reading.",
+    seenHeading: "Posts I've seen",
+    seenNote: "Other people's work, shared because it's good — not mine.",
   },
 
   skills: {
@@ -274,7 +289,6 @@ const en = {
     // marketing-page word and it primes a reader to discount whatever is
     // under it; the first is a description of who is about to speak.
     heading: "People I've worked with",
-    intro: "Pick a name to read what they said.",
     verify: "View profile",
     project: "Project",
     placeholder: "Placeholder",
@@ -302,16 +316,14 @@ const en = {
       "Álvaro Galván: geospatial engineer from Oaxaca, working on wildfire and climate risk. Background, education and the journey that got him here.",
     eyebrow: "Who I am",
     heading: "About me",
-    // Moved here from `background.educationNote` — it renders on this page
-    // now, beside the photo, rather than sitting unused next to a map that
-    // has since moved here too.
-    scholarship:
-      "I studied on scholarships the whole way, across seven countries, with classmates from more than 90 nationalities.",
     // The line that hands off to the map below: what it is, in one
     // sentence, before the reader scrolls to it.
     transition:
       "That's the map below: where I studied, and the ports a semester at sea stopped in along the way.",
     journeyHeading: "The journey",
+    // Points at Work with me on the home page rather than repeating its
+    // buttons here — see the note in About.tsx.
+    workLink: "Want to work together? See Work with me →",
   },
 
   faq: {
@@ -322,7 +334,7 @@ const en = {
     // The route's <title>, run through the layout's "%s — name" template.
     metaTitle: "Pricing",
     metaDescription:
-      "Geospatial consulting: research, building and design. $65 USD/hour base rate, fixed-price projects, reduced rates for NGOs, and pro bono work for mission-aligned climate projects.",
+      "Geospatial consulting: research, building and design. $85 USD/hour base rate, fixed-price projects, reduced rates for NGOs, and pro bono work for mission-aligned climate projects.",
     eyebrow: "Work with me",
     heading: "Pricing",
     lede: "Four ways to work together. Every project starts with a 30-minute call.",
@@ -567,9 +579,15 @@ const es: UiStrings = {
   wall: {
     heading: "Mi Muro",
     skip: "Saltar el Muro",
-    note: "Mis proyectos, junto a trabajos que admiro sobre incendios forestales y adaptación al cambio climático. Lo voy actualizando.",
-    scrollHint: "Mi Muro: desliza hacia los lados para recorrerlo",
+    note: "Primero mis propios proyectos, luego libros que me gustan y trabajo de otras personas que he disfrutado. Lo voy actualizando.",
+    scrollHint: "Desliza hacia los lados para recorrerlo",
     readOriginal: "Leer el original ↗",
+    featuredHeading: "Proyectos destacados",
+    featuredNote: "Trabajo propio.",
+    booksHeading: "Libros que me gustan",
+    booksNote: "Lo que he estado leyendo.",
+    seenHeading: "Publicaciones que he visto",
+    seenNote: "Trabajo de otras personas, compartido porque es bueno — no es mío.",
   },
 
   skills: {
@@ -580,7 +598,6 @@ const es: UiStrings = {
 
   testimonials: {
     heading: "Gente con la que he trabajado",
-    intro: "Elige un nombre para leer lo que dijo.",
     verify: "Ver perfil",
     project: "Proyecto",
     placeholder: "Ejemplo",
@@ -608,11 +625,10 @@ const es: UiStrings = {
       "Álvaro Galván: ingeniero geoespacial de Oaxaca, trabajando en riesgo de incendios forestales y clima. Trayectoria, formación y el recorrido que lo trajo hasta aquí.",
     eyebrow: "Quién soy",
     heading: "Sobre mí",
-    scholarship:
-      "Estudié con becas de principio a fin, en siete países y con compañeros de más de 90 nacionalidades.",
     transition:
       "Ese es el mapa de abajo: dónde estudié, y los puertos donde paró un semestre en barco por el camino.",
     journeyHeading: "El recorrido",
+    workLink: "¿Quieres que trabajemos juntos? Ve Trabajemos juntos →",
   },
 
   faq: {
@@ -622,7 +638,7 @@ const es: UiStrings = {
   pricing: {
     metaTitle: "Tarifas",
     metaDescription:
-      "Consultoría geoespacial: investigación, desarrollo y diseño. Tarifa base de 65 USD por hora, proyectos con precio cerrado, tarifas reducidas para ONG y trabajo pro bono para proyectos climáticos con los que comparto causa.",
+      "Consultoría geoespacial: investigación, desarrollo y diseño. Tarifa base de 85 USD por hora, proyectos con precio cerrado, tarifas reducidas para ONG y trabajo pro bono para proyectos climáticos con los que comparto causa.",
     eyebrow: "Trabajemos juntos",
     heading: "Tarifas",
     lede: "Hay cuatro formas de trabajar juntos. Todo proyecto empieza con una llamada de 30 minutos.",

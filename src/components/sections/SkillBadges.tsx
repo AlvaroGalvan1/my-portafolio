@@ -15,8 +15,8 @@ import { currentLocale } from "@/content/locale.server";
 // Stacked rows make the reader pass each group in turn, and each row is a
 // small argument: here is a stage of the work, here is what I do it with,
 // here is how far into it I go. Three of those beats twelve logos, and the
-// ORDER carries meaning the grid could not — build, then process, then
-// domain, which is the order the work actually happens in. See skills.ts.
+// ORDER carries meaning the grid could not — Research, Build & deploy,
+// Design, the same three stages Work with me runs in. See skills.ts.
 //
 // ── Alignment ─────────────────────────────────────────────────────────
 // ONE left edge, all the way down. Label, marks and sentence all start at
@@ -44,6 +44,11 @@ export default async function SkillBadges() {
           <h5 className="eyebrow text-brand-red">
             {say(group.label, locale)}
           </h5>
+          {group.note && (
+            <p className="mt-1 font-sans text-[0.8rem] text-neutral-600">
+              {say(group.note, locale)}
+            </p>
+          )}
 
           {/* One list, with a mark where the tool has one. See skills.ts:
               this used to be marks on one line and the same names repeated

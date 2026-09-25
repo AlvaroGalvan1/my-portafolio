@@ -62,5 +62,38 @@ export type Testimonial = {
   photoSrc?: string;
 };
 
-// EMPTY ON PURPOSE. Add entries and the section appears on its own.
-export const testimonials: Testimonial[] = [];
+export const testimonials: Testimonial[] = [
+  {
+    // Trimmed from a longer written blurb, with Jack's OK to cut — see
+    // rule 2 and rule 3 above. Cut: a sentence that repeated ground the
+    // kept sentences already cover, and every mention of "internship" —
+    // still his exact words either side of the cut, just without the
+    // clause naming the engagement type, which read as junior on a page
+    // arguing the opposite. Two grammar fixes, per rule 2: "their ability"
+    // → "his ability", "and were a reliable" → "and was a reliable".
+    // Nothing else changed from his own words.
+    quote:
+      "Álvaro made a strong contribution to our geospatial analytics work, particularly on tools and workflows supporting site selection and impact assessment. I was impressed by his ability to turn loosely defined problems into practical, maintainable and communicable solutions while incorporating feedback from the team. He grew considerably in both technical independence and communication, and was a reliable and thoughtful contributor to our team.",
+    name: "Jack Royero",
+    role: { en: "Head of GIS", es: "Jefe del equipo de SIG" },
+    relation: { en: "Manager at Pano AI", es: "Gerente en Pano AI" },
+    org: "Pano AI",
+    href: "https://www.linkedin.com/in/jack-royero-aa9b2a192",
+    photoSrc: "/gallery/portraits/jack-royero.jpeg",
+  },
+  {
+    quote:
+      "Our team lacked a streamlined way to evaluate and compare the performance of different solutions. Álvaro developed a reusable geospatial analysis framework that automated and standardized these workflows, making analyses faster, more robust, and reproducible. His ability to learn quickly, take ownership of challenging problems, and consistently deliver thorough and reliable work has made him an incredibly valuable member of the team.",
+    // Spelled per her own LinkedIn vanity URL — "McQuillan", not
+    // "McQuillian" as this was first entered. See rule 1.
+    name: "Katie McQuillan",
+    role: { en: "Data Engineer", es: "Ingeniera de Datos" },
+    relation: { en: "Colleague at Pano AI", es: "Colega en Pano AI" },
+    org: "Pano AI",
+    // Trimmed to the profile itself — the link the user gave was a
+    // contact-info overlay carrying a session-specific `lipi` tracking
+    // token, which isn't a stable public URL for anyone else to open.
+    href: "https://www.linkedin.com/in/katie-ann-mcquillan/",
+    photoSrc: "/gallery/portraits/katie-mcquillan.jpeg",
+  },
+];

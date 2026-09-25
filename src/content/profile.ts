@@ -56,8 +56,8 @@ export const profile = {
   // out. It's the opening line of the About page now — see About.tsx.
   bio: [
     {
-      en: "Hey, I'm Álvaro from Oaxaca. If you're building toward a livable future, let's chat 🌸",
-      es: "Hola, soy Álvaro, de Oaxaca. Si estás construyendo hacia un futuro habitable, platiquemos 🌸",
+      en: "Hey, I'm Álvaro from Oaxaca. If you're building toward a livable future, let's chat.",
+      es: "Hola, soy Álvaro, de Oaxaca. Si estás construyendo hacia un futuro habitable, platiquemos.",
     },
   ] satisfies Phrase[],
 };

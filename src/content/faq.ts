@@ -3,11 +3,6 @@ import type { Phrase } from "./i18n";
 // The questions a reader has right before they'd otherwise write an email
 // to ask them. Answered here so the email, if it comes, is about the
 // project instead.
-//
-// Each one earns its place by covering ground nothing else on the page
-// does — response time and timezone are in the footer, not here; what a
-// project delivers is in Process. A question that just repeats another
-// section in FAQ clothing is worse than no question at all.
 export type FaqItem = {
   question: Phrase;
   answer: Phrase;
@@ -15,31 +10,60 @@ export type FaqItem = {
 
 export const faq: FaqItem[] = [
   {
-    question: { en: "Full-time or contract — which is this?", es: "¿Tiempo completo o por contrato?" },
+    question: { en: "How long do projects typically run?", es: "¿Cuánto duran los proyectos normalmente?" },
     answer: {
-      en: "Either. I'm open to consulting contracts and to full-time geospatial roles — say which one you've got and we'll go from there.",
-      es: "Cualquiera de los dos. Estoy abierto a contratos de consultoría y a puestos de tiempo completo en geoespacial — dime cuál tienes en mente y seguimos de ahí.",
+      en: "It varies with scope. A short research sprint can wrap in a week or two. A full build can run several months. You'll see a realistic timeline in the written plan before work starts.",
+      es: "Depende del alcance. Un sprint de investigación corto se puede cerrar en una o dos semanas. Un desarrollo completo puede tomar varios meses. Verás un cronograma realista en el plan por escrito antes de empezar.",
     },
   },
   {
-    question: { en: "Do you only work on wildfire and climate projects?", es: "¿Solo trabajas en proyectos de incendios y clima?" },
+    question: {
+      en: "Do you work remotely, or does it need to be in-person?",
+      es: "¿Trabajas remoto, o tiene que ser en persona?",
+    },
     answer: {
-      en: "That's where most of my work lives and where I'm fastest, but the skills are general geospatial engineering. If it's spatial data and it needs building, ask.",
-      es: "Ahí vive la mayoría de mi trabajo y donde soy más rápido, pero las habilidades son de ingeniería geoespacial en general. Si es un problema de datos espaciales, pregúntame.",
+      en: "Remote works for almost everything — the work is data and code, and that travels fine. In-person is possible around the Bay Area when it makes sense for the project.",
+      es: "Remoto funciona para casi todo — el trabajo es datos y código, y eso viaja bien. En persona es posible en el área de la Bahía cuando tiene sentido para el proyecto.",
     },
   },
   {
-    question: { en: "Do you sign NDAs?", es: "¿Firmas acuerdos de confidencialidad?" },
+    question: {
+      en: "I don't have a scoped project yet, can I still reach out?",
+      es: "Todavía no tengo un proyecto definido, ¿puedo escribirte de todos modos?",
+    },
     answer: {
-      en: "Yes — send yours, or I'll send mine on the call.",
-      es: "Sí. Envía el tuyo, o yo mando el mío en la llamada.",
+      en: "Yes. Plenty of projects start as \"something's not working\" rather than a finished spec — that's what the research phase is for.",
+      es: "Sí. Muchos proyectos empiezan como «algo no está funcionando» en vez de una especificación terminada — para eso está la fase de investigación.",
     },
   },
   {
-    question: { en: "What if my org can't pay the base rate?", es: "¿Y si mi organización no puede pagar la tarifa base?" },
+    question: {
+      en: "What size teams or orgs do you usually work with?",
+      es: "¿Con qué tamaño de equipos u organizaciones sueles trabajar?",
+    },
     answer: {
-      en: "NGOs, nonprofits and pro bono climate work get reduced or free rates — details on the pricing page.",
-      es: "ONG, organizaciones sin fines de lucro y proyectos climáticos pro bono tienen tarifas reducidas o gratuitas — los detalles están en la página de tarifas.",
+      en: "Solo researchers, small NGOs, startups, and established companies. Scope and rate flex to match.",
+      es: "Investigadores independientes, ONG pequeñas, startups y empresas establecidas. El alcance y la tarifa se ajustan según el caso.",
+    },
+  },
+  {
+    question: {
+      en: "Can I hire you for one small task instead of a full project?",
+      es: "¿Puedo contratarte para una sola tarea pequeña en vez de un proyecto completo?",
+    },
+    answer: {
+      en: "Sure. Fixed-term projects can be scoped down to a single deliverable — a dataset, a model, a map — rather than a full build.",
+      es: "Claro. Los proyectos a plazo fijo se pueden reducir a un solo entregable — un conjunto de datos, un modelo, un mapa — en vez de un desarrollo completo.",
+    },
+  },
+  {
+    question: {
+      en: "Who owns the code and data once the project's done?",
+      es: "¿De quién es el código y los datos cuando termina el proyecto?",
+    },
+    answer: {
+      en: "You do. Everything ships in a repo under your ownership, documented, with a handover call included.",
+      es: "Tuyos. Todo se entrega en un repositorio bajo tu propiedad, documentado, con una llamada de entrega incluida.",
     },
   },
 ];

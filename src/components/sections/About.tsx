@@ -1,7 +1,6 @@
+import Link from "next/link";
 import BaseMap from "@/components/map/BaseMap";
-import ContactTrigger from "@/components/contact/ContactTrigger";
 import { profile } from "@/content/profile";
-import { CALENDLY_URL } from "@/content/socials";
 import { say } from "@/content/i18n";
 import { currentLocale } from "@/content/locale.server";
 import { UI } from "@/content/ui";
@@ -15,7 +14,6 @@ import { UI } from "@/content/ui";
 export default async function About() {
   const locale = await currentLocale();
   const ui = UI[locale].about;
-  const services = UI[locale].services;
   const background = UI[locale].background;
 
   return (
@@ -35,9 +33,6 @@ export default async function About() {
       <section className="bg-brand-cream px-6 py-[clamp(3rem,8vh,5.5rem)] sm:px-16">
         <div className="mx-auto max-w-4xl">
           <p className="max-w-2xl font-sans text-lg leading-relaxed text-brand-maroon">
-            {ui.scholarship}
-          </p>
-          <p className="mt-4 max-w-2xl font-sans text-lg leading-relaxed text-brand-maroon">
             {ui.transition}
           </p>
 
@@ -73,19 +68,17 @@ export default async function About() {
             </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a
-              href={CALENDLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-2 border-brand-maroon bg-brand-yellow px-6 py-3 font-sans font-semibold text-brand-maroon shadow-[4px_4px_0_var(--color-brand-maroon)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--color-brand-maroon)]"
-            >
-              {services.book}
-            </a>
-            <ContactTrigger className="font-sans text-sm font-semibold text-brand-maroon underline decoration-brand-red decoration-2 underline-offset-4 hover:text-brand-red">
-              {services.brief}
-            </ContactTrigger>
-          </div>
+          {/* One link, not a second set of buttons. Booking a call and
+              sending a brief are Work with me's job — repeating them here
+              just gives a reader two different "reach out" moments to
+              choose between on two different pages. This points at the
+              one that actually is that moment. */}
+          <Link
+            href={`/${locale}#work`}
+            className="mt-8 inline-block font-sans text-sm font-semibold text-brand-red underline decoration-brand-red/40 decoration-2 underline-offset-4 hover:decoration-brand-red"
+          >
+            {ui.workLink}
+          </Link>
         </div>
       </section>
     </>

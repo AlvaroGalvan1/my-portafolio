@@ -64,7 +64,6 @@ export default async function Testimonials() {
   return (
     <section id="testimonials" className="border-t-2 border-brand-maroon/15 bg-brand-cream px-6 py-[clamp(3rem,8vh,5rem)] sm:px-16 print:hidden">
       <h2 className="font-[family-name:var(--font-display)] text-3xl text-brand-maroon sm:text-4xl">{ui.heading}</h2>
-      <p className="mt-2 font-sans text-base text-neutral-600">{ui.intro}</p>
       <TestimonialsPicker items={items} strings={{ verify: ui.verify, project: ui.project, placeholder: ui.placeholder }} />
     </section>
   );

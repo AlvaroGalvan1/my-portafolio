@@ -36,6 +36,9 @@ const filesToScan = [
   // The CV download lives on Background's Experience heading, so a renamed
   // PDF would otherwise go unnoticed.
   "src/components/sections/Background.tsx",
+  // Testimonial portraits — optional per entry, so a typo'd path would
+  // otherwise just silently fall back to initials instead of 404ing loud.
+  "src/content/testimonials.ts",
 ];
 
 const pathPattern = /["'](\/(?:gallery|papers|hero|logos)\/[^"'?#]+|\/profile\.png|\/cv\.pdf)["']/g;
