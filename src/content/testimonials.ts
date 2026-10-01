@@ -96,4 +96,20 @@ export const testimonials: Testimonial[] = [
     href: "https://www.linkedin.com/in/katie-ann-mcquillan/",
     photoSrc: "/gallery/portraits/katie-mcquillan.jpeg",
   },
+  {
+    quote:
+      "Our team had been missing a critical capability within our site suitability tooling, requiring us to rely on ad hoc workarounds. Álvaro developed features that gave us new ways to incorporate and analyze spatial data, enabling our team to follow a more robust and unified approach to common tasks. Álvaro is very thoughtful and actively looks for opportunities to help others succeed.",
+    name: "Sydney Davison",
+    role: { en: "Geospatial Data Analyst", es: "Analista de Datos Geoespaciales" },
+    // Org wasn't stated outright — inferred from "site suitability
+    // tooling," which is the same work Jack's quote above describes as
+    // "site selection and impact assessment" on the same team. Worth
+    // double-checking against the real org if that inference is wrong.
+    relation: { en: "Colleague at Pano AI", es: "Colega en Pano AI" },
+    org: "Pano AI",
+    // Same trim as Katie's above — the link given was a contact-info
+    // overlay with a session-specific `lipi` token, not a stable URL.
+    href: "https://www.linkedin.com/in/sydneysdavison/",
+    photoSrc: "/gallery/portraits/sydney-davison.jpeg",
+  },
 ];
