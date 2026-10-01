@@ -378,6 +378,20 @@ const allItems: FrameData[] = [
     },
   },
   {
+    id: "fuego-platform",
+    title: "Fuego.Earth Platform (live)",
+    type: "embed",
+    section: "featured",
+    // Framing is allowed (no X-Frame-Options / frame-ancestors on the
+    // origin, checked with `curl -sI`). If that ever changes, swap this for
+    // a `link` frame like the old LANDFIRE one.
+    src: "https://platform.fuego.earth",
+    // Credit assumed to be mine — change `who`/`relation` if the platform
+    // is a team or org effort that should be named.
+    credit: { who: "Álvaro Galván", relation: "mine" },
+    ...SHAPE.landscape,
+  },
+  {
     id: "graduacion",
     title: "Un logro colectivo",
     type: "post",
@@ -489,6 +503,7 @@ const GALLERY_ES: Record<string, FrameText> = {
     linkLabel: "Léelo en Distill ↗",
   },
   "landfire-viewer": { title: "Cobertura vegetal LANDFIRE, 2024 (en vivo)" },
+  "fuego-platform": { title: "Plataforma Fuego.Earth (en vivo)" },
   graduacion: {
     alt: "Álvaro en su graduación universitaria.",
     linkLabel: "Léelo en LinkedIn ↗",
