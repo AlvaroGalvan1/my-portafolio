@@ -392,6 +392,16 @@ const allItems: FrameData[] = [
     ...SHAPE.landscape,
   },
   {
+    id: "fuego-risk-map",
+    title: "Fuego.Earth Risk Map (live)",
+    type: "embed",
+    section: "featured",
+    // Same origin as fuego-platform above: no frame-blocking headers.
+    src: "https://platform.fuego.earth/risk_map",
+    credit: { who: "Álvaro Galván", relation: "mine" },
+    ...SHAPE.landscape,
+  },
+  {
     id: "graduacion",
     title: "Un logro colectivo",
     type: "post",
@@ -504,6 +514,7 @@ const GALLERY_ES: Record<string, FrameText> = {
   },
   "landfire-viewer": { title: "Cobertura vegetal LANDFIRE, 2024 (en vivo)" },
   "fuego-platform": { title: "Plataforma Fuego.Earth (en vivo)" },
+  "fuego-risk-map": { title: "Mapa de riesgo Fuego.Earth (en vivo)" },
   graduacion: {
     alt: "Álvaro en su graduación universitaria.",
     linkLabel: "Léelo en LinkedIn ↗",
