@@ -247,6 +247,11 @@ const en = {
     problem: "Problem",
     tech: "Tech",
     impact: "Impact",
+    // The beats of an entry's story, when it has one (see STORYTELLING.md).
+    stakes: "At stake",
+    built: "What I built",
+    results: "Results",
+    builtWith: "Built with",
   },
 
   wall: {
@@ -574,6 +579,10 @@ const es: UiStrings = {
     problem: "Problema",
     tech: "Tecnología",
     impact: "Impacto",
+    stakes: "Lo que está en juego",
+    built: "Lo que construí",
+    results: "Resultados",
+    builtWith: "Hecho con",
   },
 
   wall: {

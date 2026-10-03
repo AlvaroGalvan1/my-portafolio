@@ -21,6 +21,19 @@ export type Job = {
    *  changed. Three short lines, always in that order, so a reader who
    *  opens one entry knows where to look in the next. */
   details: { problem: Phrase; tech: Phrase; impact: Phrase };
+  /** The story behind the entry, opened by its Expand control, told in the
+   *  beats from STORYTELLING.md: what was at stake, what was in the way,
+   *  and what I built. The `stats` below are the proof and `door` is the
+   *  way in. `visual` names a picture from components/stories; an entry
+   *  with nothing it may show leaves it off. Entries without a story fall
+   *  back to `details`. */
+  story?: {
+    stakes: Phrase;
+    snag: Phrase;
+    move: Phrase;
+    visual?: "fireProgression" | "riskCollage";
+    door?: { label: Phrase; href: string }[];
+  };
   /** One or two results, set large on screen. Figures from the CV only;
    *  a number here has to be one I can defend in an interview. */
   stats: { value: Phrase; label: Phrase }[];
@@ -95,6 +108,21 @@ const allJobs: Job[] = [
         es: "Reemplacé la estimación manual con una puntuación automatizada para maximizar la cobertura de las cámaras.",
       },
     },
+    story: {
+      stakes: {
+        en: "The first smoke of a new fire, in a valley no camera can see.",
+        es: "El primer humo de un incendio nuevo, en un valle que ninguna cámara alcanza a ver.",
+      },
+      snag: {
+        en: "Camera sites were checked by hand, so nobody knew where the blind spots were.",
+        es: "Los sitios de las cámaras se revisaban a mano, así que nadie sabía dónde estaban los puntos ciegos.",
+      },
+      move: {
+        en: "I wrote viewshed tools in Python that score each candidate site by what it can see, inside the ArcGIS workflow where siting is decided.",
+        es: "Escribí herramientas de cuencas visuales en Python que califican cada sitio candidato por lo que alcanza a ver, dentro del flujo de ArcGIS donde se decide la ubicación.",
+      },
+      door: [{ label: { en: "Pano AI", es: "Pano AI" }, href: "https://www.pano.ai" }],
+    },
     stats: [
       { value: "1,000+", label: { en: "critical assets ranked by camera coverage", es: "activos críticos clasificados por cobertura de cámaras" } },
       { value: "0 to 40%", label: { en: "of high-risk zones with measured coverage", es: "de zonas de alto riesgo con cobertura medida" } },
@@ -161,6 +189,25 @@ const allJobs: Job[] = [
         es: "Entregué un mapa de índice de incendio que se actualiza solo, todos los días, con información de campo.",
       },
     },
+    story: {
+      stakes: {
+        en: "Tigers live in Telangana's forests, and those forests burn.",
+        es: "En los bosques de Telangana viven tigres, y esos bosques se queman.",
+      },
+      snag: {
+        en: "Fire in India isn't fire in the US. There is no LANDFIRE, and most fires start near villages and roads.",
+        es: "El fuego en India no es el de Estados Unidos. No hay LANDFIRE, y la mayoría de los incendios empiezan cerca de pueblos y caminos.",
+      },
+      move: {
+        en: "I built a fire-risk map on free satellite data, weighted with AHP by the reserve teams who use it.",
+        es: "Construí un mapa de riesgo de incendio con datos satelitales gratuitos, ponderado con AHP por los equipos de las reservas que lo usan.",
+      },
+      visual: "riskCollage",
+      door: [
+        { label: { en: "The full story", es: "La historia completa" }, href: "https://fuego.earth/portfolio/risk-map" },
+        { label: { en: "Open the risk map", es: "Abrir el mapa de riesgo" }, href: "https://platform.fuego.earth/risk_map" },
+      ],
+    },
     stats: [
       { value: { en: "Daily", es: "A diario" }, label: { en: "fire-risk updates for tiger reserve teams", es: "actualizaciones de riesgo de incendio para las reservas" } },
     ],
@@ -221,6 +268,22 @@ const allJobs: Job[] = [
         en: "Built a modular backend runner and UI processing 1,000+ daily simulation runs.",
         es: "Construí un backend modular y una interfaz que procesan más de 1,000 simulaciones al día.",
       },
+    },
+    story: {
+      stakes: {
+        en: "Towns at the foot of fire-prone hills, and the crews who defend them.",
+        es: "Pueblos al pie de cerros propensos al fuego, y las brigadas que los defienden.",
+      },
+      snag: {
+        en: "Open fire-spread models existed, but each read data in its own format and none ran out of the box.",
+        es: "Los modelos abiertos de propagación existían, pero cada uno leía los datos en su propio formato y ninguno funcionaba de inmediato.",
+      },
+      move: {
+        en: "I built the platform around them: the data pipeline, the runs, and a map of the fire hour by hour that anyone can read.",
+        es: "Construí la plataforma alrededor de ellos: la conexión de datos, las corridas y un mapa del fuego hora por hora que cualquiera puede leer.",
+      },
+      visual: "fireProgression",
+      door: [{ label: { en: "Run a simulation", es: "Correr una simulación" }, href: "https://platform.fuego.earth" }],
     },
     stats: [
       { value: "1,000+", label: { en: "fire-spread simulations a day", es: "simulaciones de propagación al día" } },
@@ -289,6 +352,21 @@ const allJobs: Job[] = [
         en: "Flagged line anomalies early so crews could repair grid issues before blackouts hit.",
         es: "Detecté anomalías en las líneas a tiempo para que las cuadrillas repararan antes de un apagón.",
       },
+    },
+    story: {
+      stakes: {
+        en: "A power line that fails can start a fire and black out a whole town.",
+        es: "Una línea eléctrica que falla puede iniciar un incendio y dejar sin luz a un pueblo entero.",
+      },
+      snag: {
+        en: "Damage on the lines was found only after the outage, or the fire.",
+        es: "El daño en las líneas se encontraba solo después del apagón, o del incendio.",
+      },
+      move: {
+        en: "I watched the sensor streams, diagnosed anomalies with statistics, and sent the real faults to the crews the same day.",
+        es: "Vigilé los flujos de los sensores, diagnostiqué anomalías con estadística y mandé las fallas reales a las cuadrillas el mismo día.",
+      },
+      door: [{ label: { en: "Gridware", es: "Gridware" }, href: "https://www.gridware.io" }],
     },
     stats: [
       { value: "2,000+", label: { en: "grid anomaly alerts investigated", es: "alertas de anomalías en la red investigadas" } },

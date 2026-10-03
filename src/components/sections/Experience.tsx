@@ -1,4 +1,5 @@
 import OrgLogo from "./OrgLogo";
+import StoryPanel from "@/components/stories/Story";
 import { experience, type Job } from "@/content/experience";
 import { say } from "@/content/i18n";
 import { currentLocale } from "@/content/locale.server";
@@ -76,7 +77,9 @@ export default async function Experience() {
                   {say(job.headline.line, locale)}
                 </p>
 
-                {/* The next level down, behind one control. A native
+                {/* The next level down, behind one control: the project's
+                    story where it has one (components/stories), otherwise
+                    the problem, the tools and what changed. A native
                     <details>: keyboard and screen readers get the
                     open/closed state for free, and it works before any
                     JavaScript has loaded. The label swaps with the state.
@@ -92,20 +95,24 @@ export default async function Experience() {
                     <span className="group-open:hidden">{ui.expand}</span>
                     <span className="hidden group-open:inline">{ui.collapse}</span>
                   </summary>
-                  <dl className="mt-3 grid min-w-0 grid-cols-1 gap-x-4 gap-y-1 border-l-2 border-brand-red/30 pl-4 font-sans text-sm leading-snug sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-y-2">
-                    {(
-                      [
-                        [ui.problem, job.details.problem],
-                        [ui.tech, job.details.tech],
-                        [ui.impact, job.details.impact],
-                      ] as const
-                    ).map(([term, value]) => (
-                      <div key={term} className="contents">
-                        <dt className="eyebrow pt-0.5 text-brand-red">{term}</dt>
-                        <dd className="mb-2 text-neutral-700 last:mb-0 sm:mb-0">{say(value, locale)}</dd>
-                      </div>
-                    ))}
-                  </dl>
+                  {job.story ? (
+                    <StoryPanel job={job} story={job.story} locale={locale} />
+                  ) : (
+                    <dl className="mt-3 grid min-w-0 grid-cols-1 gap-x-4 gap-y-1 border-l-2 border-brand-red/30 pl-4 font-sans text-sm leading-snug sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-y-2">
+                      {(
+                        [
+                          [ui.problem, job.details.problem],
+                          [ui.tech, job.details.tech],
+                          [ui.impact, job.details.impact],
+                        ] as const
+                      ).map(([term, value]) => (
+                        <div key={term} className="contents">
+                          <dt className="eyebrow pt-0.5 text-brand-red">{term}</dt>
+                          <dd className="mb-2 text-neutral-700 last:mb-0 sm:mb-0">{say(value, locale)}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
                 </details>
 
                 {/* ── Paper only, from here down ─────────────────────────
