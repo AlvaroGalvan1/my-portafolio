@@ -209,24 +209,29 @@ buttons and location line stay where they are.
 ---
 
 <a id="b1"></a>
-## B1 🟣 Background as a pitch — prototype more, then pick one
+## B1 🟣 Background as a pitch — review v5, then build it in
 
 Issue [#1](https://github.com/AlvaroGalvan1/my-portafolio/issues/1), branch `feat/1-background-pitch` (draft PR).
-Background should tell someone hiring a contractor that I know how to work
-where wildfire meets the power grid: four things to hire me for (catch line
-faults, place cameras, forecast spread, read satellite data), each proven by
-what I did, with its logo. No workflow, no hardships, no figures.
+Background should tell someone hiring a contractor that I build wildfire
+intelligence for the grid: four layers of one map, each proven by what I
+did, with its logo. No workflow, no hardships, no figures.
 
-The current try is `public/prototypes/background-story.html` (v4, open at
-`/prototypes/background-story.html` under `npm run dev`): map layers that
-stack as you scroll and flatten into one map. It works but it is **too long**.
+The current try is `public/prototypes/background-story.html` (v5, open at
+`/prototypes/background-story.html` under `npm run dev`). Side-by-side
+layout variants were tried as a plan and dropped in favour of keeping the
+layer stack and sharpening the message. v5, after looking at how Overstory,
+Gridware, OroraTech and Technosylva pitch, and at the FireTrace demo:
 
-> **Prompt:** *Read `public/prototypes/background-story.html` and issue #1.
-> Keep the story and copy, but make it much shorter. Prototype two or three
-> different ways side by side as separate files in `public/prototypes/`
-> (for example: the layer stack in one screen, four compact cards with one
-> anime.js loop each, one hero animation plus a list) and show me each at
-> desktop and phone widths so I can pick. Don't touch `Background.tsx` yet.*
+- Heading "Wildfire intelligence for the grid"; the four items read as a GIS
+  layers panel that checks each one on as its layer lands.
+- Layers stack bottom to top like a real map: satellite imagery (Hyticos,
+  cycling true colour / near-infrared / burn ratio), grid (Gridware),
+  cameras (Pano AI), forecast (FUEGO). Ends on "Let's talk" alone.
+- Scroll is about 3.4 screens instead of 5.6.
+
+> **Prompt:** *Open `/prototypes/background-story.html` (v5) with me. Once I
+> sign off on it, build it into `Background.tsx`, remove Skills, and delete
+> the prototype before the PR leaves draft.*
 
 ---
 
