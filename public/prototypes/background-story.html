@@ -4,14 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Background prototype</title>
-<!-- PROTOTYPE, v4.1 (v4 layout, new copy; v5 was dropped). Not part of the site: a throwaway page to test
-     Background as a pitch: four things you can hire me for, each one a
-     layer of the same map, stacking up as you scroll into one finished
-     picture. Served by `next dev` from /public so it can use the real
-     logos. Delete or move before merging. Copy is draft.
+<!-- PROTOTYPE, v6. Not part of the site: Background as one story on one
+     real map. A 5 x 5 mile patch east of Grass Valley, CA. A Gridscope
+     sensor on a pole flags a fault (Gridware), the hilltop cameras turn and
+     confirm the smoke (Pano AI), the spread model shows where it goes
+     (FUEGO), then the map zooms out to 25 x 25 miles where satellites track
+     it (Hyticos). Each step says what I did there. Fire, faults and most
+     distribution lines are made up; the imagery and transmission lines are
+     real. Delete or move before merging.
 
-     Scroll scrubs one paused anime.js timeline (the stack); small
-     anime.js loops inside each layer keep it alive while you read. -->
+     Scroll scrubs one paused anime.js timeline; a rAF loop keeps the
+     cameras sweeping and the sensor pinging. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
@@ -27,73 +30,68 @@
          padding: 0 24px; background: var(--maroon); color: var(--cream); }
   .bar a { color: var(--yellow); font-size: 13px; }
 
-  .story { position: relative; height: 560svh; }
+  .story { position: relative; height: 600svh; }
   .sticky { position: sticky; top: var(--bar); height: calc(100svh - var(--bar)); display: grid;
-            grid-template-columns: minmax(340px, 460px) minmax(0, 1fr); gap: 24px; padding: 0 clamp(24px, 5vw, 72px); align-items: center; }
+            grid-template-columns: minmax(340px, 440px) minmax(0, 1fr); gap: 40px; padding: 0 clamp(24px, 5vw, 72px); align-items: center; }
 
-  /* ── The pitch ───────────────────────────────────────────────────── */
   .kicker { color: var(--red); }
-  h1 { font-family: Bungee, sans-serif; font-weight: 400; font-size: clamp(30px, 3.4vw, 44px); line-height: 1; margin: 12px 0 14px; color: var(--maroon); }
-  .lede { font-size: 17px; line-height: 1.5; margin: 0; color: var(--ink); max-width: 38ch; }
-  .items { list-style: none; padding: 0; margin: 32px 0 0; display: flex; flex-direction: column; gap: 4px; }
+  h1 { font-family: Bungee, sans-serif; font-weight: 400; font-size: clamp(30px, 3.4vw, 44px); line-height: 1; margin: 12px 0 0; color: var(--maroon); }
+  .items { list-style: none; padding: 0; margin: 28px 0 0; display: flex; flex-direction: column; gap: 4px; }
   .item { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; align-items: center; padding: 14px 16px; border-radius: 10px;
-          opacity: .5; transition: opacity .35s, background .35s; cursor: pointer; }
+          opacity: .45; transition: opacity .35s, background .35s; cursor: pointer; }
   .item.on { opacity: 1; background: #fff; box-shadow: 0 6px 22px rgba(59,19,15,.08), 0 0 0 1px var(--rule); }
   .item.seen { opacity: .7; }
   .item h3 { margin: 0; font-size: 17px; font-weight: 600; }
   .item p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.45; color: var(--muted); grid-column: 1; }
-  .item .logo { grid-row: 1 / 3; grid-column: 2; width: 84px; height: 32px; display: grid; place-items: center; }
-  .item .logo img, .item .logo svg { max-width: 100%; max-height: 100%; }
-  .close { margin-top: 24px; display: flex; align-items: center; gap: 18px; opacity: 0; transform: translateY(8px); transition: all .4s; pointer-events: none; }
+  .item .logo { grid-row: 1 / 3; grid-column: 2; width: 84px; height: 32px; display: block; }
+  .item .logo img, .item .logo svg { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .close { margin-top: 24px; opacity: 0; transform: translateY(8px); transition: all .4s; pointer-events: none; }
   .close.on { opacity: 1; transform: none; pointer-events: auto; }
-  .close a { background: var(--red); color: #fff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
-  .close span { color: var(--muted); font-size: 14px; }
+  .close p { margin: 0 0 14px; font-size: 19px; font-weight: 500; }
+  .close a { display: inline-block; background: var(--red); color: #fff; text-decoration: none; font-weight: 600; padding: 12px 22px; border-radius: 8px; }
 
-  /* ── The stack: one map, four layers, drawn isometric ────────────── */
-  .stage { position: relative; height: 100%; display: grid; place-items: center; overflow: hidden; }
-  .stack { position: relative; width: min(400px, 34vw); aspect-ratio: 1; transform-style: preserve-3d; will-change: transform; }
-  .layer { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform, opacity; }
-  .layer svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .plate { fill: rgba(255,251,242,.5); stroke: rgba(122,23,16,.28); stroke-width: 1; }
-  .layer.ground .plate { fill: var(--cream); }
-  .layer.dim { filter: saturate(.4); }
-  .tag { position: absolute; left: 100%; top: 0; margin-left: 14px; white-space: nowrap; color: var(--muted); }
+  .stage { display: grid; place-items: center; }
+  .map { width: min(600px, 100%, calc(100svh - var(--bar) - 90px)); }
+  .map svg { width: 100%; height: auto; display: block; border-radius: 10px; background: #2b2a1f; }
+  .credit { margin-top: 8px; font: 500 9.5px "Geist Mono", monospace; letter-spacing: .05em; color: var(--muted); }
 
   @media (max-width: 860px) {
-    .story { height: 520svh; }
-    .sticky { grid-template-columns: 1fr; grid-template-rows: 46% 54%; gap: 0; padding: 0 16px; align-items: start; }
-    .stage { grid-row: 1; }
-    .pitch { grid-row: 2; padding-top: 8px; }
+    .story { height: 560svh; }
+    .sticky { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; gap: 10px; padding: 12px 16px; align-items: start; }
+    .pitch { display: contents; }
     .kicker { display: none; }
-    h1 { font-size: 24px; margin: 0 0 6px; }
-    .lede { font-size: 15px; }
-    .items { margin-top: 12px; }
+    h1 { font-size: 24px; margin: 0; }
+    .stage { grid-row: 2; }
+    .map { width: min(100%, 46svh); }
+    .items, .close { grid-row: 3; margin-top: 0; }
     .item:not(.on) { display: none; }
-    .stack { width: min(240px, 58vw); }
-    .tag { display: none; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<div class="bar"><span class="mono">Prototype v4.1 · Background as a pitch</span><a href="/en#background">← back to the site</a></div>
+<div class="bar"><span class="mono">Prototype v6 · Background as a story</span><a href="/en#background">← back to the site</a></div>
 
 <section class="story">
   <div class="sticky">
     <div class="pitch">
       <div class="kicker mono">Background</div>
       <h1>Wildfire intelligence for the grid</h1>
-      <p class="lede">I build each layer of the map that utilities and fire teams decide on.</p>
       <ol class="items"></ol>
-      <div class="close"><a href="/en#process">Let's talk</a></div>
+      <div class="close"><p>If you want wildfire intelligence, let's talk.</p><a href="/en#process">Let's talk</a></div>
     </div>
-    <div class="stage"><div class="stack"></div></div>
+    <div class="stage"><div class="map">
+      <svg viewBox="0 0 400 400" role="img" aria-label="A map: a sensor on a power line flags a fault, cameras confirm smoke, a forecast shows the spread, and satellites track the fire from above">
+        <defs><clipPath id="frame"><rect width="400" height="400" rx="8"/></clipPath></defs>
+        <g clip-path="url(#frame)"><g class="world"></g></g>
+      </svg>
+      <div class="credit">Imagery: USGS NAIP · Sentinel-2 cloudless 2016 by EOX (CC BY 4.0) · transmission lines © OpenStreetMap · fire is illustrative</div>
+    </div></div>
   </div>
 </section>
 
 <script>
-const { createTimeline, animate, svg: animeSvg, stagger } = anime;
-const C = { cream: "#fff4de", yellow: "#ffc93c", orange: "#f5821f", red: "#d92b1c", maroon: "#7a1710", ink: "#3b130f", green: "#2f7d4f" };
+const { createTimeline, animate } = anime;
+const C = { cream: "#fff4de", yellow: "#ffc93c", orange: "#f5821f", red: "#d92b1c", maroon: "#7a1710", ink: "#3b130f" };
 
 function fuegoLogo() {
   const g = { W: 34, H: 100, S: 12, GAP: 8, R: 9, r: 4, BAR: 44 };
@@ -112,122 +110,142 @@ function fuegoLogo() {
   return `<svg viewBox="0 0 ${bw} ${bh}"><rect width="${bw}" height="${bh}" rx="24" fill="#ff5b14"/><g fill="#fff7ec" transform="translate(16 14)">${[..."FUEGO"].map((c, i) => `<path d="${L[c](i * (g.W + g.GAP))}"/>`).join("")}</g></svg>`;
 }
 
-// ── What you can hire me for. Draft copy; no figures, by request. ──────
+// ── The story, one beat per company. What I did there, in a line. ──────
 const ITEMS = [
-  { title: "Sense the line before it fails", tag: "Grid",
-    line: "Read live sensor streams from power lines and got the real faults to crews the same day.",
+  { title: "A fault on the line",
+    line: "At Gridware I watched Gridscope sensors on the poles and got the real faults to crews the same day.",
     logo: `<img src="/logos/gridware.svg" alt="Gridware">` },
-  { title: "See smoke from the right peak", tag: "Cameras",
-    line: "Scored camera sites by what they can see, so the network covers the land and the lines.",
+  { title: "Cameras confirm the smoke",
+    line: "At Pano AI I built the tools that decide where the cameras go, so they see the land and the lines.",
     logo: `<img src="/logos/pano-ai.svg" alt="Pano AI">` },
-  { title: "Show where the fire goes next", tag: "Forecast",
-    line: "Built the public map that turns fire-spread simulations into an hour-by-hour picture anyone can read.",
+  { title: "The model shows where it goes",
+    line: "At FUEGO I built the public map that turns fire-spread simulations into an hour-by-hour picture.",
     logo: fuegoLogo() },
-  { title: "Read the land from orbit", tag: "Satellite",
-    line: "Turned satellite bands into a clear read of fuel and burn scars for forest teams with no other data.",
+  { title: "Satellites track it at scale",
+    line: "At Hyticos I turned satellite bands into fire maps for forest teams with no ground data.",
     logo: `<img src="/logos/hyticos.png" alt="Hyticos">` },
 ];
-
 const itemsEl = document.querySelector(".items");
 ITEMS.forEach((it, i) => itemsEl.insertAdjacentHTML("beforeend",
   `<li class="item" data-i="${i}"><h3>${it.title}</h3><p>${it.line}</p><span class="logo">${it.logo}</span></li>`));
 
-// ── The map, one footprint for every layer (400 × 400) ─────────────────
-const plate = (extra = "") => `<rect class="plate" x="0" y="0" width="400" height="400" rx="6" ${extra}/>`;
-const LINE = "40,250 120,222 200,214 268,232 360,206";
-const BRANCH = "200,214 214,282 236,348";
-const FAULT = [236, 226];
-const ign = FAULT, WIND = Math.PI / 4;
-const perim = (s) => "M" + Array.from({ length: 64 }, (_, k) => {
-  const a = k / 64 * Math.PI * 2, E = .68, r = s * (1 - E * E) / (1 - E * Math.cos(a - WIND)) * (1 + .06 * Math.sin(3 * a + 1));
-  return `${(ign[0] + r * Math.cos(a)).toFixed(1)} ${(ign[1] + r * Math.sin(a)).toFixed(1)}`;
+// ── The map. Close-up units: 400 = 5 miles. The wide view is 5× that. ──
+const OSM = "M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196";
+const FEEDERS = "M122 191L140 205M131 222L140 205M140 205L180 203L225 208L265 196L310 204L355 190L400 196M225 208L240 245L275 262L315 258M265 196L262 160L280 135M310 204L318 165L310 125L322 80M355 190L365 230L392 252M140 205L166 194L186 150L206 101L243 39L262 0M206 101L238 108L272 98L300 70M140 205L150 238L176 268L205 300L238 318M205 300L212 350L224 400";
+const P = [314, 184.5];                       // the fault, on a feeder in the forest
+const SENSORS = [[180, 203], [265, 196], P, [355, 190], [206, 101], [176, 268], [240, 245]];
+const CAMS = [{ x: 170, y: 80, dir: 1 }, { x: 372, y: 318, dir: -1 }];
+const deg = (r) => r * 180 / Math.PI;
+CAMS.forEach((c) => { c.bearing = deg(Math.atan2(P[1] - c.y, P[0] - c.x)); c.dist = Math.hypot(P[0] - c.x, P[1] - c.y); });
+const WIND = -Math.PI / 4, E = .68;            // spreading north-east, away from town
+const reach = (a, s) => s * (1 - E * E) / (1 - E * Math.cos(a - WIND)) * (1 + .06 * Math.sin(3 * a + 1));
+const perim = (s) => "M" + Array.from({ length: 72 }, (_, k) => {
+  const a = k / 72 * Math.PI * 2, r = reach(a, s);
+  return `${(P[0] + r * Math.cos(a)).toFixed(1)} ${(P[1] + r * Math.sin(a)).toFixed(1)}`;
 }).join("L") + "Z";
+const viewshed = (c, i) => "M" + Array.from({ length: 90 }, (_, k) => {
+  const a = k / 90 * Math.PI * 2;
+  let r = 165 + 22 * Math.sin(3 * a + i * 2) + 14 * Math.sin(7 * a + i) + 9 * Math.sin(13 * a);
+  if (Math.abs(((deg(a) - c.bearing + 540) % 360) - 180) < 18) r = Math.max(r, c.dist + 18);
+  return `${(c.x + r * Math.cos(a)).toFixed(1)} ${(c.y + r * Math.sin(a)).toFixed(1)}`;
+}).join("L") + "Z";
+const RINGS = [24, 48, 72, 96], S_END = 310;
+
+// Satellite fire pixels (VIIRS-sized, 375 m) over the area it will burn.
 const PIX = [];
-for (let y = 180; y < 360; y += 16) for (let x = 200; x < 360; x += 16) {
-  const cx = x + 8, cy = y + 8, dx = cx - ign[0], dy = cy - ign[1], a = Math.atan2(dy, dx), d = Math.hypot(dx, dy);
-  const reach = 92 * (1 - .68 * .68) / (1 - .68 * Math.cos(a - WIND));
-  if (d < reach) PIX.push([x, y, d > reach * .62]);
+for (let y = -420; y < 620; y += 22) for (let x = -300; x < 820; x += 22) {
+  const dx = x + 9 - P[0], dy = y + 9 - P[1], a = Math.atan2(dy, dx), d = Math.hypot(dx, dy);
+  const h = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+  if (d < reach(a, S_END)) PIX.push({ x, y, a, d, h: h - Math.floor(h) });
 }
-const poles = LINE.split(" ").concat(BRANCH.split(" ").slice(1)).map((p) => p.split(",").map(Number));
 
-const LAYERS = [
-  // 0 · ground: the land everything sits on
-  `${plate()}
-   <path d="M60 70 C 120 30, 200 50, 230 110 S 160 190, 90 160 S 20 110, 60 70Z" fill="#f3e2c0"/>
-   <path d="M90 92 C 130 70, 180 82, 196 116 S 150 160, 104 146 S 66 110, 90 92Z" fill="#ecd6ad"/>
-   <path d="M270 300 C 330 270, 380 300, 380 350 S 300 390, 270 370 S 230 320, 270 300Z" fill="#f3e2c0"/>
-   <path d="M250 40 C 300 30, 370 60, 370 110 S 310 150, 280 130 S 220 70, 250 40Z" fill="#f3e2c0"/>
-   <path d="M0 330 C 80 300, 140 380, 230 400" fill="none" stroke="#a9c3cc" stroke-width="3"/>`,
-  // 1 · grid: the lines, and a fault caught on them
-  `${plate()}
-   <polyline points="${LINE}" fill="none" stroke="${C.ink}" stroke-width="2.2" stroke-linejoin="round"/>
-   <polyline points="${BRANCH}" fill="none" stroke="${C.ink}" stroke-width="2.2" stroke-linejoin="round"/>
-   <polyline class="current" points="${LINE}" fill="none" stroke="${C.yellow}" stroke-width="2.2" stroke-linejoin="round"/>
-   ${poles.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="${C.ink}"/>`).join("")}
-   <rect x="28" y="238" width="20" height="20" rx="3" fill="${C.ink}"/><path d="M40 241 34 249h5l-2 6 6-8h-5z" fill="${C.yellow}"/>
-   <circle class="ping" cx="${FAULT[0]}" cy="${FAULT[1]}" r="6" fill="none" stroke="${C.red}" stroke-width="2"/>
-   <circle cx="${FAULT[0]}" cy="${FAULT[1]}" r="5" fill="${C.red}"/>`,
-  // 2 · cameras: what each one can see
-  `${plate()}
-   ${[[140, 104, 20, 100], [318, 84, 70, 160]].map(([x, y, a0, a1], i) => {
-     const pts = Array.from({ length: 16 }, (_, k) => { const a = (a0 + (a1 - a0) * k / 15) * Math.PI / 180; return `${x + 190 * Math.cos(a)},${y + 190 * Math.sin(a)}`; });
-     return `<path d="M${x},${y}L${pts.join("L")}Z" fill="${C.green}" fill-opacity=".14" stroke="${C.green}" stroke-opacity=".55" stroke-width="1.2"/>
-       <line class="sweep" data-i="${i}" x1="${x}" y1="${y}" x2="${x + 190}" y2="${y}" stroke="${C.green}" stroke-width="1.5" style="transform-origin:${x}px ${y}px"/>
-       <circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="${C.ink}" stroke-width="2"/><rect x="${x - 4}" y="${y - 3}" width="8" height="6" fill="${C.ink}"/>`;
-   }).join("")}`,
-  // 3 · forecast: the fire's edge, hour by hour
-  `${plate()}
-   ${[30, 52, 74, 96].map((s, i) => `<path class="ring" d="${perim(s)}" fill="${i === 0 ? C.red : "none"}" fill-opacity=".18" stroke="${[C.yellow, C.orange, C.red, C.maroon][i]}" stroke-width="1.8" stroke-dasharray="${i ? "5 4" : ""}"/>`).join("")}
-   <circle cx="${ign[0]}" cy="${ign[1]}" r="4" fill="${C.red}"/>
-   ${[["+1h", 30], ["+3h", 74], ["+4h", 96]].map(([t, s]) => { const r = s * (1 + .68) * 1.02; return `<text x="${ign[0] + r * Math.cos(WIND) + 6}" y="${ign[1] + r * Math.sin(WIND) + 4}" font-family="Geist Mono" font-size="10" fill="${C.ink}">${t}</text>`; }).join("")}`,
-  // 4 · satellite: the burn, as pixels, seen through the smoke
-  `${plate()}
-   <g class="pix">${PIX.map(([x, y, edge]) => `<rect x="${x}" y="${y}" width="14" height="14" rx="2" fill="${edge ? C.yellow : "#5a1d14"}" opacity="${edge ? 1 : .8}"/>`).join("")}</g>
-   <rect class="scan" x="0" y="0" width="3" height="400" fill="${C.yellow}"/>
-   <g transform="translate(60 52)"><rect x="-7" y="-6" width="14" height="12" fill="${C.ink}"/><rect x="-26" y="-4" width="16" height="8" fill="${C.yellow}" stroke="${C.ink}" stroke-width="1.5"/><rect x="10" y="-4" width="16" height="8" fill="${C.yellow}" stroke="${C.ink}" stroke-width="1.5"/></g>`,
-];
-const stack = document.querySelector(".stack");
-LAYERS.forEach((svg, i) => stack.insertAdjacentHTML("beforeend",
-  `<div class="layer ${i ? "" : "ground"}" data-i="${i}"><svg viewBox="0 0 400 400">${svg}</svg>${i ? `<span class="tag mono">${ITEMS[i - 1].tag}</span>` : ""}</div>`));
-const layers = [...document.querySelectorAll(".layer")];
-const plates = layers.map((l) => l.querySelector(".plate"));
-const tags = [...document.querySelectorAll(".tag")];
+const NS = 'vector-effect="non-scaling-stroke"';
+const world = document.querySelector(".world");
+world.innerHTML = `
+  <image href="/prototypes/assets/grass-valley-wide-s2-2016.webp" x="-800" y="-800" width="2000" height="2000"/>
+  <g class="pix">${PIX.map((p) => `<rect x="${p.x}" y="${p.y}" width="18" height="18" opacity="0"/>`).join("")}</g>
+  <path class="wide-perim" fill="${C.maroon}" fill-opacity=".12" stroke="${C.yellow}" stroke-width="1" stroke-opacity=".8" ${NS} opacity="0"/>
+  <image class="near" href="/prototypes/assets/grass-valley-naip.webp" width="400" height="400"/>
+  <g class="grid" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="${OSM}" stroke="${C.ink}" stroke-width="3.6" stroke-opacity=".55" ${NS}/><path d="${OSM}" stroke="${C.yellow}" stroke-width="1.7" ${NS}/>
+    <path d="${FEEDERS}" stroke="${C.ink}" stroke-width="2.8" stroke-opacity=".5" ${NS}/><path d="${FEEDERS}" stroke="${C.yellow}" stroke-width="1.1" ${NS}/>
+  </g>
+  <g class="views" opacity="0">${CAMS.map((c, i) => `<path d="${viewshed(c, i)}" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".35" ${NS}/>`).join("")}</g>
+  <g class="rings" fill="none">${RINGS.map((s, i) => `<path d="${perim(s)}" pathLength="1" stroke="${[C.yellow, C.orange, C.red, C.maroon][i]}" stroke-width="1.8" stroke-dasharray="1 1" stroke-dashoffset="1" fill="${C.red}" fill-opacity="0"/>`).join("")}</g>
+  <g class="bearings">${CAMS.map((c) => `<line x1="${c.x}" y1="${c.y}" x2="${P[0]}" y2="${P[1]}" pathLength="1" stroke="#fff" stroke-width="1.3" stroke-dasharray="1 1" stroke-dashoffset="1"/>`).join("")}</g>
+  <g class="kit">
+    ${CAMS.map((c, i) => `<line class="sweep" x1="${c.x}" y1="${c.y}" x2="${c.x + 46}" y2="${c.y}" stroke="#fff" stroke-width="1.6"/>`).join("")}
+    ${SENSORS.map(([x, y], i) => `<circle class="sensor${i === 2 ? " hit" : ""}" cx="${x}" cy="${y}" r="2.8" fill="${C.cream}" stroke="${C.ink}" stroke-width="1.3"/>`).join("")}
+    <circle class="ping" cx="${P[0]}" cy="${P[1]}" r="3" fill="none" stroke="${C.red}" stroke-width="1.6" opacity="0"/>
+    ${CAMS.map((c) => `<g transform="translate(${c.x} ${c.y})"><circle r="6.5" fill="#fff" stroke="${C.ink}" stroke-width="1.6"/><circle r="2.4" fill="${C.ink}"/></g>`).join("")}
+  </g>
+  <g class="smoke" opacity="0">${[0, 1, 2].map((k) => `<circle cx="${P[0] + 3 + k * 4}" cy="${P[1] - 6 - k * 6}" r="${3 + k * 1.6}" fill="#f3efe8" fill-opacity="${.8 - k * .2}"/>`).join("")}</g>
+  <g class="labels" font-family="Geist Mono" font-size="9" fill="${C.cream}">${RINGS.map((s, i) => {
+    const r = s * (1 + E) + 6; return `<text x="${(P[0] + r * Math.cos(WIND)).toFixed(1)}" y="${(P[1] + r * Math.sin(WIND)).toFixed(1)}" opacity="0" paint-order="stroke" stroke="${C.ink}" stroke-width="2.5">+${i + 1}h</text>`; }).join("")}</g>`;
 
-// ── Life inside each layer: small loops, independent of the scroll ─────
-animate(animeSvg.createDrawable(".current"), { draw: ["0 0", "0 .2", "1 1"], duration: 2400, loop: true, ease: "linear" });
-animate(".ping", { r: [6, 22], opacity: [1, 0], duration: 1400, loop: true, ease: "outQuad" });
-animate(".sweep", { rotate: (el) => el.dataset.i === "0" ? [20, 100] : [70, 160], duration: 2600, alternate: true, loop: true, ease: "inOutSine" });
-animate(animeSvg.createDrawable(".ring"), { draw: ["0 0", "0 1"], duration: 900, delay: stagger(350), loop: true, loopDelay: 1400, ease: "outQuad" });
-animate(".scan", { x: [0, 397], duration: 2600, loop: true, ease: "inOutSine" });
-animate(".pix rect", { opacity: [0, 1], duration: 300, delay: stagger(18), loop: true, loopDelay: 1600 });
+const $ = (s) => world.querySelector(s), $$ = (s) => [...world.querySelectorAll(s)];
+const near = $(".near"), grid = $(".grid"), kit = $(".kit"), views = $(".views"), smoke = $(".smoke"), ping = $(".ping"), hit = $(".sensor.hit");
+const sweeps = $$(".sweep"), bearings = $$(".bearings line"), rings = $$(".rings path"), labels = $$(".labels text");
+const widePerim = $(".wide-perim"), pixEls = $$(".pix rect");
 
-// ── The stack, scrubbed by scroll ──────────────────────────────────────
-// 0–1000: the ground, alone. k×1000: layer k drops on. 5000: it all
-// flattens into one map, seen from straight above, and the close appears.
-const S = { d1: 0, d2: 0, d3: 0, d4: 0, flat: 0 };
-const tl = createTimeline({ autoplay: false, defaults: { duration: 450, ease: "outCubic" } });
-[1, 2, 3, 4].forEach((k) => tl.add(S, { [`d${k}`]: 1 }, k * 1000 + 100));
-tl.add(S, { flat: 1, duration: 600, ease: "inOutCubic" }, 5100).add(S, { flat: 1, duration: 1 }, 5999);
+// Small loops that run regardless of scroll.
+animate(ping, { r: [3, 18], duration: 1100, loop: true, ease: "outQuad" });
+animate(".smoke circle", { translateY: [0, -6], duration: 2200, alternate: true, loop: true, ease: "inOutSine" });
+
+// ── The story, scrubbed by scroll ──────────────────────────────────────
+// 1000 per beat: 0 the place, 1 fault, 2 cameras, 3 spread, 4 zoom out and
+// track, 5 the close.
+const S = { fault: 0, cams: 0, bear: 0, smoke: 0, spread: 0, zoom: 0, track: 0 };
+const tl = createTimeline({ autoplay: false, defaults: { duration: 500, ease: "inOutSine" } })
+  .add(S, { fault: 1, duration: 400 }, 1150)
+  .add(S, { cams: 1, duration: 600 }, 2100)
+  .add(S, { bear: 1, duration: 400 }, 2650)
+  .add(S, { smoke: 1, duration: 300 }, 2950)
+  .add(S, { spread: 1, duration: 850, ease: "linear" }, 3100)
+  .add(S, { zoom: 1, duration: 600, ease: "inOutCubic" }, 4100)
+  .add(S, { track: 1, duration: 700, ease: "linear" }, 4650)
+  .add(S, { track: 1, duration: 1 }, 5799);
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const items = [...document.querySelectorAll(".item")];
-let shown = -1;
-function render(time) {
+let shown = -1, lastTrack = -1;
+function render(time, now) {
   const ch = Math.min(5, Math.floor(time / 1000));
-  const gap = window.innerWidth < 860 ? 46 : 78;
-  const f = S.flat;
-  stack.style.transform = `translateY(${(1 - f) * 70}px) rotateX(${58 * (1 - f)}deg) rotateZ(${-42 * (1 - f)}deg) scale(${.92 + .08 * f})`;
-  layers.forEach((el, i) => {
-    const d = i === 0 ? 1 : S[`d${i}`];
-    const z = (i * gap) * (1 - f) + (1 - d) * 260;
-    el.style.transform = `translateZ(${z}px)`;
-    el.style.opacity = d * (i === 4 ? 1 - .25 * f : 1);
-    // sheets while stacked; one map once flat, so only the ground keeps its fill
-    if (i) { plates[i].style.fillOpacity = .5 * (1 - f); plates[i].style.strokeOpacity = 1 - f; }
-    // the layer being talked about is the one in full colour
-    el.classList.toggle("dim", f < .5 && ch >= 1 && ch <= 4 && i > 0 && i !== ch);
+  // Close-up: the fault, the cameras, the hours.
+  hit.setAttribute("fill", S.fault > .5 ? C.red : C.cream);
+  ping.style.visibility = S.fault > .5 && S.cams < 1 ? "visible" : "hidden";
+  ping.setAttribute("opacity", clamp(1 - (+ping.getAttribute("r") - 3) / 15));
+  CAMS.forEach((c, i) => {
+    const amb = (c.bearing + 120 + c.dir * now * .04) % 360;
+    const diff = ((c.bearing - amb + 540) % 360) - 180;
+    sweeps[i].setAttribute("transform", `rotate(${amb + diff * S.cams} ${c.x} ${c.y})`);
+    bearings[i].setAttribute("stroke-dashoffset", 1 - S.bear);
   });
-  tags.forEach((tg) => (tg.style.opacity = 1 - f));
+  views.setAttribute("opacity", S.cams * (1 - S.spread));
+  smoke.setAttribute("opacity", S.smoke * (1 - S.spread * .7));
+  rings.forEach((r, k) => { const v = clamp(S.spread * 4 - k); r.setAttribute("stroke-dashoffset", 1 - v); r.setAttribute("fill-opacity", k === 0 ? .2 * v : 0); });
+  labels.forEach((l, k) => l.setAttribute("opacity", clamp(S.spread * 4 - k - .6) * (1 - S.zoom * 2)));
+  // Zoom out to 25 × 25 miles, where the satellites take over.
+  const z = Math.pow(.2, S.zoom);
+  world.setAttribute("transform", `translate(200 200) scale(${z}) translate(-200 -200)`);
+  near.setAttribute("opacity", 1 - clamp((S.zoom - .3) / .5));
+  kit.setAttribute("opacity", 1 - clamp(S.zoom / .5));
+  grid.setAttribute("opacity", 1 - .6 * clamp(S.zoom / .7));
+  $(".rings").setAttribute("opacity", 1 - clamp((S.zoom - .6) / .4));
+  widePerim.setAttribute("opacity", clamp((S.zoom - .7) / .3));
+  if (Math.abs(S.track - lastTrack) > .004 || (S.track === 0) !== (lastTrack === 0)) {
+    lastTrack = S.track;
+    const s = 96 + (S_END - 96) * S.track;
+    widePerim.setAttribute("d", perim(s));
+    PIX.forEach((p, i) => {
+      const r = p.d / reach(p.a, s), el = pixEls[i];
+      const front = r > .82;
+      // detections are scattered: most of the front, a few spots behind it
+      if (S.track === 0 || r > 1 || p.h < (front ? .3 : .78)) { el.setAttribute("opacity", 0); return; }
+      el.setAttribute("fill", front ? (r > .92 ? C.yellow : C.orange) : C.red);
+      el.setAttribute("opacity", front ? .95 : .45);
+    });
+  }
   if (ch !== shown) {
     shown = ch;
     items.forEach((it, i) => { it.classList.toggle("on", i + 1 === ch); it.classList.toggle("seen", i + 1 < ch || ch === 5); });
@@ -238,17 +256,17 @@ function render(time) {
 const story = document.querySelector(".story"), sticky = document.querySelector(".sticky");
 const progress = () => { const r = story.getBoundingClientRect(); return clamp(-r.top / (r.height - sticky.clientHeight)); };
 let t = 0;
-function tick() {
+function tick(now) {
   const target = progress() * tl.duration;
   t += (target - t) * .14;
   if (Math.abs(target - t) < .5) t = target;
   tl.seek(t);
-  render(t);
+  render(t, now);
   requestAnimationFrame(tick);
 }
 items.forEach((it, i) => it.addEventListener("click", () => {
   const r = story.getBoundingClientRect();
-  window.scrollTo({ top: scrollY + r.top + ((i + 1.6) * 1000 / tl.duration) * (r.height - sticky.clientHeight), behavior: "smooth" });
+  window.scrollTo({ top: scrollY + r.top + ((i + 1.7) * 1000 / tl.duration) * (r.height - sticky.clientHeight), behavior: "smooth" });
 }));
 requestAnimationFrame(tick);
 </script>

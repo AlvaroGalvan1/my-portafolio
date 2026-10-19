@@ -209,28 +209,33 @@ buttons and location line stay where they are.
 ---
 
 <a id="b1"></a>
-## B1 🟣 Background as a pitch — keep v4's layout, find the next step with me
+## B1 🟣 Background as a story — review v6, then build it in
 
 Issue [#1](https://github.com/AlvaroGalvan1/my-portafolio/issues/1), branch `feat/1-background-pitch` (draft PR).
 Background should tell someone hiring a contractor that I build wildfire
-intelligence for the grid: four things to hire me for, each proven by what I
-did, with its logo. No workflow, no hardships, no figures.
+intelligence for the grid. No workflow, no hardships, no figures.
 
-The current try is `public/prototypes/background-story.html` (v4.1, open at
-`/prototypes/background-story.html` under `npm run dev`): v4's layout (map
-layers that stack as you scroll and flatten into one map) with sharper,
-verb-led copy. Narrow screens keep the heading visible.
+The current try is `public/prototypes/background-story.html` (v6): one
+fire told on one real map (5 x 5 miles east of Grass Valley, CA), in v4's
+scroll steps. A Gridscope sensor on a pole flags a fault (Gridware), the
+hilltop cameras turn and confirm the smoke (Pano AI), the spread model
+grows hour by hour (FUEGO), then the map zooms out to 25 x 25 miles where
+satellites track it (Hyticos). Each step is one line on what I did there.
+It ends on "If you want wildfire intelligence, let's talk."
+`public/prototypes/base-layer.html` is the map on its own.
+
+Imagery: USGS NAIP close-up (public domain) and Sentinel-2 cloudless 2016
+by EOX (CC BY 4.0), about 250 KB together. Transmission lines are real
+(OpenStreetMap); the distribution lines, the fault and the fire are made up.
 
 Tried and rejected, so don't repeat them:
-- **v5:** a GIS "Layers" panel with checkboxes and collapsed lines, plus
-  satellite imagery as the base layer. Too much cognitive load, not clear,
-  and the text was hidden.
-- **Layout variants side by side** (cards, hero plus list): proposed, not
-  wanted.
+- **v5:** a GIS "Layers" panel with checkboxes. Too much cognitive load.
+- **Layout variants side by side** (cards, hero plus list).
+- **Drawn terrain** (contours, land cover): not intuitive; real imagery reads.
 
-> **Prompt:** *Open `/prototypes/background-story.html` (v4.1) with me and
-> ask what still bothers me before changing anything. Clarity first; less
-> on screen beats more. Don't touch `Background.tsx` until I pick.*
+> **Prompt:** *Open `/prototypes/background-story.html` (v6) with me and
+> ask what to change. Check desktop only while prototyping. Once I sign off,
+> build it into `Background.tsx`, remove Skills, and delete the prototypes.*
 
 ---
 
