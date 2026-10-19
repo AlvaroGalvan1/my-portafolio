@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background prototype</title>
+<!-- PROTOTYPE, v4. Not part of the site: a throwaway page to test
+     Background as a pitch: four things you can hire me for, each one a
+     layer of the same map, stacking up as you scroll into one finished
+     picture. Served by `next dev` from /public so it can use the real
+     logos. Delete or move before merging. Copy is draft.
+
+     Scroll scrubs one paused anime.js timeline (the stack); small
+     anime.js loops inside each layer keep it alive while you read. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
+<style>
+  :root {
+    --orange: #f5821f; --yellow: #ffc93c; --red: #d92b1c; --maroon: #7a1710; --cream: #fff4de;
+    --paper: #fbf3e2; --ink: #3b130f; --muted: #8a6a5c; --rule: rgba(122,23,16,.14); --bar: 48px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: Geist, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; }
+  .bar { position: sticky; top: 0; z-index: 30; height: var(--bar); display: flex; align-items: center; justify-content: space-between;
+         padding: 0 24px; background: var(--maroon); color: var(--cream); }
+  .bar a { color: var(--yellow); font-size: 13px; }
+
+  .story { position: relative; height: 560svh; }
+  .sticky { position: sticky; top: var(--bar); height: calc(100svh - var(--bar)); display: grid;
+            grid-template-columns: minmax(340px, 460px) minmax(0, 1fr); gap: 24px; padding: 0 clamp(24px, 5vw, 72px); align-items: center; }
+
+  /* ── The pitch ───────────────────────────────────────────────────── */
+  .kicker { color: var(--red); }
+  h1 { font-family: Bungee, sans-serif; font-weight: 400; font-size: clamp(30px, 3.4vw, 44px); line-height: 1; margin: 12px 0 14px; color: var(--maroon); }
+  .lede { font-size: 17px; line-height: 1.5; margin: 0; color: var(--ink); max-width: 38ch; }
+  .items { list-style: none; padding: 0; margin: 32px 0 0; display: flex; flex-direction: column; gap: 4px; }
+  .item { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; align-items: center; padding: 14px 16px; border-radius: 10px;
+          opacity: .5; transition: opacity .35s, background .35s; cursor: pointer; }
+  .item.on { opacity: 1; background: #fff; box-shadow: 0 6px 22px rgba(59,19,15,.08), 0 0 0 1px var(--rule); }
+  .item.seen { opacity: .7; }
+  .item h3 { margin: 0; font-size: 17px; font-weight: 600; }
+  .item p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.45; color: var(--muted); grid-column: 1; }
+  .item .logo { grid-row: 1 / 3; grid-column: 2; width: 84px; height: 32px; display: grid; place-items: center; }
+  .item .logo img, .item .logo svg { max-width: 100%; max-height: 100%; }
+  .close { margin-top: 24px; display: flex; align-items: center; gap: 18px; opacity: 0; transform: translateY(8px); transition: all .4s; pointer-events: none; }
+  .close.on { opacity: 1; transform: none; pointer-events: auto; }
+  .close a { background: var(--red); color: #fff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 8px; }
+  .close span { color: var(--muted); font-size: 14px; }
+
+  /* ── The stack: one map, four layers, drawn isometric ────────────── */
+  .stage { position: relative; height: 100%; display: grid; place-items: center; overflow: hidden; }
+  .stack { position: relative; width: min(400px, 34vw); aspect-ratio: 1; transform-style: preserve-3d; will-change: transform; }
+  .layer { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform, opacity; }
+  .layer svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .plate { fill: rgba(255,251,242,.5); stroke: rgba(122,23,16,.28); stroke-width: 1; }
+  .layer.ground .plate { fill: var(--cream); }
+  .layer.dim { filter: saturate(.4); }
+  .tag { position: absolute; left: 100%; top: 0; margin-left: 14px; white-space: nowrap; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .story { height: 520svh; }
+    .sticky { grid-template-columns: 1fr; grid-template-rows: 46% 54%; gap: 0; padding: 0 16px; align-items: start; }
+    .stage { grid-row: 1; }
+    .pitch { grid-row: 2; padding-top: 8px; }
+    .kicker, h1, .lede { display: none; }
+    .items { margin-top: 0; }
+    .item:not(.on) { display: none; }
+    .stack { width: min(240px, 58vw); }
+    .tag { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="bar"><span class="mono">Prototype v4 · Background as a pitch</span><a href="/en#background">← back to the site</a></div>
+
+<section class="story">
+  <div class="sticky">
+    <div class="pitch">
+      <div class="kicker mono">Background</div>
+      <h1>Wildfire and the power grid</h1>
+      <p class="lede">I build the tools that sit between them. Here is what you can bring me in for.</p>
+      <ol class="items"></ol>
+      <div class="close"><a href="/en#process">Let's talk</a><span>One of these, or all four.</span></div>
+    </div>
+    <div class="stage"><div class="stack"></div></div>
+  </div>
+</section>
+
+<script>
+const { createTimeline, animate, svg: animeSvg, stagger } = anime;
+const C = { cream: "#fff4de", yellow: "#ffc93c", orange: "#f5821f", red: "#d92b1c", maroon: "#7a1710", ink: "#3b130f", green: "#2f7d4f" };
+
+function fuegoLogo() {
+  const g = { W: 34, H: 100, S: 12, GAP: 8, R: 9, r: 4, BAR: 44 };
+  const rect = (x, y, w, h, [tl, tr, br, bl] = [0, 0, 0, 0]) => `M${x + tl} ${y}H${x + w - tr}` + (tr ? `A${tr} ${tr} 0 0 1 ${x + w} ${y + tr}` : "") +
+    `V${y + h - br}` + (br ? `A${br} ${br} 0 0 1 ${x + w - br} ${y + h}` : "") + `H${x + bl}` + (bl ? `A${bl} ${bl} 0 0 1 ${x} ${y + h - bl}` : "") + `V${y + tl}` + (tl ? `A${tl} ${tl} 0 0 1 ${x + tl} ${y}` : "") + "Z";
+  const hole = (x, y, w, h, [tl, tr, br, bl] = [0, 0, 0, 0]) => `M${x + tl} ${y}` + (tl ? `A${tl} ${tl} 0 0 0 ${x} ${y + tl}` : "") + `V${y + h - bl}` + (bl ? `A${bl} ${bl} 0 0 0 ${x + bl} ${y + h}` : "") +
+    `H${x + w - br}` + (br ? `A${br} ${br} 0 0 0 ${x + w} ${y + h - br}` : "") + `V${y + tr}` + (tr ? `A${tr} ${tr} 0 0 0 ${x + w - tr} ${y}` : "") + "Z";
+  const L = {
+    F: (x) => rect(x, 0, g.S, g.H, [g.R, 0, 0, 0]) + rect(x, 0, g.W, g.S, [g.R, 0, 0, 0]) + rect(x, g.BAR, g.W * .82, g.S),
+    U: (x) => rect(x, 0, g.W, g.H, [0, 0, g.R, g.R]) + hole(x + g.S, 0, g.W - 2 * g.S, g.H - g.S, [0, 0, g.r, g.r]),
+    E: (x) => rect(x, 0, g.S, g.H, [g.R, 0, 0, g.R]) + rect(x, 0, g.W, g.S, [g.R, 0, 0, 0]) + rect(x, g.BAR, g.W * .88, g.S) + rect(x, g.H - g.S, g.W, g.S, [0, 0, 0, g.R]),
+    G: (x) => rect(x, 0, g.S, g.H, [g.R, 0, 0, g.R]) + rect(x, 0, g.W, g.S, [g.R, g.R, 0, 0]) + rect(x + g.W - g.S, 0, g.S, g.S + g.H * .1, [0, g.R, 0, 0]) + rect(x, g.H - g.S, g.W, g.S, [0, 0, g.R, g.R]) + rect(x + g.W - g.S, g.BAR, g.S, g.H - g.BAR, [0, 0, g.R, 0]) + rect(x + g.W * .44, g.BAR, g.W * .56, g.S),
+    O: (x) => rect(x, 0, g.W, g.H, [g.R, g.R, g.R, g.R]) + hole(x + g.S, g.S, g.W - 2 * g.S, g.H - 2 * g.S, [g.r, g.r, g.r, g.r]),
+  };
+  const bw = 5 * g.W + 4 * g.GAP + 32, bh = g.H + 28;
+  return `<svg viewBox="0 0 ${bw} ${bh}"><rect width="${bw}" height="${bh}" rx="24" fill="#ff5b14"/><g fill="#fff7ec" transform="translate(16 14)">${[..."FUEGO"].map((c, i) => `<path d="${L[c](i * (g.W + g.GAP))}"/>`).join("")}</g></svg>`;
+}
+
+// ── What you can hire me for. Draft copy; no figures, by request. ──────
+const ITEMS = [
+  { title: "Catch line faults early", tag: "Grid",
+    line: "Watched live sensor data from power lines and sent the real faults to field crews the same day.",
+    logo: `<img src="/logos/gridware.svg" alt="Gridware">` },
+  { title: "Put cameras where they see", tag: "Cameras",
+    line: "Built tools that score camera sites by how much of the land and the lines they can see.",
+    logo: `<img src="/logos/pano-ai.svg" alt="Pano AI">` },
+  { title: "Show where a fire will go", tag: "Forecast",
+    line: "Built the public map that turns fire-spread simulations into an hour-by-hour picture anyone can read.",
+    logo: fuegoLogo() },
+  { title: "Make sense of satellite data", tag: "Satellite",
+    line: "Worked with multispectral imagery to map fire where there is no ground data to lean on.",
+    logo: `<img src="/logos/hyticos.png" alt="Hyticos">` },
+];
+
+const itemsEl = document.querySelector(".items");
+ITEMS.forEach((it, i) => itemsEl.insertAdjacentHTML("beforeend",
+  `<li class="item" data-i="${i}"><h3>${it.title}</h3><p>${it.line}</p><span class="logo">${it.logo}</span></li>`));
+
+// ── The map, one footprint for every layer (400 × 400) ─────────────────
+const plate = (extra = "") => `<rect class="plate" x="0" y="0" width="400" height="400" rx="6" ${extra}/>`;
+const LINE = "40,250 120,222 200,214 268,232 360,206";
+const BRANCH = "200,214 214,282 236,348";
+const FAULT = [236, 226];
+const ign = FAULT, WIND = Math.PI / 4;
+const perim = (s) => "M" + Array.from({ length: 64 }, (_, k) => {
+  const a = k / 64 * Math.PI * 2, E = .68, r = s * (1 - E * E) / (1 - E * Math.cos(a - WIND)) * (1 + .06 * Math.sin(3 * a + 1));
+  return `${(ign[0] + r * Math.cos(a)).toFixed(1)} ${(ign[1] + r * Math.sin(a)).toFixed(1)}`;
+}).join("L") + "Z";
+const PIX = [];
+for (let y = 180; y < 360; y += 16) for (let x = 200; x < 360; x += 16) {
+  const cx = x + 8, cy = y + 8, dx = cx - ign[0], dy = cy - ign[1], a = Math.atan2(dy, dx), d = Math.hypot(dx, dy);
+  const reach = 92 * (1 - .68 * .68) / (1 - .68 * Math.cos(a - WIND));
+  if (d < reach) PIX.push([x, y, d > reach * .62]);
+}
+const poles = LINE.split(" ").concat(BRANCH.split(" ").slice(1)).map((p) => p.split(",").map(Number));
+
+const LAYERS = [
+  // 0 · ground: the land everything sits on
+  `${plate()}
+   <path d="M60 70 C 120 30, 200 50, 230 110 S 160 190, 90 160 S 20 110, 60 70Z" fill="#f3e2c0"/>
+   <path d="M90 92 C 130 70, 180 82, 196 116 S 150 160, 104 146 S 66 110, 90 92Z" fill="#ecd6ad"/>
+   <path d="M270 300 C 330 270, 380 300, 380 350 S 300 390, 270 370 S 230 320, 270 300Z" fill="#f3e2c0"/>
+   <path d="M250 40 C 300 30, 370 60, 370 110 S 310 150, 280 130 S 220 70, 250 40Z" fill="#f3e2c0"/>
+   <path d="M0 330 C 80 300, 140 380, 230 400" fill="none" stroke="#a9c3cc" stroke-width="3"/>`,
+  // 1 · grid: the lines, and a fault caught on them
+  `${plate()}
+   <polyline points="${LINE}" fill="none" stroke="${C.ink}" stroke-width="2.2" stroke-linejoin="round"/>
+   <polyline points="${BRANCH}" fill="none" stroke="${C.ink}" stroke-width="2.2" stroke-linejoin="round"/>
+   <polyline class="current" points="${LINE}" fill="none" stroke="${C.yellow}" stroke-width="2.2" stroke-linejoin="round"/>
+   ${poles.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="${C.ink}"/>`).join("")}
+   <rect x="28" y="238" width="20" height="20" rx="3" fill="${C.ink}"/><path d="M40 241 34 249h5l-2 6 6-8h-5z" fill="${C.yellow}"/>
+   <circle class="ping" cx="${FAULT[0]}" cy="${FAULT[1]}" r="6" fill="none" stroke="${C.red}" stroke-width="2"/>
+   <circle cx="${FAULT[0]}" cy="${FAULT[1]}" r="5" fill="${C.red}"/>`,
+  // 2 · cameras: what each one can see
+  `${plate()}
+   ${[[140, 104, 20, 100], [318, 84, 70, 160]].map(([x, y, a0, a1], i) => {
+     const pts = Array.from({ length: 16 }, (_, k) => { const a = (a0 + (a1 - a0) * k / 15) * Math.PI / 180; return `${x + 190 * Math.cos(a)},${y + 190 * Math.sin(a)}`; });
+     return `<path d="M${x},${y}L${pts.join("L")}Z" fill="${C.green}" fill-opacity=".14" stroke="${C.green}" stroke-opacity=".55" stroke-width="1.2"/>
+       <line class="sweep" data-i="${i}" x1="${x}" y1="${y}" x2="${x + 190}" y2="${y}" stroke="${C.green}" stroke-width="1.5" style="transform-origin:${x}px ${y}px"/>
+       <circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="${C.ink}" stroke-width="2"/><rect x="${x - 4}" y="${y - 3}" width="8" height="6" fill="${C.ink}"/>`;
+   }).join("")}`,
+  // 3 · forecast: the fire's edge, hour by hour
+  `${plate()}
+   ${[30, 52, 74, 96].map((s, i) => `<path class="ring" d="${perim(s)}" fill="${i === 0 ? C.red : "none"}" fill-opacity=".18" stroke="${[C.yellow, C.orange, C.red, C.maroon][i]}" stroke-width="1.8" stroke-dasharray="${i ? "5 4" : ""}"/>`).join("")}
+   <circle cx="${ign[0]}" cy="${ign[1]}" r="4" fill="${C.red}"/>
+   ${[["+1h", 30], ["+3h", 74], ["+4h", 96]].map(([t, s]) => { const r = s * (1 + .68) * 1.02; return `<text x="${ign[0] + r * Math.cos(WIND) + 6}" y="${ign[1] + r * Math.sin(WIND) + 4}" font-family="Geist Mono" font-size="10" fill="${C.ink}">${t}</text>`; }).join("")}`,
+  // 4 · satellite: the burn, as pixels, seen through the smoke
+  `${plate()}
+   <g class="pix">${PIX.map(([x, y, edge]) => `<rect x="${x}" y="${y}" width="14" height="14" rx="2" fill="${edge ? C.yellow : "#5a1d14"}" opacity="${edge ? 1 : .8}"/>`).join("")}</g>
+   <rect class="scan" x="0" y="0" width="3" height="400" fill="${C.yellow}"/>
+   <g transform="translate(60 52)"><rect x="-7" y="-6" width="14" height="12" fill="${C.ink}"/><rect x="-26" y="-4" width="16" height="8" fill="${C.yellow}" stroke="${C.ink}" stroke-width="1.5"/><rect x="10" y="-4" width="16" height="8" fill="${C.yellow}" stroke="${C.ink}" stroke-width="1.5"/></g>`,
+];
+const stack = document.querySelector(".stack");
+LAYERS.forEach((svg, i) => stack.insertAdjacentHTML("beforeend",
+  `<div class="layer ${i ? "" : "ground"}" data-i="${i}"><svg viewBox="0 0 400 400">${svg}</svg>${i ? `<span class="tag mono">${ITEMS[i - 1].tag}</span>` : ""}</div>`));
+const layers = [...document.querySelectorAll(".layer")];
+const plates = layers.map((l) => l.querySelector(".plate"));
+const tags = [...document.querySelectorAll(".tag")];
+
+// ── Life inside each layer: small loops, independent of the scroll ─────
+animate(animeSvg.createDrawable(".current"), { draw: ["0 0", "0 .2", "1 1"], duration: 2400, loop: true, ease: "linear" });
+animate(".ping", { r: [6, 22], opacity: [1, 0], duration: 1400, loop: true, ease: "outQuad" });
+animate(".sweep", { rotate: (el) => el.dataset.i === "0" ? [20, 100] : [70, 160], duration: 2600, alternate: true, loop: true, ease: "inOutSine" });
+animate(animeSvg.createDrawable(".ring"), { draw: ["0 0", "0 1"], duration: 900, delay: stagger(350), loop: true, loopDelay: 1400, ease: "outQuad" });
+animate(".scan", { x: [0, 397], duration: 2600, loop: true, ease: "inOutSine" });
+animate(".pix rect", { opacity: [0, 1], duration: 300, delay: stagger(18), loop: true, loopDelay: 1600 });
+
+// ── The stack, scrubbed by scroll ──────────────────────────────────────
+// 0–1000: the ground, alone. k×1000: layer k drops on. 5000: it all
+// flattens into one map, seen from straight above, and the close appears.
+const S = { d1: 0, d2: 0, d3: 0, d4: 0, flat: 0 };
+const tl = createTimeline({ autoplay: false, defaults: { duration: 450, ease: "outCubic" } });
+[1, 2, 3, 4].forEach((k) => tl.add(S, { [`d${k}`]: 1 }, k * 1000 + 100));
+tl.add(S, { flat: 1, duration: 600, ease: "inOutCubic" }, 5100).add(S, { flat: 1, duration: 1 }, 5999);
+
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const items = [...document.querySelectorAll(".item")];
+let shown = -1;
+function render(time) {
+  const ch = Math.min(5, Math.floor(time / 1000));
+  const gap = window.innerWidth < 860 ? 46 : 78;
+  const f = S.flat;
+  stack.style.transform = `translateY(${(1 - f) * 70}px) rotateX(${58 * (1 - f)}deg) rotateZ(${-42 * (1 - f)}deg) scale(${.92 + .08 * f})`;
+  layers.forEach((el, i) => {
+    const d = i === 0 ? 1 : S[`d${i}`];
+    const z = (i * gap) * (1 - f) + (1 - d) * 260;
+    el.style.transform = `translateZ(${z}px)`;
+    el.style.opacity = d * (i === 4 ? 1 - .25 * f : 1);
+    // sheets while stacked; one map once flat, so only the ground keeps its fill
+    if (i) { plates[i].style.fillOpacity = .5 * (1 - f); plates[i].style.strokeOpacity = 1 - f; }
+    // the layer being talked about is the one in full colour
+    el.classList.toggle("dim", f < .5 && ch >= 1 && ch <= 4 && i > 0 && i !== ch);
+  });
+  tags.forEach((tg) => (tg.style.opacity = 1 - f));
+  if (ch !== shown) {
+    shown = ch;
+    items.forEach((it, i) => { it.classList.toggle("on", i + 1 === ch); it.classList.toggle("seen", i + 1 < ch || ch === 5); });
+    document.querySelector(".close").classList.toggle("on", ch === 5);
+  }
+}
+
+const story = document.querySelector(".story"), sticky = document.querySelector(".sticky");
+const progress = () => { const r = story.getBoundingClientRect(); return clamp(-r.top / (r.height - sticky.clientHeight)); };
+let t = 0;
+function tick() {
+  const target = progress() * tl.duration;
+  t += (target - t) * .14;
+  if (Math.abs(target - t) < .5) t = target;
+  tl.seek(t);
+  render(t);
+  requestAnimationFrame(tick);
+}
+items.forEach((it, i) => it.addEventListener("click", () => {
+  const r = story.getBoundingClientRect();
+  window.scrollTo({ top: scrollY + r.top + ((i + 1.6) * 1000 / tl.duration) * (r.height - sticky.clientHeight), behavior: "smooth" });
+}));
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

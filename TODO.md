@@ -208,6 +208,28 @@ buttons and location line stay where they are.
 
 ---
 
+<a id="b1"></a>
+## B1 🟣 Background as a pitch — prototype more, then pick one
+
+Issue [#1](https://github.com/AlvaroGalvan1/my-portafolio/issues/1), branch `feat/1-background-pitch` (draft PR).
+Background should tell someone hiring a contractor that I know how to work
+where wildfire meets the power grid: four things to hire me for (catch line
+faults, place cameras, forecast spread, read satellite data), each proven by
+what I did, with its logo. No workflow, no hardships, no figures.
+
+The current try is `public/prototypes/background-story.html` (v4, open at
+`/prototypes/background-story.html` under `npm run dev`): map layers that
+stack as you scroll and flatten into one map. It works but it is **too long**.
+
+> **Prompt:** *Read `public/prototypes/background-story.html` and issue #1.
+> Keep the story and copy, but make it much shorter. Prototype two or three
+> different ways side by side as separate files in `public/prototypes/`
+> (for example: the layer stack in one screen, four compact cards with one
+> anime.js loop each, one hero animation plus a list) and show me each at
+> desktop and phone widths so I can pick. Don't touch `Background.tsx` yet.*
+
+---
+
 # 2️⃣ THE WALL — `src/components/gallery/`
 
 <a id="w8"></a>
