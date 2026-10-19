@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Base layer</title>
-<!-- PROTOTYPE. The Background map's base layer, on its own: a real
+<!-- PROTOTYPE. The Background map's first layers, on their own: a real
      5 x 5 mile patch of Sierra foothills east of Grass Valley, CA, from
      Sentinel-2 imagery, with power lines in one style: the real ones from
      OpenStreetMap plus a drawn (made-up) distribution network so the grid
-     reads. Kept slim: one ~50 KB image and one inline path.
+     reads. On top, two layers linked by one event: a line sensor flags a
+     fault (Gridware), and two 360° hilltop cameras turn to it and cross
+     bearings on the smoke (Pano AI). Kept slim: one ~50 KB image, inline
+     paths, anime.js for the loop.
      Delete or move before merging. -->
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -21,17 +25,65 @@
 </head>
 <body>
 <figure>
-  <svg viewBox="0 0 400 400" role="img" aria-label="Satellite image of forested foothills with the power lines drawn over it">
+  <svg viewBox="0 0 400 400" role="img" aria-label="Satellite image of forested foothills with power lines; a sensor on a line flags a fault and two hilltop cameras turn to confirm smoke there">
     <defs><clipPath id="map"><rect width="400" height="400" rx="6"/></clipPath></defs>
     <g clip-path="url(#map)" fill="none" stroke-linejoin="round" stroke-linecap="round">
       <image href="/prototypes/assets/grass-valley-s2-2016.webp" width="400" height="400"/>
-      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196M138 281L137 279M138 281L136 276M137 279L136 276M136 278L136 278M136 277L135 277M135 277L135 277M135 278L136 278M135 277L135 277M135 277L136 276M134 276L135 279M135 279L134 276M135 277L134 277M135 278L135 278M135 278L135 278M135 278L135 278M135 277L135 278" stroke="#3b130f" stroke-width="3.6" stroke-opacity=".55"/>
-      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196M138 281L137 279M138 281L136 276M137 279L136 276M136 278L136 278M136 277L135 277M135 277L135 277M135 278L136 278M135 277L135 277M135 277L136 276M134 276L135 279M135 279L134 276M135 277L134 277M135 278L135 278M135 278L135 278M135 278L135 278M135 277L135 278" stroke="#ffc93c" stroke-width="1.7"/>
+      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196" stroke="#3b130f" stroke-width="3.6" stroke-opacity=".55"/>
+      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196" stroke="#ffc93c" stroke-width="1.7"/>
       <path d="M122 191L140 205M131 222L140 205M140 205L180 203L225 208L265 196L310 204L355 190L400 196M225 208L240 245L275 262L315 258M265 196L262 160L280 135M310 204L318 165L310 125L322 80M355 190L365 230L392 252M140 205L166 194L186 150L206 101L243 39L262 0M206 101L238 108L272 98L300 70M140 205L150 238L176 268L205 300L238 318M205 300L212 350L224 400" stroke="#3b130f" stroke-width="2.8" stroke-opacity=".5"/>
       <path d="M122 191L140 205M131 222L140 205M140 205L180 203L225 208L265 196L310 204L355 190L400 196M225 208L240 245L275 262L315 258M265 196L262 160L280 135M310 204L318 165L310 125L322 80M355 190L365 230L392 252M140 205L166 194L186 150L206 101L243 39L262 0M206 101L238 108L272 98L300 70M140 205L150 238L176 268L205 300L238 318M205 300L212 350L224 400" stroke="#ffc93c" stroke-width="1.1"/>
+      <g class="overlay"></g>
     </g>
   </svg>
   <figcaption>Sentinel-2 cloudless 2016 by EOX (CC BY 4.0) · transmission lines © OpenStreetMap</figcaption>
 </figure>
+<script>
+const { createTimeline, svg: animeSvg } = anime;
+const C = { cream: "#fff4de", ink: "#3b130f", red: "#d92b1c", yellow: "#ffc93c" };
+const P = [314, 184.5];                                   // where the fault is, on a feeder in the forest
+const SENSORS = [[180, 203], [265, 196], P, [355, 190], [206, 101], [176, 268], [240, 245]];
+const CAMS = [{ x: 170, y: 80, start: 0, sweep: 290 }, { x: 372, y: 318, start: 0, sweep: -276 }];
+const deg = (r) => r * 180 / Math.PI;
+CAMS.forEach((c) => { c.bearing = deg(Math.atan2(P[1] - c.y, P[0] - c.x)); c.start = c.bearing; c.dist = Math.hypot(P[0] - c.x, P[1] - c.y); });
+
+// What each camera can see: a full circle, bitten into by the terrain.
+const viewshed = (c, i) => "M" + Array.from({ length: 90 }, (_, k) => {
+  const a = k / 90 * Math.PI * 2;
+  let r = 165 + 22 * Math.sin(3 * a + i * 2) + 14 * Math.sin(7 * a + i) + 9 * Math.sin(13 * a);
+  const off = Math.abs(((deg(a) - c.bearing + 540) % 360) - 180);
+  if (off < 18) r = Math.max(r, c.dist + 18);              // the event is in view of both
+  return `${(c.x + r * Math.cos(a)).toFixed(1)} ${(c.y + r * Math.sin(a)).toFixed(1)}`;
+}).join("L") + "Z";
+
+const o = document.querySelector(".overlay");
+o.innerHTML = `
+  ${CAMS.map((c, i) => `<path d="${viewshed(c, i)}" fill="#fff" fill-opacity=".09" stroke="#fff" stroke-opacity=".35" stroke-width="1"/>`).join("")}
+  ${CAMS.map((c, i) => `<line class="bearing" x1="${c.x}" y1="${c.y}" x2="${P[0]}" y2="${P[1]}" stroke="#fff" stroke-width="1.3" stroke-dasharray="3 3" opacity="0"/>`).join("")}
+  ${CAMS.map((c, i) => `<line class="sweep" data-i="${i}" x1="${c.x}" y1="${c.y}" x2="${c.x + 46}" y2="${c.y}" stroke="#fff" stroke-width="1.6" style="transform-origin:${c.x}px ${c.y}px; transform: rotate(${c.start}deg)"/>`).join("")}
+  ${SENSORS.map(([x, y], i) => `<circle class="sensor${i === 2 ? " hit" : ""}" cx="${x}" cy="${y}" r="2.8" fill="${C.cream}" stroke="${C.ink}" stroke-width="1.3"/>`).join("")}
+  <circle class="ping" cx="${P[0]}" cy="${P[1]}" r="3" fill="none" stroke="${C.red}" stroke-width="1.6" opacity="0"/>
+  <g class="smoke" opacity="0">${[0, 1, 2].map((k) => `<circle cx="${P[0] + 3 + k * 4}" cy="${P[1] - 6 - k * 6}" r="${3 + k * 1.6}" fill="#f3efe8" fill-opacity="${.75 - k * .18}"/>`).join("")}</g>
+  ${CAMS.map((c) => `<g transform="translate(${c.x} ${c.y})"><circle r="6.5" fill="#fff" stroke="${C.ink}" stroke-width="1.6"/><circle r="2.4" fill="${C.ink}"/></g>`).join("")}`;
+
+// One loop: cameras sweep, the sensor flags a fault, both cameras turn to
+// it, their bearings cross on the smoke, then it clears and starts over.
+const sw = [...document.querySelectorAll(".sweep")];
+const tl = createTimeline({ loop: true });
+tl
+  .add(sw[0], { rotate: [CAMS[0].start, CAMS[0].start + CAMS[0].sweep], duration: 2600, ease: "linear" }, 0)
+  .add(sw[1], { rotate: [CAMS[1].start, CAMS[1].start + CAMS[1].sweep], duration: 2600, ease: "linear" }, 0)
+  .add(".sensor.hit", { fill: [C.cream, C.red], r: [2.8, 3.6], duration: 200 }, 1700)
+  .add(".ping", { r: [3, 18], opacity: [1, 0], duration: 900, loop: 2, ease: "outQuad" }, 1700)
+  .add(sw[0], { rotate: CAMS[0].start + 360, duration: 700, ease: "outCubic" }, 2600)
+  .add(sw[1], { rotate: CAMS[1].start - 360, duration: 700, ease: "outCubic" }, 2600)
+  .add(animeSvg.createDrawable(".bearing"), { draw: ["0 0", "0 1"], opacity: [1, 1], duration: 700, ease: "inOutSine" }, 3300)
+  .add(".smoke", { opacity: [0, 1], translateY: [4, 0], duration: 600, ease: "outQuad" }, 4000)
+  .add(".smoke circle", { translateY: [0, -6], duration: 2400, ease: "inOutSine" }, 4000)
+  .add(".bearing, .smoke", { opacity: 0, duration: 600 }, 7000)
+  .add(".sensor.hit", { fill: C.cream, r: 2.8, duration: 600 }, 7000)
+  .add(".smoke circle", { translateY: 0, duration: 1 }, 7700)
+  .add({}, { duration: 1 }, 8400);
+</script>
 </body>
 </html>
