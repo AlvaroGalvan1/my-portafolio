@@ -74,7 +74,7 @@ export default async function About() {
               choose between on two different pages. This points at the
               one that actually is that moment. */}
           <Link
-            href={`/${locale}#work`}
+            href={`/${locale}#process`}
             className="mt-8 inline-block font-sans text-sm font-semibold text-brand-red underline decoration-brand-red/40 decoration-2 underline-offset-4 hover:decoration-brand-red"
           >
             {ui.workLink}

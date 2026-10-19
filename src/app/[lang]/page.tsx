@@ -4,7 +4,6 @@ import Hero from "@/components/sections/Hero";
 import Background from "@/components/sections/Background";
 import Wall from "@/components/sections/Wall";
 import Testimonials from "@/components/sections/Testimonials";
-import Services from "@/components/sections/Services";
 import Process from "@/components/sections/Process";
 import Faq from "@/components/sections/Faq";
 import Footer from "@/components/sections/Footer";
@@ -43,18 +42,14 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                          footnote where the same list read at the end of
                          the four problems it solved is an answer.
 
-            Services   — what I do and how to start, once everything above
-                         has earned it. The rates are not in this run:
-                         they are the Pricing page, /[lang]/pricing, the
-                         one route outside the scroll, linked from here.
-            Process    — what happens after the call: three steps, in
-                         order, so booking isn't a leap into the unknown.
-                         Right after Services on purpose: both are a row of
-                         three cards answering "what happens if I press the
-                         button", and Testimonials used to sit between them
-                         — which split one argument into two.
+            Process    — what happens if you press the button: the steps,
+                         in order, beside the one button to start them.
+                         "Work with me" used to sit above it with its own
+                         three cards and booking buttons; it went, and its
+                         call to book moved into this panel, so the pitch
+                         and the how are one block, not two.
             Testimonials — other people's words, which is the one claim I
-                         cannot make myself. Placed after Services and
+                         cannot make myself. Placed after
                          Process so it reads as proof that the pitch just
                          made is true, right before Faq mops up what's
                          left. Renders nothing until there are any; see
@@ -78,7 +73,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Hero />
         <Background />
         <Wall />
-        <Services />
         <Process />
         <Testimonials />
         <Faq />
