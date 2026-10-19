@@ -3,131 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Base layer options</title>
-<!-- PROTOTYPE. Three looks for the Background map's base layer, side by
-     side, with nothing else on the page. Same 5 × 5 mile patch of land and
-     the same power grid in each; only the way the land is drawn changes.
+<title>Base layer</title>
+<!-- PROTOTYPE. The Background map's base layer, on its own: a real
+     5 x 5 mile patch of Sierra foothills east of Grass Valley, CA, from
+     Sentinel-2 imagery, with the real power lines from OpenStreetMap drawn
+     in one style. Kept slim: one ~50 KB image and one inline path.
      Delete or move before merging. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root { --paper: #fbf3e2; --ink: #3b130f; --muted: #8a6a5c; --maroon: #7a1710; --cream: #fff4de; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: Geist, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-  .mono { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; }
-  .bar { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--maroon); color: var(--cream); }
-  .bar a { color: #ffc93c; font-size: 13px; }
-  .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 3vw, 40px); padding: clamp(24px, 5vw, 64px); max-width: 1400px; margin: 0 auto; }
-  figure { margin: 0; }
-  figure svg { width: 100%; height: auto; display: block; border-radius: 8px; box-shadow: 0 0 0 1px rgba(122,23,16,.14); }
-  figcaption { margin-top: 12px; color: var(--muted); }
-  figcaption b { color: var(--ink); font-weight: 500; margin-right: 8px; }
-  @media (max-width: 860px) { .options { grid-template-columns: 1fr; padding: 16px; gap: 28px; } }
+  body { margin: 0; min-height: 100svh; display: grid; place-items: center; background: #fbf3e2; }
+  figure { margin: 0; width: min(560px, 90vw); }
+  svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+  figcaption { margin-top: 10px; font: 500 10px "Geist Mono", ui-monospace, monospace; letter-spacing: .06em; color: #8a6a5c; }
 </style>
 </head>
 <body>
-<div class="bar"><span class="mono">Base layer · 3 options</span><a href="/prototypes/background-story.html">← prototype</a></div>
-<main class="options"></main>
-
-<script>
-// ── One patch of land, 5 × 5 miles, 400 × 400 units: 80 units to the mile ─
-const MI = 80;
-const ink = "#3b130f";
-
-// Two ridges, as rings of rising ground (wobbly ellipses, outer to inner).
-const RIDGES = [
-  { cx: 105, cy: 105, rx: 120, ry: 78, rot: -18, seed: 1 },
-  { cx: 318, cy: 318, rx: 105, ry: 70, rot: 24, seed: 4 },
-];
-const LEVELS = 7;
-function ring(r, k) {
-  const s = 1 - k / LEVELS * .9, rot = r.rot * Math.PI / 180;
-  return "M" + Array.from({ length: 72 }, (_, i) => {
-    const a = i / 72 * Math.PI * 2;
-    const w = 1 + .09 * Math.sin(3 * a + r.seed + k * .4) + .05 * Math.sin(5 * a + r.seed * 2);
-    const x = r.rx * s * w * Math.cos(a), y = r.ry * s * w * Math.sin(a);
-    return `${(r.cx + x * Math.cos(rot) - y * Math.sin(rot)).toFixed(1)} ${(r.cy + x * Math.sin(rot) + y * Math.cos(rot)).toFixed(1)}`;
-  }).join("L") + "Z";
-}
-const RIVER = "M0 262 C 60 246, 110 300, 175 296 S 270 250, 330 268 S 380 300, 400 296";
-const ROADS = [
-  "M0 205 C 80 196, 150 214, 205 200 S 330 150, 400 150",   // valley road
-  "M212 198 C 222 250, 214 300, 236 340 S 262 390, 268 400", // south road
-  "M205 200 C 180 170, 150 150, 118 128 S 70 100, 40 70",   // up into the hills
-];
-// The town: small blocks around the crossroads, kept off the river.
-const TOWN = [];
-for (let i = 0; i < 46; i++) {
-  const a = i * 2.39996, d = 7 * Math.sqrt(i) + 6;
-  const x = 222 + d * Math.cos(a) * 1.3, y = 205 + d * Math.sin(a) * .8;
-  if (y < 250) TOWN.push([x, y, 5 + (i % 3), 4 + (i % 2)]);
-}
-
-// The grid. A transmission line crosses on towers, steps down at the
-// substation by the town, and feeders run out along the roads on poles.
-const TRANSMISSION = "M0 126 L110 156 L203 194 L300 124 L400 94";
-const SUB = [203, 194];
-// Feeders run along the roads, set just off the road edge.
-const FEEDERS = ROADS, FEEDER_SHIFT = "translate(-4 -5)";
-
-// ── Three ways to draw the land ───────────────────────────────────────
-const OPTIONS = [
-  { name: "Topographic", note: "contours, river, roads",
-    land: () => `<rect width="400" height="400" fill="#fff4de"/>
-      ${RIDGES.map((r) => Array.from({ length: LEVELS }, (_, k) => `<path d="${ring(r, k)}" fill="none" stroke="#c9a77a" stroke-width="${k % 3 === 0 ? 1.3 : .7}" opacity=".9"/>`).join("")).join("")}
-      <path d="${RIVER}" fill="none" stroke="#8fb3c0" stroke-width="4" stroke-linecap="round"/>
-      ${ROADS.map((d) => `<path d="${d}" fill="none" stroke="#dcc7a0" stroke-width="3" stroke-linecap="round"/>`).join("")}
-      ${TOWN.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#d9c3a0"/>`).join("")}` },
-  { name: "Land cover", note: "forest, brush, grass, town",
-    land: () => `<rect width="400" height="400" fill="#efe2b8"/>
-      ${RIDGES.map((r) => `<path d="${ring(r, 0)}" fill="#b9b27a"/><path d="${ring(r, 2)}" fill="#7f8a52"/><path d="${ring(r, 4)}" fill="#5c6e3e"/>`).join("")}
-      <ellipse cx="222" cy="210" rx="52" ry="30" fill="#ddd0b8"/>
-      <path d="${RIVER}" fill="none" stroke="#7fa6b5" stroke-width="7" stroke-linecap="round"/>
-      ${ROADS.map((d) => `<path d="${d}" fill="none" stroke="#fffaf0" stroke-width="2.5" stroke-linecap="round"/>`).join("")}
-      ${TOWN.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#b7a58c"/>`).join("")}` },
-  { name: "Relief and mile grid", note: "shaded hills, 1-mile squares",
-    land: () => `<rect width="400" height="400" fill="#fbf3e2"/>
-      ${RIDGES.map((r) => Array.from({ length: LEVELS }, (_, k) => `<path d="${ring(r, k)}" fill="#7a1710" fill-opacity=".055"/>`).join("")).join("")}
-      ${Array.from({ length: 4 }, (_, i) => `<line x1="${(i + 1) * MI}" y1="0" x2="${(i + 1) * MI}" y2="400" stroke="${ink}" stroke-opacity=".12"/><line x1="0" y1="${(i + 1) * MI}" x2="400" y2="${(i + 1) * MI}" stroke="${ink}" stroke-opacity=".12"/>`).join("")}
-      <path d="${RIVER}" fill="none" stroke="#9dbcc6" stroke-width="3" stroke-linecap="round"/>
-      ${ROADS.map((d) => `<path d="${d}" fill="none" stroke="#e2d2b2" stroke-width="2" stroke-linecap="round"/>`).join("")}
-      ${TOWN.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#d8c7aa"/>`).join("")}` },
-];
-
-// ── The grid, drawn the same on all three ──────────────────────────────
-const halo = (d, w) => `<path d="${d}" fill="none" stroke="#fff4de" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
-const gridSvg = () => `
-  <g transform="${FEEDER_SHIFT}">${FEEDERS.map((d) => halo(d, 4)).join("")}
-    ${FEEDERS.map((d) => `<path class="feeder" d="${d}" fill="none" stroke="${ink}" stroke-width="1.3"/>`).join("")}<g class="poles"></g></g>
-  ${halo(TRANSMISSION, 6)}<path class="tx" d="${TRANSMISSION}" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linejoin="round"/>
-  <g class="towers"></g>
-  <g transform="translate(${SUB[0] - 9} ${SUB[1] - 9})"><rect width="18" height="18" rx="2" fill="#fff4de" stroke="${ink}" stroke-width="1.8"/><path d="M10.5 3 6 10h3.5l-1.5 5 5-7.5H9.5z" fill="${ink}"/></g>`;
-const scale = () => `<g transform="translate(16 378)">
-  <rect x="-6" y="-16" width="${MI + 54}" height="24" rx="4" fill="#fff4de" fill-opacity=".85"/>
-  <path d="M0 0V-5M0 0H${MI}V-5" fill="none" stroke="${ink}" stroke-width="1.5"/>
-  <text x="${MI + 8}" y="1" font-family="Geist Mono" font-size="10" fill="${ink}">1 MI</text></g>`;
-
-const main = document.querySelector(".options");
-OPTIONS.forEach((o, i) => main.insertAdjacentHTML("beforeend",
-  `<figure><svg viewBox="0 0 400 400"><defs><clipPath id="c${i}"><rect width="400" height="400"/></clipPath></defs>
-     <g clip-path="url(#c${i})">${o.land()}${gridSvg()}${scale()}</g></svg>
-   <figcaption class="mono"><b>${"ABC"[i]}</b>${o.name} · ${o.note}</figcaption></figure>`));
-
-// Poles every 0.15 mi along the feeders, towers every 0.3 mi on the line.
-document.querySelectorAll("figure svg").forEach((svg) => {
-  const poles = svg.querySelector(".poles"), towers = svg.querySelector(".towers");
-  svg.querySelectorAll(".feeder").forEach((p) => {
-    for (let l = 14; l < p.getTotalLength(); l += MI * .15) {
-      const { x, y } = p.getPointAtLength(l);
-      poles.insertAdjacentHTML("beforeend", `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.8" fill="${ink}"/>`);
-    }
-  });
-  const tx = svg.querySelector(".tx");
-  for (let l = 10; l < tx.getTotalLength(); l += MI * .3) {
-    const { x, y } = tx.getPointAtLength(l);
-    towers.insertAdjacentHTML("beforeend", `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="-3.5" y="-3.5" width="7" height="7" fill="#fff4de" stroke="${ink}" stroke-width="1.4"/><path d="M-3.5 -3.5 3.5 3.5M3.5 -3.5 -3.5 3.5" stroke="${ink}" stroke-width="1"/></g>`);
-  }
-});
-</script>
+<figure>
+  <svg viewBox="0 0 400 400" role="img" aria-label="Satellite image of forested foothills with the power lines drawn over it">
+    <defs><clipPath id="map"><rect width="400" height="400" rx="6"/></clipPath></defs>
+    <g clip-path="url(#map)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <image href="/prototypes/assets/grass-valley-s2-2016.webp" width="400" height="400"/>
+      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196M138 281L137 279M138 281L136 276M137 279L136 276M136 278L136 278M136 277L135 277M135 277L135 277M135 278L136 278M135 277L135 277M135 277L136 276M134 276L135 279M135 279L134 276M135 277L134 277M135 278L135 278M135 278L135 278M135 278L135 278M135 277L135 278" stroke="#3b130f" stroke-width="3.6" stroke-opacity=".55"/>
+      <path d="M43 201L43 217L46 226L43 222M-46 -132L-34 -118L11 -91L37 -86L41 69M24 400L14 398L0 398L-3 401L-2 407L-10 413L-12 411L-12 409L-31 404L-33 403L-47 399L-53 341L-54 268L-91 99L-128 -22L-142 -52L-150 -63L-155 -76L-164 -89L-190 -136L-219 -213L-434 -239L-519 -267L-522 -269L-528 -277M41 69L43 201M39 -21L89 53L98 60L112 118L123 142L122 190M255 771L228 714L175 652L138 632L138 573L135 549L142 509L142 493L131 470L130 438L149 416L149 397L134 372L136 351L145 301L142 288L138 281M128 224L146 221M142 222L149 211L154 207L157 206L165 196M138 281L137 279M138 281L136 276M137 279L136 276M136 278L136 278M136 277L135 277M135 277L135 277M135 278L136 278M135 277L135 277M135 277L136 276M134 276L135 279M135 279L134 276M135 277L134 277M135 278L135 278M135 278L135 278M135 278L135 278M135 277L135 278" stroke="#ffc93c" stroke-width="1.7"/>
+    </g>
+  </svg>
+  <figcaption>Sentinel-2 cloudless 2016 by EOX (CC BY 4.0) · power lines © OpenStreetMap</figcaption>
+</figure>
 </body>
 </html>
