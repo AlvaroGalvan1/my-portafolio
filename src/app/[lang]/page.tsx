@@ -2,16 +2,16 @@ import { notFound } from "next/navigation";
 import ContactModal from "@/components/contact/ContactModal";
 import Areas from "@/components/areas/Areas";
 import Testimonials from "@/components/testimonials/Testimonials";
+import { heroContent } from "@/components/hero/hero.content";
+import { shellContent } from "@/components/shell/shell.content";
 import Button from "@/components/ui/Button";
 import Story from "@/components/story/Story";
 import { isLocale } from "@/content/i18n";
 import { UI } from "@/content/ui";
 
-// Portfolio 2.0 starts from one screen: the name and one way to start.
+// Portfolio 2.0 starts from one screen: the name, one line and one way to start.
 // The v1 sections still exist in components/sections; they come back one
 // at a time, if and when 2.0 wants them.
-const CTA = { en: "Let's build together", es: "Construyamos juntos" };
-
 const STORY = {
   en: {
     beats: [
@@ -56,14 +56,20 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               <br />
               Galván
             </h1>
-            <Button href={`/${lang}/work-with-me`} className="mt-12">
-              {CTA[lang]}
+            <p className="mt-4 max-w-[22ch] font-sans text-xl font-semibold text-brand-maroon sm:max-w-none sm:text-2xl">
+              {heroContent[lang].tagline}
+            </p>
+            <Button href={`/${lang}/work-with-me`} className="mt-10">
+              {heroContent[lang].cta}
             </Button>
           </div>
         </section>
         <Story strings={STORY[lang]} />
         <Areas lang={lang} />
         <Testimonials lang={lang} />
+        <div className="flex justify-center px-6 pb-4 pt-2">
+          <Button href={`/${lang}/work-with-me`}>{shellContent[lang].nav.work}</Button>
+        </div>
       </main>
       <ContactModal strings={ui.contact} />
     </>

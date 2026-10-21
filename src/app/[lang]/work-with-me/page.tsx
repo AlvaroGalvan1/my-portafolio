@@ -7,7 +7,7 @@ import { BCP47, LOCALES, isLocale, type Locale } from "@/content/i18n";
 
 const META: Record<Locale, { title: string; description: string }> = {
   en: { title: "Work with me", description: "Tell me the problem. I build the tool your team uses." },
-  es: { title: "Trabajemos juntos", description: "Cuéntame el problema. Yo construyo la herramienta que tu equipo usa." },
+  es: { title: "Trabaja conmigo", description: "Cuéntame el problema. Yo construyo la herramienta que tu equipo usa." },
 };
 
 export async function generateMetadata({
