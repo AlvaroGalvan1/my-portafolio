@@ -339,26 +339,6 @@ const en = {
     brief: "or send me a message",
   },
 
-  contact: {
-    heading: "Get In Touch",
-    close: "Close",
-    book: "Book 30 minutes",
-    preferDirect: "Prefer to chat directly?",
-    emailMeAt: "Email me at",
-    name: "Name",
-    email: "Your email",
-    subject: "Subject",
-    message: "Message",
-    send: "Send",
-    sending: "Sending…",
-    sent: "Sent. Thanks, I'll reply soon.",
-    openedClient:
-      "Your email app opened with this message filled in. Hit send there to reach me.",
-    failed:
-      "Something went wrong. Try the email link above instead.",
-    defaultSubject: "Portfolio contact",
-  },
-
   footer: {
     heading: "What this site is for",
   },
@@ -634,26 +614,6 @@ const es: UiStrings = {
       "Cuéntame en qué estás trabajando y encontramos la mejor opción.",
     book: "Agenda una llamada de 30 minutos",
     brief: "o mándame un mensaje",
-  },
-
-  contact: {
-    heading: "Hablemos",
-    close: "Cerrar",
-    book: "Agenda una llamada",
-    preferDirect: "¿Prefieres escribir directamente?",
-    emailMeAt: "Escríbeme a",
-    name: "Nombre",
-    email: "Tu correo",
-    subject: "Asunto",
-    message: "Mensaje",
-    send: "Enviar",
-    sending: "Enviando…",
-    sent: "Enviado. Gracias, te contesto pronto.",
-    openedClient:
-      "Se abrió tu correo con el mensaje ya escrito. Solo dale enviar.",
-    failed:
-      "Algo salió mal. Mejor escríbeme al correo de arriba.",
-    defaultSubject: "Contacto desde el portafolio",
   },
 
   footer: {

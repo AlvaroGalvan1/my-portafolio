@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import ContactTrigger from "@/components/contact/ContactTrigger";
+import Button from "@/components/ui/Button";
 import { fuegoLogo } from "./fuego-logo";
 import { mountStory } from "./story-map";
 
@@ -21,7 +21,7 @@ const LOGOS = [
   { src: "/logos/hyticos.png", alt: "Hyticos" },
 ];
 
-export default function Story({ strings }: { strings: Strings }) {
+export default function Story({ strings, ctaHref }: { strings: Strings; ctaHref: string }) {
   const section = useRef<HTMLElement>(null);
   const world = useRef<SVGGElement>(null);
 
@@ -65,9 +65,9 @@ export default function Story({ strings }: { strings: Strings }) {
 
           <div data-close className={caption}>
             <p className="text-lg font-semibold">{strings.close}</p>
-            <ContactTrigger className="mt-3 rounded-lg bg-brand-maroon px-5 py-2.5 font-semibold text-brand-cream transition-colors hover:bg-[#5e110c]">
+            <Button href={ctaHref} className="mt-3">
               {strings.cta}
-            </ContactTrigger>
+            </Button>
           </div>
         </div>
       </div>

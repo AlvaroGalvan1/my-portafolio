@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import ContactModal from "@/components/contact/ContactModal";
 import Areas from "@/components/areas/Areas";
 import Testimonials from "@/components/testimonials/Testimonials";
 import { heroContent } from "@/components/hero/hero.content";
@@ -7,7 +6,6 @@ import { shellContent } from "@/components/shell/shell.content";
 import Button from "@/components/ui/Button";
 import Story from "@/components/story/Story";
 import { isLocale } from "@/content/i18n";
-import { UI } from "@/content/ui";
 
 // Portfolio 2.0 starts from one screen: the name, one line and one way to start.
 // The v1 sections still exist in components/sections; they come back one
@@ -38,7 +36,6 @@ const STORY = {
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const ui = UI[lang];
 
   return (
     <>
@@ -64,14 +61,13 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </Button>
           </div>
         </section>
-        <Story strings={STORY[lang]} />
+        <Story strings={STORY[lang]} ctaHref={`/${lang}/work-with-me`} />
         <Areas lang={lang} />
         <Testimonials lang={lang} />
         <div className="flex justify-center px-6 pb-4 pt-2">
           <Button href={`/${lang}/work-with-me`}>{shellContent[lang].nav.work}</Button>
         </div>
       </main>
-      <ContactModal strings={ui.contact} />
     </>
   );
 }
