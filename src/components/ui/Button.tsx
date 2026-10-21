@@ -46,8 +46,13 @@ export default function Button({
   // Next's Link is for routes; anything leaving the site (Calendly, mailto,
   // the CV) is a plain anchor.
   if (/^(https?:|mailto:)/.test(href) || href.endsWith(".pdf")) {
+    const external = href.startsWith("http");
     return (
-      <a href={href} className={classes}>
+      <a
+        href={href}
+        className={classes}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
         {children}
       </a>
     );
