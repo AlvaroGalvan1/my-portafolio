@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Nav from "@/components/sections/Nav";
 import About from "@/components/sections/About";
-import Footer from "@/components/sections/Footer";
-import ContactModal from "@/components/contact/ContactModal";
 import { BCP47, LOCALES, isLocale } from "@/content/i18n";
 import { UI } from "@/content/ui";
 
@@ -31,16 +28,10 @@ export async function generateMetadata({
 export default async function AboutPage({ params }: PageProps<"/[lang]/about">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const ui = UI[lang];
 
   return (
-    <>
-      <Nav lang={lang} strings={ui.nav} />
-      <main>
-        <About />
-      </main>
-      <Footer />
-      <ContactModal strings={ui.contact} />
-    </>
+    <main>
+      <About />
+    </main>
   );
 }

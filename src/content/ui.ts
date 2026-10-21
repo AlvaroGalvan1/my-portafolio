@@ -328,7 +328,7 @@ const en = {
     journeyHeading: "The journey",
     // Points at Work with me on the home page rather than repeating its
     // buttons here — see the note in About.tsx.
-    workLink: "Want to work together? See Work with me →",
+    workLink: "Want to work together? See Work with me",
   },
 
   faq: {
@@ -637,7 +637,7 @@ const es: UiStrings = {
     transition:
       "Ese es el mapa de abajo: dónde estudié, y los puertos donde paró un semestre en barco por el camino.",
     journeyHeading: "El recorrido",
-    workLink: "¿Quieres que trabajemos juntos? Ve Trabajemos juntos →",
+    workLink: "¿Quieres trabajar juntos? Ve Trabaja conmigo",
   },
 
   faq: {
