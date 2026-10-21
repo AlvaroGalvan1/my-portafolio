@@ -1,9 +1,12 @@
+import { geoGraticule10, geoOrthographic, geoPath } from "d3-geo";
+import { feature } from "topojson-client";
+import type { GeometryCollection, Topology } from "topojson-specification";
 import { FEEDERS, TRANSMISSION } from "./lines";
 
 // The story map, drawn and driven imperatively: one SVG, one scroll-driven
 // clock, one render function that puts the whole map at time `t`. Ported
-// from prototypes/story-v7 (the steps; the satellite pass and the zoom out
-// to the Earth come in the next story ticket).
+// from prototypes/story-v7: the four steps, then a satellite pass over the
+// same fire and a zoom out to the Earth.
 //
 // Close-up units: 400 = 5 miles (the NAIP image). The wide view is 5× that
 // (Sentinel-2), used when the story zooms out to track the fire.
@@ -81,7 +84,7 @@ const CAM = [
   [0, 1.9, 300, 190], [800, 1.9, 305, 188],
   [1150, 1, 200, 198], [2000, 1, 200, 198],
   [2250, 1.05, 315, 160], [3000, 1.05, 315, 160],
-  [3400, 0.3, 330, 150], [4000, 0.3, 330, 150],
+  [3400, 0.3, 330, 150], [6000, 0.3, 330, 150],
 ];
 function camera(t: number) {
   const i = CAM.findIndex((k) => k[0] > t);
@@ -99,6 +102,27 @@ const T_GROW = 3300;
 const simS = (t: number) =>
   t < 2150 ? -1 : t < 2950 ? S_CLOSE * clamp((t - 2150) / 800) : t < T_GROW ? S_CLOSE : S_CLOSE + (S_END - S_CLOSE) * clamp((t - T_GROW) / 650);
 
+// Satellite detections: 375 m pixels (about 19 units here) on a fixed grid,
+// lit where the pass sees fire still burning.
+const PX = 19;
+const PIXELS: { x: number; y: number; a: number }[] = [];
+for (let y = P[1] - 260; y < P[1] + 200; y += PX)
+  for (let x = P[0] - 220; x < P[0] + 420; x += PX) {
+    const a = arrival(x + PX / 2, y + PX / 2);
+    if (a <= S_END) PIXELS.push({ x, y, a });
+  }
+
+// ---- The close: keep pulling back until the fire is a dot on the Earth ----
+// The globe is centred on the story's place (Grass Valley, California) and
+// starts at the same scale as the satellite view, so the zoom never cuts.
+const HERE: [number, number] = [-121.06, 39.22];
+const T_EARTH = 4000;
+const EARTH_DUR = 800;
+const T_PASS = 3350;
+const PASS_DUR = 600;
+// The satellite pass sweeps west to east across the fire.
+const passX = (t: number) => P[0] - 520 + 1000 * clamp((t - T_PASS) / PASS_DUR);
+
 /** In-map labels, one set per language. */
 export type MapLabels = {
   powerLine: string;
@@ -108,10 +132,12 @@ export type MapLabels = {
   smoke: string;
   ignition: string;
   fireFront: string;
+  satellitePass: string;
+  fireDetections: string;
   day: string;
 };
 
-export const DURATION = 4000;
+export const DURATION = 6000;
 
 /** Draws the map into `world` and plays it as the section scrolls. `root`
  *  holds the elements it drives: `[data-beat]`, `[data-tick]`, `[data-clock]`.
@@ -129,6 +155,12 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
       <path class="faulted" d="M310 204L318 165" stroke="${C.red}" stroke-width="3" opacity="0" ${NS}/>
     </g>
     <image class="sim" x="${GX}" y="${GY}" width="${GW}" height="${GH}" preserveAspectRatio="none"/>
+    <g class="swath" opacity="0">
+      <rect x="-130" y="-1400" width="260" height="2800" fill="${C.maroon}" fill-opacity=".05"/>
+      <line x1="-130" y1="-1400" x2="-130" y2="1400" stroke="${C.maroon}" stroke-opacity=".45" stroke-width="1" stroke-dasharray="6 5" ${NS}/>
+      <line x1="130" y1="-1400" x2="130" y2="1400" stroke="${C.maroon}" stroke-opacity=".45" stroke-width="1" stroke-dasharray="6 5" ${NS}/>
+    </g>
+    <g class="pixels" fill="none" stroke="${C.maroon}" stroke-width="1.1" ${NS}>${PIXELS.map((p) => `<rect x="${p.x + 1}" y="${p.y + 1}" width="${PX - 2}" height="${PX - 2}" opacity="0" ${NS}/>`).join("")}</g>
     <g class="views" opacity="0">${CAMS.map((c) => `<path class="fov" d="${wedge(c)}" fill="${C.maroon}" fill-opacity=".07" stroke="${C.maroon}" stroke-opacity=".35" stroke-width="1" ${NS}/>`).join("")}</g>
     <g class="bearings">${CAMS.map((c) => `<line x1="${c.x}" y1="${c.y}" x2="${P[0]}" y2="${P[1]}" pathLength="1" stroke="${C.maroon}" stroke-width="1.2" stroke-dasharray="1 1" stroke-dashoffset="1"/>`).join("")}</g>
     <g class="kit">
@@ -147,6 +179,8 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
       <text opacity="0" data-on="1" x="332" y="152">${labels.smoke}</text>
       <text opacity="0" data-on="2" x="296" y="214" text-anchor="end">${labels.ignition}</text>
       <text opacity="0" data-on="2" class="front-note" fill="${C.red}">${labels.fireFront}</text>
+      <text opacity="0" data-on="3" class="pass-note">${labels.satellitePass}</text>
+      <text opacity="0" data-on="3" x="${P[0] - 50}" y="${P[1] + 100}" text-anchor="end">${labels.fireDetections}</text>
     </g>`;
 
   const $ = (s: string) => world.querySelector(s) as SVGElement;
@@ -166,13 +200,31 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
   const notes = $$(".notes text");
   const notesG = $(".notes");
   const frontNote = $(".front-note");
+  const passNote = $(".pass-note");
+  const swath = $(".swath");
+  const pixEls = $$(".pixels rect");
   const smokeCircles = $$(".smoke circle");
   const beats = [...root.querySelectorAll<HTMLElement>("[data-beat]")];
   const ticks = [...root.querySelectorAll<HTMLElement>("[data-tick]")];
   const clockEl = root.querySelector<HTMLElement>("[data-clock]")!;
   const clockText = clockEl.querySelector("span")!;
   const svgEl = world.ownerSVGElement!;
-  const card = svgEl.parentElement!;
+  const globeEl = root.querySelector<SVGSVGElement>("[data-globe]")!;
+  const sphereEl = globeEl.querySelector(".sphere")!;
+  const gratEl = globeEl.querySelector(".grat")!;
+  const landEl = globeEl.querySelector(".land")!;
+  const hereEl = globeEl.querySelector(".here")!;
+  const ringEl = globeEl.querySelector(".here-ring")!;
+  const proj = geoOrthographic().rotate([-HERE[0], -HERE[1]]).precision(0.3);
+  const gpath = geoPath(proj);
+  const grat = geoGraticule10();
+  // The land outline is only needed at the very end, so it loads on its own.
+  let land: ReturnType<typeof feature> | null = null;
+  let alive = true;
+  import("world-atlas/land-110m.json").then((m) => {
+    const topo = m.default as unknown as Topology<{ land: GeometryCollection }>;
+    if (alive) land = feature(topo, topo.objects.land);
+  });
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -194,14 +246,25 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
 
   let shown = -1;
   let lastS: number | null = null;
+  let lastPass: number | null = null;
   function render(t: number, now: number) {
     const S = { fault: ramp(t, 200, 300), cams: ramp(t, 1150, 450), bear: ramp(t, 1550, 300), smoke: ramp(t, 1800, 250), spread: clamp((t - 2150) / 800), zoom: ramp(t, 2980, 420) };
-    const [z, cx, cy] = camera(t);
+    const [z0, cx, cy] = camera(t);
+    // Past the satellite view, both layers zoom out at the same rate: the map
+    // shrinks away while the globe arrives at the scale it is leaving.
+    const g = ease(clamp((t - T_EARTH) / EARTH_DUR));
+    const W = svgEl.clientWidth;
+    const H = svgEl.clientHeight;
+    const mPerPx = (5 * 1609) / ((Math.max(W, H) / 400) * 0.3) / 400; // metres per pixel at z = .3
+    const k0 = 6371000 / mPerPx;
+    const k1 = 0.36 * Math.min(W, H);
+    const k = k0 * Math.pow(k1 / k0, g);
+    const z = (z0 * k) / k0;
     world.setAttribute("transform", `translate(200 200) scale(${z}) translate(${-cx} ${-cy})`);
     // Labels stay 12px on screen whatever the zoom.
     const unit = (Math.max(svgEl.clientWidth, svgEl.clientHeight) / 400) * z;
     notesG.setAttribute("font-size", String(12 / unit));
-    const beat = Math.min(3, Math.floor(t / 1000));
+    const beat = Math.min(4, Math.floor(t / 1000));
     notes.forEach((n) => n.setAttribute("opacity", String(+n.dataset.on! === beat && t % 1000 > 200 && t % 1000 < 920 ? 1 : 0)));
 
     // 1. Grid sensing
@@ -254,11 +317,51 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
       frontNote.setAttribute("y", (P[1] + r * Math.sin(WIND)).toFixed(1));
     }
 
+    // 4. Remote sensing: a pass crosses the same fire and lights the pixels
+    // that are still burning when it goes over.
+    const px = passX(t);
+    swath.setAttribute("opacity", String(clamp((t - T_PASS + 100) / 120) * (1 - clamp((t - T_PASS - PASS_DUR) / 120))));
+    swath.setAttribute("transform", `translate(${px} 0)`);
+    passNote.setAttribute("x", String(px + 136));
+    passNote.setAttribute("y", String(P[1] - 230));
+    if (px !== lastPass) {
+      lastPass = px;
+      pixEls.forEach((el, i) => {
+        const p = PIXELS[i];
+        const cxp = p.x + PX / 2;
+        let on = false;
+        if (t >= T_PASS && cxp <= px) {
+          // when the pass was over this pixel, was it burning?
+          const tp = T_PASS + PASS_DUR * clamp((cxp - (P[0] - 520)) / 1000);
+          const sp = simS(tp);
+          on = p.a <= sp && sp - p.a < 28;
+        }
+        el.setAttribute("opacity", on ? ".85" : "0");
+      });
+    }
+
     near.setAttribute("opacity", String(1 - clamp((S.zoom - 0.3) / 0.5)));
     kit.setAttribute("opacity", String(1 - clamp(S.zoom / 0.4)));
     grid.setAttribute("opacity", String(1 - 0.6 * clamp(S.zoom / 0.7)));
 
-    if (t > 150) clockEl.setAttribute("data-on", "");
+    svgEl.style.opacity = String(1 - clamp((g - 0.08) / 0.22));
+    globeEl.style.opacity = String(clamp((g - 0.02) / 0.2));
+    if (t > T_EARTH - 50) {
+      const end = [Math.max(W / 2, Math.min(W * 0.66, W - k1 - 32)), H * 0.42];
+      proj.scale(k).translate([W / 2 + (end[0] - W / 2) * g, H / 2 + (end[1] - H / 2) * g]);
+      sphereEl.setAttribute("d", gpath({ type: "Sphere" }) ?? "");
+      gratEl.setAttribute("d", gpath(grat) ?? "");
+      if (land) landEl.setAttribute("d", gpath(land) ?? "");
+      const [hx, hy] = proj(HERE) ?? [0, 0];
+      const ph = (now / 1600) % 1;
+      hereEl.setAttribute("cx", String(hx));
+      hereEl.setAttribute("cy", String(hy));
+      ringEl.setAttribute("cx", String(hx));
+      ringEl.setAttribute("cy", String(hy));
+      ringEl.setAttribute("r", String(5 + 22 * ph));
+      ringEl.setAttribute("opacity", String((1 - ph) * g));
+    }
+    if (t > 150 && t < T_EARTH + 200) clockEl.setAttribute("data-on", "");
     else clockEl.removeAttribute("data-on");
     clockText.textContent = clock(t, s);
 
@@ -286,5 +389,8 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    alive = false;
+    cancelAnimationFrame(raf);
+  };
 }
