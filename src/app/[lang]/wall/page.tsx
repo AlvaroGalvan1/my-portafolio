@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Wall from "@/components/gallery/Wall";
 import { BCP47, LOCALES, isLocale, type Locale } from "@/content/i18n";
 
 const META: Record<Locale, { title: string; description: string }> = {
@@ -33,12 +34,8 @@ export default async function WallPage({ params }: PageProps<"/[lang]/wall">) {
   if (!isLocale(lang)) notFound();
 
   return (
-    <main>
-      <section className="bg-brand-red px-6 py-10 sm:px-16">
-        <div className="mx-auto max-w-5xl rounded-lg border-2 border-dashed border-brand-cream/60 p-8 text-center font-sans text-brand-cream">
-          <p className="eyebrow">{lang === "es" ? "Muro" : "Wall"}</p>
-        </div>
-      </section>
+    <main className="flex flex-1 flex-col bg-brand-brick">
+      <Wall locale={lang} />
     </main>
   );
 }
