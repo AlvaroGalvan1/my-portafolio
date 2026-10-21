@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio v2 skeleton</title>
+<style>
+  :root {
+    --bg: #f4f2ee; --paper: #fff; --line: #d6d2ca; --box: #ebe8e2; --ink: #1d1b18;
+    --muted: #6d6860; --accent: #e8572a; --dark: #1b2621; --note: #fff7d6; --note-line: #e6d48a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 40px 24px 120px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 20px; }
+  .mono { font: 12px/1.4 ui-monospace, Menlo, monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .hl { color: var(--accent); font-weight: 600; }
+
+  /* Sitemap */
+  .map { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+  .flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 16px; }
+  .node { border: 2px solid var(--ink); border-radius: 8px; padding: 8px 12px; background: var(--paper); }
+  .node small { display: block; color: var(--muted); }
+  .node.main { background: var(--ink); color: #fff; }
+  .node.main small { color: #cfc9bf; }
+  .node.goal { border-color: var(--accent); }
+  .node.later { border-style: dashed; border-color: var(--muted); color: var(--muted); }
+  .node.side { border-width: 1px; }
+  .arrow { color: var(--muted); }
+
+  /* Page sections */
+  .page { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; margin-bottom: 56px; }
+  .page > header { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+  .page > header h2 { margin: 0; font-size: 22px; }
+  .frame { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .bar nav { display: flex; gap: 16px; color: var(--muted); }
+  .bar nav .on { color: var(--ink); font-weight: 600; }
+  .block { border-bottom: 1px dashed var(--line); padding: 20px; }
+  .block:last-child { border-bottom: 0; }
+  .block > .mono:first-child { display: block; margin-bottom: 10px; }
+  .ph { background: var(--box); border-radius: 6px; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 12px; }
+  .row { display: grid; gap: 12px; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 14px; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; border-radius: 8px; padding: 9px 18px; font-weight: 600; font-size: 14px; }
+  .link { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; }
+  .hero { background: var(--accent); color: #fff; padding: 72px 20px; text-align: center; }
+  .hero .name { font-size: 44px; font-weight: 900; letter-spacing: .02em; }
+  .hero .btn { background: #fff8ec; color: var(--ink); margin-top: 18px; }
+  .area { display: grid; justify-items: center; gap: 8px; padding: 16px 8px; text-align: center; font-weight: 700; }
+  .icon { width: 36px; height: 36px; fill: none; stroke: #7a1710; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .swatches { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .inline-link { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .field { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; color: var(--muted); font-size: 13px; margin-bottom: 8px; background: #fbfaf8; }
+  .field.tall { height: 64px; }
+  .chat { background: var(--box); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+  .btn.ghost { background: none; color: var(--ink); border: 1.5px solid var(--ink); align-self: flex-start; }
+  .scale { max-width: 460px; }
+  .scale-ends { display: flex; justify-content: space-between; align-items: baseline; }
+  .scale-ends b { font-size: 24px; } .scale-ends small { color: var(--muted); font-size: 13px; }
+  .scale-bar { position: relative; height: 8px; border-radius: 4px; margin: 8px 0; background: linear-gradient(90deg, #ffc93c, var(--accent)); }
+  .scale-bar .dot { position: absolute; right: -2px; top: -5px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid var(--accent); }
+  .bars { display: grid; gap: 14px; }
+  .opt { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: center; font-size: 14px; }
+  .opt .bar { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+  .opt.pick .bar { border: 2px solid var(--accent); }
+  .branches { font: 12.5px/1.7 ui-monospace, Menlo, monospace; background: #f7f5f1; border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 0; white-space: pre; overflow-x: auto; }
+  .marquee { display: flex; gap: 10px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .quote { flex: 0 0 210px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 13px; }
+  .quote small { display: flex; justify-content: space-between; margin-top: 6px; color: var(--muted); }
+  .quote small i { font-style: normal; background: var(--box); border-radius: 3px; padding: 0 6px; font-size: 11px; }
+  .steps { background: var(--dark); color: #f4eee2; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 28px; border-radius: 10px; }
+  .steps h3 { font-size: 28px; line-height: 1; margin: 0 0 8px; text-transform: uppercase; }
+  .steps ol { list-style: none; margin: 0; padding: 0; }
+  .steps li { display: flex; gap: 12px; align-items: center; padding: 6px 0; color: #8a948d; font-weight: 700; text-transform: uppercase; }
+  .steps li b { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #4a554f; display: grid; place-items: center; font-size: 12px; flex: none; }
+  .steps li.on { color: #f4eee2; }
+  .steps li.on b { background: var(--accent); border-color: var(--accent); }
+  .steps .vis { background: rgba(255,255,255,.08); color: #b9c0bb; border-radius: 6px; padding: 8px; font-size: 12px; font-weight: 400; text-transform: none; margin: 0 0 6px 38px; }
+  .qa { border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 14px; display: flex; justify-content: space-between; }
+  .wall { background: #b3261e; color: #fff; padding: 20px; }
+  .wall .ph { background: rgba(255,255,255,.15); color: #fde; }
+  .chips { display: flex; gap: 6px; margin-bottom: 10px; }
+  .chip { border: 1px solid rgba(255,255,255,.5); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+  .later-box { border: 2px dashed var(--line); border-radius: 8px; padding: 16px; color: var(--muted); font-size: 14px; text-align: center; }
+
+  /* Notes */
+  aside { display: flex; flex-direction: column; gap: 10px; }
+  .note { background: var(--note); border: 1px solid var(--note-line); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+  .note h3 { margin: 0 0 2px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  .note.q { background: #eef4ff; border-color: #b9cdf0; }
+
+  /* Build plan */
+  .plan { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .plan h2 { margin: 0 0 4px; }
+  .plan-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; margin-top: 16px; }
+  pre { background: #f7f5f1; border: 1px solid var(--line); border-radius: 8px; padding: 14px; font: 12.5px/1.55 ui-monospace, Menlo, monospace; margin: 0; overflow-x: auto; }
+  pre .new { color: #1f7a3f; } pre .del { color: #b3261e; text-decoration: line-through; } pre .c { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 11px ui-monospace, Menlo, monospace; text-transform: uppercase; color: var(--muted); }
+  td.n { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); white-space: nowrap; }
+  .tag { font: 11px ui-monospace, Menlo, monospace; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .tag.done { background: #dff0e3; color: #1f7a3f; } .tag.decide { background: #eef4ff; color: #2f5aa8; } .tag.go { background: var(--box); color: var(--ink); }
+  .rules { margin: 20px 0 0; padding-left: 18px; font-size: 14px; }
+  .rules li { margin-bottom: 4px; }
+
+  @media (max-width: 1000px) {
+    .page { grid-template-columns: minmax(0, 1fr); }
+    aside { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    .plan-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="mono">Portfolio 2.0 · skeleton · approved 2026-10-21 · spec: SITE-STRUCTURE.md</p>
+  <h1>Less text. Show, don't explain.</h1>
+  <p class="lede">Home shows what I do. Work with me shows how. The rest are their own pages.</p>
+
+  <section class="map">
+    <div class="flow">
+      <div class="node main">Home<small>/</small></div><span class="arrow">→</span>
+      <div class="node main">Work with me<small>/work-with-me</small></div><span class="arrow">→</span>
+      <div class="node goal">Form<small>start a project</small></div><span class="arrow">or</span>
+      <div class="node later">Calendly<small>just chat</small></div>
+    </div>
+    <div class="flow" style="margin-bottom:0">
+      <div class="node side">Wall<small>/wall</small></div>
+      <div class="node side">About<small>/about</small></div>
+      <div class="node side">Pricing<small>/pricing</small></div>
+      <div class="node side">FAQ<small>/faq</small></div>
+      <span class="mono" style="margin-left:8px">Pages fade into each other. Buttons have no arrows.</span>
+    </div>
+  </section>
+
+  <!-- TOP BAR -->
+  <section class="page" id="topbar">
+    <header><h2>Top bar</h2><span class="mono">on every page</span></header>
+    <div class="bars">
+      <div class="opt"><span><b>Now</b><br><small style="color:var(--muted)">name shows twice on Home</small></span>
+        <div class="bar"><b>Álvaro Galván</b><nav><span>Wall</span><span>About</span><span>Work with me</span><span>Pricing</span><span>EN/ES</span></nav></div></div>
+      <div class="opt pick"><span><b>A · Name on scroll</b><br><small style="color:var(--muted)">my pick</small></span>
+        <div class="bar"><b style="color:var(--muted);font-weight:400;font-size:12px">[empty over the hero → name fades in after]</b><nav><span>Wall</span><span>About</span><span style="color:var(--ink);font-weight:600">Work with me</span></nav></div></div>
+      <div class="opt"><span><b>B · Initials</b></span>
+        <div class="bar"><b>ÁG</b><nav><span>Wall</span><span>About</span><span>Work with me</span></nav></div></div>
+      <div class="opt"><span><b>C · Menu</b></span>
+        <div class="bar"><b>ÁG</b><nav><span style="color:var(--ink);font-weight:600">Work with me</span><span>☰</span></nav></div></div>
+    </div>
+    <aside>
+      <div class="note"><h3>All options</h3>Three links only. EN/ES moves to the footer, because the site already picks the visitor's language. Pricing and FAQ are linked from Work with me and the footer.</div>
+      <div class="note"><h3>Why A</h3>On Home the big name is the logo, so the bar starts empty. Once the hero scrolls away, the name fades into the bar. Other pages show it from the start.</div>
+    </aside>
+  </section>
+
+  <!-- HOME -->
+  <section class="page" id="home">
+    <header><h2>Home</h2><span class="mono">/</span></header>
+    <div class="frame">
+      <div class="bar"><b style="visibility:hidden">Álvaro Galván</b><nav><span>Wall</span><span>About</span><span>Work with me</span></nav></div>
+      <div class="hero">
+        <div class="name">ÁLVARO GALVÁN</div>
+        <div style="opacity:.9">I build software for wildfire.</div>
+        <span class="btn">Let's build together</span>
+      </div>
+      <div class="block">
+        <span class="mono">Story</span>
+        <div class="ph" style="height:120px">story-v7 map scroll: one fire, four steps, zoom out to Earth</div>
+      </div>
+      <div class="block">
+        <span class="mono">What I do</span>
+        <div class="row">
+          <div class="area"><svg class="icon" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Grid Intelligence</div>
+          <div class="area"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2c.5 3.5 5 6 5 11a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5.5.5 2 1.5 3 2.5 3.5.5-3-.5-6-0-9z"/></svg>Fire Tech</div>
+          <div class="area"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="5" r="2"/><circle cx="20" cy="5" r="2"/><circle cx="12" cy="21" r="2"/><path d="M5.5 6.5 9.8 10M18.5 6.5 14.2 10M12 15v4"/></svg>Data Fusion</div>
+        </div>
+        <div class="swatches"><span class="mono">Icon colour</span><span class="sw" style="background:#7a1710"></span>maroon (my pick) <span class="sw" style="background:#f5821f"></span>orange</div>
+      </div>
+      <div class="block">
+        <span class="mono">Proof · slowly scrolling, pauses on hover</span>
+        <div class="marquee">
+          <div class="quote">"Turns <span class="hl">loosely defined problems</span> into…"<small>Jack Royero<i>Pano AI logo</i></small></div>
+          <div class="quote">"<span class="hl">Learns quickly</span>, takes ownership…"<small>Katie McQuillan<i>Pano AI logo</i></small></div>
+          <div class="quote">"Very <span class="hl">thoughtful</span>…"<small>Sydney Davison<i>Pano AI logo</i></small></div>
+          <div class="quote">more coming…<small>&nbsp;<i>logo</i></small></div>
+        </div>
+      </div>
+      <div class="block" style="text-align:center"><span class="btn">Work with me</span></div>
+    </div>
+    <aside>
+      <div class="note"><h3>Icons</h3>Line SVGs (e.g. from Lucide), not PNGs. They stay sharp at any size and take their colour from CSS. Orange stays reserved for highlighted keywords.</div>
+      <div class="note"><h3>Order</h3>Proof comes after What I do, right before the button.</div>
+      <div class="note"><h3>Watch out</h3>Keep What I do to three icons and three names. In v1, a longer summary right after the story was removed because it repeated the story.</div>
+    </aside>
+  </section>
+
+  <!-- WORK WITH ME -->
+  <section class="page" id="work">
+    <header><h2>Work with me</h2><span class="mono">/work-with-me</span></header>
+    <div class="frame">
+      <div class="bar"><b>Álvaro Galván</b><nav><span>Wall</span><span>About</span><span class="on">Work with me</span></nav></div>
+      <div class="block">
+        <div class="steps">
+          <div><h3>Let's build your tool</h3><div style="color:#b9c0bb;font-size:14px">You bring the problem and the data. I turn them into a tool your team uses. [line to write]</div></div>
+          <ol>
+            <li><b>1</b>Let's talk</li>
+            <li class="on"><b>2</b>Explore it together</li>
+            <div class="vis">[visual: your data on a map]</div>
+            <li><b>3</b>Build it</li>
+            <li><b>4</b>Test and refine</li>
+          </ol>
+        </div>
+      </div>
+      <div class="block" style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+        <div>
+          <span class="mono" style="display:block;margin-bottom:10px">Start a project</span>
+          <div class="field">Name</div>
+          <div class="field">Email</div>
+          <div class="field tall">What's the problem?</div>
+          <span class="btn">Send</span>
+        </div>
+        <div class="chat">
+          <div><b>Want to learn more, swap ideas, or just chat?</b><div style="color:var(--muted);font-size:14px;margin-top:4px">No project needed.</div></div>
+          <span class="btn ghost">Book 30 minutes</span>
+        </div>
+      </div>
+      <div class="block" style="text-align:center;font-size:14px">Wondering about cost or timing? See <span class="inline-link">pricing</span> and <span class="inline-link">common questions</span>.</div>
+    </div>
+    <aside>
+      <div class="note"><h3>From fuego.earth</h3>Same layout as the partnership panel, with no button. The active step opens a small visual instead of a sentence.</div>
+      <div class="note"><h3>Two doors</h3>The form is for projects. Calendly is for anyone curious, including people who aren't hiring. Both are visible without sending anything first.</div>
+      <div class="note q"><h3>Later</h3>How the form sends is its own decision issue. Until then it uses v1's mail-app fallback.</div>
+      
+    </aside>
+  </section>
+
+  <!-- PRICING + FAQ -->
+  <section class="page" id="pricing">
+    <header><h2>Pricing · FAQ</h2><span class="mono">/pricing · /faq</span></header>
+    <div class="frame">
+      <div class="bar"><b>Álvaro Galván</b><nav><span>Wall</span><span>About</span><span>Work with me</span></nav></div>
+      <div class="block">
+        <span class="mono">/pricing</span>
+        <div class="row" style="--n:2;max-width:520px;align-items:stretch">
+          <div class="card" style="border:2px solid var(--ink)"><b style="font-size:28px">$125</b> / hour<br><small style="color:var(--muted)">My rate</small></div>
+          <div class="card" style="border-style:dashed"><b style="font-size:28px" class="hl">down to $0</b><br><small style="color:var(--muted)">NGOs and mission-driven work. I adjust.</small></div>
+        </div>
+      </div>
+      <div class="block">
+        <span class="mono">/faq</span>
+        <div class="qa">How long do projects run?<span>+</span></div>
+        <div class="qa">Remote or in person?<span>+</span></div>
+        <div class="qa">Who owns the code?<span>+</span></div>
+        <div class="qa">…<span>+</span></div>
+      </div>
+    </div>
+    <aside>
+      <div class="note"><h3>Two boxes</h3>$125 is the normal rate, not a ceiling. The second box only shows how far it can come down for mission work.</div>
+      <div class="note"><h3>FAQ</h3>Four questions at most. The proposed four are in the spec; confirm them in review.</div>
+    </aside>
+  </section>
+
+  <!-- WALL + ABOUT -->
+  <section class="page" id="wall">
+    <header><h2>Wall · About</h2><span class="mono">/wall · /about</span></header>
+    <div class="frame">
+      <div class="wall">
+        <div class="chips"><span class="chip">Fire</span><span class="chip">Maps</span><span class="chip">Models</span></div>
+        <div class="row" style="--n:4"><div class="ph" style="height:80px">tile</div><div class="ph" style="height:80px">tile</div><div class="ph" style="height:80px">embed</div><div class="ph" style="height:80px">tile</div></div>
+      </div>
+      <div class="block" style="display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center">
+        <div class="ph" style="height:110px">photo</div>
+        <div><b>/about</b> · photo, two lines, the journey map, CV download</div>
+      </div>
+    </div>
+    <aside>
+      <div class="note"><h3>Wall</h3>Moves over as it is: one red screen.</div>
+      <div class="note"><h3>About: kept, smaller</h3>Yes, but smaller. It's the only place for your face and the journey map, which matters to people hiring. Drop the Experience rows, since the CV covers them.</div>
+    </aside>
+  </section>
+
+  <!-- BUILD PLAN -->
+  <section class="plan" id="plan">
+    <h2>Build plan</h2>
+    <p class="lede" style="margin:0">Work happens on the <code>v2.0</code> branch. Each ticket is its own PR into it, and <code>v2.0</code> merges into <code>main</code> once at launch.</p>
+    <div class="plan-grid">
+      <pre><span class="c">src/</span>
+  app/[lang]/
+    layout.tsx        <span class="c">Nav + Footer + fade (moved here)</span>
+    page.tsx          <span class="c">Home</span>
+    <span class="new">work-with-me/page.tsx</span>
+    <span class="new">wall/page.tsx</span>
+    <span class="new">faq/page.tsx</span>
+    pricing/page.tsx  <span class="c">slimmed</span>
+    about/page.tsx    <span class="c">slimmed</span>
+  components/
+    <span class="new">ui/</span>            <span class="c">shared: Button, Icon, Highlight, Marquee</span>
+    <span class="new">shell/</span>         <span class="c">Nav, Footer</span>
+    <span class="new">areas/</span>         <span class="c">one folder per section …</span>
+      Areas.tsx
+      <span class="new">areas.content.ts</span>   <span class="c">… with its own en + es copy</span>
+    <span class="new">testimonials/</span>
+    <span class="new">steps/</span>
+    <span class="new">pricing/</span>
+    story/          <span class="c">from v2.0</span>
+    gallery/        <span class="c">Wall, unchanged</span>
+    <span class="del">sections/</span>       <span class="c">v1, emptied ticket by ticket</span>
+  <span class="del">content/ui.ts</span>     <span class="c">692 lines; split up as sections move out</span></pre>
+      <table>
+        <tr><th></th><th>Ticket</th><th>Who</th></tr>
+        <tr><td class="n">Wave 0</td><td>Workflow setup, spec doc, skeleton saved, epic + issues</td><td><span class="tag done">this chat</span></td></tr>
+        <tr><td class="n">Wave 1</td><td>Shell: layout, nav (option A), footer, page fade, <code>ui/</code> pieces, every route with empty section stubs</td><td><span class="tag go">1 chat, blocks the rest</span></td></tr>
+        <tr><td class="n" rowspan="6">Wave 2</td><td>Wall moves to /wall</td><td rowspan="6"><span class="tag go">in parallel, 1 chat each</span></td></tr>
+        <tr><td>What I do: three areas</td></tr>
+        <tr><td>Testimonials: marquee, highlights, logos</td></tr>
+        <tr><td>Work with me: steps panel, form layout, chat card</td></tr>
+        <tr><td>Pricing scale + FAQ page</td></tr>
+        <tr><td>About, slimmed</td></tr>
+        <tr><td class="n">Later</td><td>Form sending (backend)</td><td><span class="tag decide">plan first</span></td></tr>
+        <tr><td class="n">Last</td><td>Launch: tag <code>v1</code>, merge into <code>main</code>, delete leftovers</td><td><span class="tag go">1 chat</span></td></tr>
+      </table>
+    </div>
+    <h3 style="margin:28px 0 8px">Branches</h3>
+    <pre class="branches">main     ●──────────── v1 stays live (fixes only) ─────────────●── launch: v2 goes live
+          \                        merge main in, now and then ↓    /
+v2.0       ●───●───────●───────●───────●───────●───────────────●   staging preview URL
+                \     /  \    /  \    /
+feat/<n>-…       ●──●     ●──●    ●──●      one ticket each, PR into v2.0</pre>
+    <ul class="rules">
+      <li><b>Production stays v1.</b> <code>main</code> only gets fixes. Vercel gives <code>v2.0</code> its own preview URL to check progress.</li>
+      <li><b>Feature PRs target <code>v2.0</code>,</b> not <code>main</code>. Set the PR's base branch when you open it.</li>
+      <li><b>Gotcha:</b> <code>Closes #n</code> only closes an issue when the PR merges into the default branch. PRs into <code>v2.0</code> won't close theirs, so close them by hand or group them in a "v2 launch" milestone.</li>
+      <li><b>Stay in sync:</b> when <code>main</code> gets a fix, merge <code>main</code> into <code>v2.0</code> so launch day has no surprises.</li>
+      <li><b>Old code:</b> each PR deletes the v1 code it replaces. No dead code piles up.</li>
+      <li><b>Safety net:</b> tag <code>main</code> as <code>v1</code> before the final merge. Git keeps the rest.</li>
+    </ul>
+    <h3 style="margin:28px 0 8px">Modular rules</h3>
+    <ul class="rules" style="margin-top:0">
+      <li><b>One folder per section,</b> with its component and its own copy file. Sections import from <code>ui/</code> and nothing else.</li>
+      <li><b>Delete test:</b> removing a section's folder breaks exactly one import line, the one in its page.</li>
+      <li><b>Stubs first:</b> the Shell ticket creates every page and an empty component for every section. Wave 2 chats only fill in their own folder, so parallel PRs don't conflict.</li>
+      <li><b>Server by default:</b> only the small interactive part uses <code>"use client"</code>, such as the marquee's pause or the active step.</li>
+    </ul>
+    <h3 style="margin:28px 0 8px">How the chats work together</h3>
+    <ul class="rules" style="margin-top:0">
+      <li><b>One epic issue</b> ("Portfolio v2") with a sub-issue per ticket and a "v2 launch" milestone. The epic's checklist shows progress.</li>
+      <li><b>Each issue stands alone:</b> why, what's in and out of scope, which folder, done-when checks, and base branch <code>v2.0</code>. A fresh chat needs nothing else.</li>
+      <li><b>Build chats:</b> each takes one issue and opens one branch and one PR into <code>v2.0</code>.</li>
+      <li><b>This chat:</b> reviews every PR against the spec, the skeleton and the issue's scope. You merge.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>
