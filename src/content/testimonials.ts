@@ -33,14 +33,19 @@ import type { Phrase } from "./i18n";
 //    both versions, use both. `role` and `relation` are mine to write, so
 //    those translate freely.
 //
-// In production the section renders nothing while this array is empty: a
-// heading over placeholders is worse than no section. In development it
-// renders three clearly marked placeholders, so the layout can be worked
-// on before the first real quote arrives. See Testimonials.tsx.
+// The home page shows only the short `excerpt` of each quote, with the
+// `highlight` words in orange. Adding a testimonial is a data change only:
+// add an entry here and the marquee picks it up.
 
 export type Testimonial = {
   /** Their words, in the language they said them in. See rule 4. */
   quote: Phrase;
+  /** A short run of `quote`, copied exactly (rule 2): what the marquee shows. */
+  excerpt: string;
+  /** Words inside `excerpt` to set in orange. Each must appear in it. */
+  highlight: string[];
+  /** Their company's logo, under /public. Shown instead of the name. */
+  logo: string;
   /** Their name, spelled the way they spell it. */
   name: string;
   /** Their role at the time, and where. "Engineering Manager, Gridware". */
@@ -74,6 +79,9 @@ export const testimonials: Testimonial[] = [
     // Nothing else changed from his own words.
     quote:
       "Álvaro made a strong contribution to our geospatial analytics work, particularly on tools and workflows supporting site selection and impact assessment. I was impressed by his ability to turn loosely defined problems into practical, maintainable and communicable solutions while incorporating feedback from the team. He grew considerably in both technical independence and communication, and was a reliable and thoughtful contributor to our team.",
+    excerpt: "turn loosely defined problems into practical, maintainable and communicable solutions",
+    highlight: ["loosely defined problems"],
+    logo: "/logos/pano-ai.svg",
     name: "Jack Royero",
     role: { en: "Head of GIS", es: "Jefe del equipo de SIG" },
     relation: { en: "Manager at Pano AI", es: "Gerente en Pano AI" },
@@ -86,6 +94,9 @@ export const testimonials: Testimonial[] = [
       "Our team lacked a streamlined way to evaluate and compare the performance of different solutions. Álvaro developed a reusable geospatial analysis framework that automated and standardized these workflows, making analyses faster, more robust, and reproducible. His ability to learn quickly, take ownership of challenging problems, and consistently deliver thorough and reliable work has made him an incredibly valuable member of the team.",
     // Spelled per her own LinkedIn vanity URL — "McQuillan", not
     // "McQuillian" as this was first entered. See rule 1.
+    excerpt: "learn quickly, take ownership of challenging problems",
+    highlight: ["learn quickly"],
+    logo: "/logos/pano-ai.svg",
     name: "Katie McQuillan",
     role: { en: "Data Engineer", es: "Ingeniera de Datos" },
     relation: { en: "Colleague at Pano AI", es: "Colega en Pano AI" },
@@ -99,6 +110,9 @@ export const testimonials: Testimonial[] = [
   {
     quote:
       "Our team had been missing a critical capability within our site suitability tooling, requiring us to rely on ad hoc workarounds. Álvaro developed features that gave us new ways to incorporate and analyze spatial data, enabling our team to follow a more robust and unified approach to common tasks. Álvaro is very thoughtful and actively looks for opportunities to help others succeed.",
+    excerpt: "very thoughtful and actively looks for opportunities to help others succeed",
+    highlight: ["very thoughtful"],
+    logo: "/logos/pano-ai.svg",
     name: "Sydney Davison",
     role: { en: "Geospatial Data Analyst", es: "Analista de Datos Geoespaciales" },
     // Org wasn't stated outright — inferred from "site suitability
