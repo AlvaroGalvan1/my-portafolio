@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import About from "@/components/sections/About";
+import About from "@/components/about/About";
 import { BCP47, LOCALES, isLocale } from "@/content/i18n";
 import { UI } from "@/content/ui";
 
@@ -30,8 +30,8 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
   if (!isLocale(lang)) notFound();
 
   return (
-    <main>
-      <About />
+    <main className="flex-1 bg-brand-orange">
+      <About lang={lang} />
     </main>
   );
 }
