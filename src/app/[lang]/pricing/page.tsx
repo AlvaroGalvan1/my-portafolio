@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Nav from "@/components/sections/Nav";
-import Pricing from "@/components/sections/Pricing";
-import Footer from "@/components/sections/Footer";
-import ContactModal from "@/components/contact/ContactModal";
+import Rates from "@/components/rates/Rates";
 import { BCP47, LOCALES, isLocale } from "@/content/i18n";
 import { UI } from "@/content/ui";
 
@@ -31,16 +28,10 @@ export async function generateMetadata({
 export default async function PricingPage({ params }: PageProps<"/[lang]/pricing">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const ui = UI[lang];
 
   return (
-    <>
-      <Nav lang={lang} strings={ui.nav} />
-      <main>
-        <Pricing />
-      </main>
-      <Footer />
-      <ContactModal strings={ui.contact} />
-    </>
+    <main>
+      <Rates lang={lang} />
+    </main>
   );
 }

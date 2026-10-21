@@ -686,3 +686,14 @@ footer :focus-visible,
     color: inherit;
   }
 }
+
+/* Page crossfade (React <ViewTransition> in the layout). Under reduced
+   motion the swap is instant, which is the browser's default. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
