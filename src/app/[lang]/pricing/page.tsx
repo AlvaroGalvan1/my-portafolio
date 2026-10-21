@@ -30,7 +30,7 @@ export default async function PricingPage({ params }: PageProps<"/[lang]/pricing
   if (!isLocale(lang)) notFound();
 
   return (
-    <main>
+    <main className="flex-1 bg-brand-orange">
       <Rates lang={lang} />
     </main>
   );
