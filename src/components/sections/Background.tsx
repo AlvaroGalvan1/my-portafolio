@@ -71,11 +71,14 @@ export default async function Background() {
           </span>
         </a>
       </div>
-      <div className="mx-auto mt-10 flex w-full max-w-3xl min-w-0 flex-col gap-6 lg:mt-[clamp(1rem,3vh,2rem)]">
-        <Panel>
+      {/* Experience sits straight on the orange as its own boxes (see
+          Experience.tsx) rather than inside one cream panel; Skills keeps
+          the panel under them. */}
+      <div className="mt-10 flex w-full min-w-0 flex-col gap-10 lg:mt-[clamp(1rem,3vh,2rem)]">
+        <div>
           <PanelHeading>{ui.experience}</PanelHeading>
           <Experience />
-        </Panel>
+        </div>
         <Panel>
           <PanelHeading>{skills.heading}</PanelHeading>
           <SkillBadges />

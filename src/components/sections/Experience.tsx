@@ -31,13 +31,15 @@ export default async function Experience() {
 
   return (
     <div>
-      {/* One column, at every width. The panel is half the page wide, and
-          splitting it again into two columns of roles gives each line a
-          twenty-five-character measure. At three short lines an entry,
-          four stacked rows come out about the height the grid was. */}
-      <ol className="mt-2 divide-y divide-brand-red/15 lg:mt-4">
+      {/* Each role is its own box, two across from `md`, so the four read
+          as four separate pieces of work rather than one long list. The
+          section is full width now, so two columns still leave each box a
+          comfortable measure. `items-start` so opening one box's story
+          doesn't stretch its neighbour to match. Paper goes back to one
+          stacked column. */}
+      <ol className="mt-6 grid items-start gap-6 md:grid-cols-2 print:block">
         {experience.map((job) => (
-          <li key={`${job.org}-${say(job.dates, "en")}`} className="print-keep py-6 first:pt-1 lg:py-4 lg:first:pt-1 lg:last:pb-1">
+          <li key={`${job.org}-${say(job.dates, "en")}`} className="print-keep border-2 border-brand-maroon bg-brand-cream p-5 shadow-[4px_4px_0_var(--color-brand-maroon)] sm:p-6 print:border-0 print:p-0 print:py-4 print:shadow-none">
             <div className="flex items-start gap-4 sm:gap-5 lg:gap-4">
               <Plate job={job} />
 

@@ -57,12 +57,12 @@ export default async function Wall() {
           invisible until it takes focus, which happens exactly once — on
           the tab that would otherwise have started that walk.
 
-          The target is whatever follows the Wall: `#work` today, since
+          The target is whatever follows the Wall: `#process` today, since
           `#testimonials` renders nothing while that array is empty and a
           skip link to an element not in the document does nothing at all.
           Revisit this the day testimonials ship. */}
       <a
-        href="#work"
+        href="#process"
         style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
         className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:border-2 focus:border-brand-yellow focus:bg-brand-maroon focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:normal-case focus:text-brand-cream sm:focus:left-16"
       >
