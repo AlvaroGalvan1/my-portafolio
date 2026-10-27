@@ -1,31 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Icon from "@/components/ui/Icon";
 import type { Locale } from "@/content/i18n";
 import { stepsContent } from "./steps.content";
-
-// One placeholder visual per step: a chat bubble, a compass, a wrench, a
-// loop. Replace with real art in a design pass.
-const VISUALS = [
-  <path key="talk" d="M4 5h16v11H9l-5 4z" />,
-  <g key="explore">
-    <circle cx="12" cy="12" r="9" />
-    <path d="m15.5 8.5-2 5-5 2 2-5z" />
-  </g>,
-  <path key="build" d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z" />,
-  <g key="test">
-    <path d="M20 12a8 8 0 1 1-2.3-5.7" />
-    <path d="M20 4v4h-4" />
-  </g>,
-];
 
 const AUTO_MS = 4500;
 
 // The active step changes three ways: tap or click a step, move focus to
 // it, or just wait; it advances by itself until the visitor takes over,
 // and never moves by itself under reduced motion. The titles are always
-// shown; only the little visual follows the active step.
+// shown; the number beside the active step lights up.
 export default function Steps({ lang }: { lang: Locale }) {
   const copy = stepsContent[lang];
   const [active, setActive] = useState(0);
@@ -75,11 +59,6 @@ export default function Steps({ lang }: { lang: Locale }) {
                   </span>
                   {title}
                 </button>
-                {on && (
-                  <div aria-hidden className="mb-2 ml-10 flex h-16 w-24 items-center justify-center rounded-lg bg-white/10 text-brand-orange">
-                    <Icon className="h-9 w-9">{VISUALS[i]}</Icon>
-                  </div>
-                )}
               </li>
             );
           })}

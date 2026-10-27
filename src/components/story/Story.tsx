@@ -53,9 +53,16 @@ export default function Story({ lang }: { lang: Locale }) {
           </svg>
           {/* The Earth, drawn over the map as it pulls away. */}
           <svg data-globe aria-hidden className="pointer-events-none absolute inset-0 block size-full opacity-0">
-            <path className="sphere" fill="#fbf9f6" stroke="#3b130f" strokeOpacity=".25" />
-            <path className="grat" fill="none" stroke="#3b130f" strokeOpacity=".08" />
-            <path className="land" fill="#e7e1d8" stroke="#3b130f" strokeOpacity=".3" strokeWidth=".6" />
+            <defs>
+              <radialGradient id="ocean" cx="38%" cy="32%" r="80%">
+                <stop offset="0" stopColor="#5fa3d8" />
+                <stop offset=".55" stopColor="#2f72b3" />
+                <stop offset="1" stopColor="#1a4373" />
+              </radialGradient>
+            </defs>
+            <path className="sphere" fill="url(#ocean)" stroke="#1a4373" strokeOpacity=".5" />
+            <path className="grat" fill="none" stroke="#fff" strokeOpacity=".14" />
+            <path className="land" fill="#7fa564" stroke="#3f6a3a" strokeOpacity=".7" strokeWidth=".6" />
             <circle className="here-ring" fill="none" stroke="#d92b1c" strokeWidth="1.5" />
             <circle className="here" r="5" fill="#d92b1c" />
           </svg>

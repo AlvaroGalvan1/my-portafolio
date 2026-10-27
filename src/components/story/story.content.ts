@@ -6,7 +6,7 @@ import type { MapLabels } from "./story-map";
 export const storyContent: Record<Locale, { steps: [string, string, string, string]; close: string; label: string; map: MapLabels }> = {
   en: {
     steps: ["Grid sensing", "Smoke detection", "Fire simulation", "Remote sensing"],
-    close: "That was one fire. Let's build for the rest.",
+    close: "Let's face this climate challenge together.",
     label: "One wildfire on a real map: a power line fault, cameras finding the smoke, a fire-spread simulation, a satellite pass, then the Earth",
     map: {
       powerLine: "Power line",
@@ -23,7 +23,7 @@ export const storyContent: Record<Locale, { steps: [string, string, string, stri
   },
   es: {
     steps: ["Sensado de la red", "Detección de humo", "Simulación del fuego", "Percepción remota"],
-    close: "Ese fue un solo incendio. Construyamos para los demás.",
+    close: "Enfrentemos juntos este reto climático.",
     label: "Un incendio en un mapa real: una falla en una línea eléctrica, cámaras que encuentran el humo, una simulación de la propagación, un paso de satélite y luego la Tierra",
     map: {
       powerLine: "Línea eléctrica",
