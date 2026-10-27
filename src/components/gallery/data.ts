@@ -360,7 +360,7 @@ const allItems: FrameData[] = [
     // Framing is allowed (no X-Frame-Options / frame-ancestors on the
     // origin, checked with `curl -sI`). If that ever changes, swap this for
     // a `link` frame like the old LANDFIRE one.
-    src: "https://platform.fuego.earth",
+    src: "https://platform.fuego.earth/simulator",
     // Credit assumed to be mine — change `who`/`relation` if the platform
     // is a team or org effort that should be named.
     credit: { who: "Álvaro Galván", relation: "mine" },
@@ -368,11 +368,11 @@ const allItems: FrameData[] = [
   },
   {
     id: "fuego-risk-map",
-    title: "Fuego.Earth Risk Map (live)",
+    title: "Burn Probability Map (live)",
     type: "embed",
     section: "featured",
     // Same origin as fuego-platform above: no frame-blocking headers.
-    src: "https://platform.fuego.earth/risk_map",
+    src: "https://platform.fuego.earth/burn-probability",
     credit: { who: "Álvaro Galván", relation: "mine" },
     ...SHAPE.statement,
   },
@@ -485,7 +485,7 @@ const GALLERY_ES: Record<string, FrameText> = {
   },
   "landfire-viewer": { title: "Cobertura vegetal LANDFIRE, 2024 (en vivo)" },
   "fuego-platform": { title: "Simulador Fuego (en vivo)" },
-  "fuego-risk-map": { title: "Mapa de riesgo Fuego.Earth (en vivo)" },
+  "fuego-risk-map": { title: "Mapa de probabilidad de quema (en vivo)" },
   graduacion: {
     alt: "Álvaro en su graduación universitaria.",
     linkLabel: "Léelo en LinkedIn ↗",
