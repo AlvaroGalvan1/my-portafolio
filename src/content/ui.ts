@@ -329,14 +329,6 @@ const en = {
     metaTitle: "Pricing",
     metaDescription:
       "Geospatial consulting: research, building and design. $85 USD/hour, and down to $0 for NGOs and mission-driven work.",
-    eyebrow: "Work with me",
-    heading: "Pricing",
-    lede: "Four ways to work together. Every project starts with a 30-minute call.",
-    talkHeading: "Let's talk",
-    talkBody:
-      "Tell me what you're working on and we'll find the right fit.",
-    book: "Book a 30-minute call",
-    brief: "or send me a message",
   },
 
   footer: {
@@ -606,14 +598,6 @@ const es: UiStrings = {
     metaTitle: "Tarifas",
     metaDescription:
       "Consultoría geoespacial: investigación, desarrollo y diseño. 85 USD por hora, y hasta 0 USD para ONG y trabajo con propósito.",
-    eyebrow: "Trabajemos juntos",
-    heading: "Tarifas",
-    lede: "Hay cuatro formas de trabajar juntos. Todo proyecto empieza con una llamada de 30 minutos.",
-    talkHeading: "Hablemos",
-    talkBody:
-      "Cuéntame en qué estás trabajando y encontramos la mejor opción.",
-    book: "Agenda una llamada de 30 minutos",
-    brief: "o mándame un mensaje",
   },
 
   footer: {
