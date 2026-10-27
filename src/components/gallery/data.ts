@@ -194,56 +194,31 @@ const allItems: FrameData[] = [
   // `aspectRatio: 1.414` — they keep their true proportions instead of
   // being cropped to fill a grid cell.
   {
-    id: "map-rivers",
-    title: "The Rivers of Mexico",
+    id: "maps-mexico-oaxaca",
+    title: "Maps of Mexico and Oaxaca",
     type: "post",
     section: "featured",
+    // Four sheets, one project: rivers and soils, each for Mexico and for
+    // Oaxaca, shown as a 2x2 on the tile. They were two tiles (rivers,
+    // soils) with a pair of sheets each; a visitor counted four maps and two
+    // projects, which is one project's worth of work.
+    grid: true,
     src: "/gallery/maps/river_mexico.jpeg",
-    alt: "A map of Mexico's river network, drawn as fine branching lines.",
+    alt: "Four maps: the river network and the soil types of Mexico and of Oaxaca.",
     images: [
       { src: "/gallery/maps/river_mexico.jpeg", alt: "The river network of Mexico." },
       { src: "/gallery/maps/river_oaxaca.jpeg", alt: "The river network of Oaxaca." },
-    ],
-    credit: { who: "Álvaro Galván", relation: "mine" },
-    body: [
-      "can't help but see veins—not on a body, but on the land. 🫀",
-      "Rivers are the circulatory system of our planet—carving landscapes, sustaining life, and shaping human history. They don't just flow; they define. They nourish ecosystems, dictate settlements, and even draw the lines between nations.",
-      "Take the Rio Grande: a natural border, a political divide, a lifeline for communities on both sides 🇲🇽 🇺🇸",
-      "My latest map traces these vital arteries across Mexico, inspired by the work of Mashford Mahute. More than just geography, it's a reminder of how rivers silently sculpt our civilizations—past, present, and future.",
-    ],
-    // TODO: the LinkedIn permalink for this post, so the lightbox can link
-    // out the way the graduation post does. Until then the words are here
-    // and the button simply doesn't render.
-    colSpan: 1,
-    rowSpan: 1,
-    aspectRatio: 1.414,
-  },
-  {
-    id: "map-soils",
-    title: "The Soils of Oaxaca",
-    type: "post",
-    section: "featured",
-    // Oaxaca leads the set. The piece is titled "The Soils of Oaxaca" and
-    // the words below are about Oaxaca, but the sheet on the tile — and the
-    // first one the lightbox opened on — was the national map, so the tile
-    // introduced itself with the wrong one of its two sheets. Mexico still
-    // follows as the context for it.
-    src: "/gallery/maps/soil_oaxaca.jpeg",
-    alt: "A map of Oaxaca's soil profiles, shaded by soil type.",
-    images: [
-      { src: "/gallery/maps/soil_oaxaca.jpeg", alt: "Soil type profiles across Oaxaca." },
       { src: "/gallery/maps/soil_mexico.jpeg", alt: "Soil type profiles across Mexico." },
+      { src: "/gallery/maps/soil_oaxaca.jpeg", alt: "Soil type profiles across Oaxaca." },
     ],
     credit: { who: "Álvaro Galván", relation: "mine" },
     body: [
-      "I'm from Oaxaca, a beautiful state in southern Mexico known for its rich culture, stunning landscapes, and incredible biodiversity. To practice my QGIS skills and showcase my home's cultural and natural wonders, I've created a series of maps inspired by the work of Mashford Mahute.",
-      "This map highlights Mexico's different soil type profiles, focusing on Oaxaca. Soil is the foundation of life; it supports agriculture, regulates water systems, stores carbon, and sustains ecosystems. In Oaxaca, the diversity of soil types reflects the region's unique geography.",
-      "I hope this map helps others appreciate the beauty and complexity of Oaxaca's natural resources. It's a small way to stay connected to my home 🏡",
+      "I'm from Oaxaca, a state in southern Mexico known for its culture, landscapes and biodiversity. To practice my QGIS skills I made a set of maps of Mexico and Oaxaca, inspired by the work of Mashford Mahute.",
+      "The rivers: I can't help but see veins, not on a body but on the land. The river network of Mexico, and of Oaxaca, drawn as fine branching lines. Rivers carve landscapes, sustain life and even draw the lines between nations.",
+      "The soils: the soil type profiles of Mexico and of Oaxaca. Soil supports agriculture, regulates water, stores carbon and sustains ecosystems, and in Oaxaca its diversity reflects the geography.",
+      "It's a small way to stay connected to my home 🏡",
     ],
-    // TODO: the LinkedIn permalink for this post — see map-rivers above.
-    colSpan: 1,
-    rowSpan: 1,
-    aspectRatio: 1.414,
+    ...SHAPE.statement,
   },
   {
     id: "leopard-gecko",
@@ -379,27 +354,27 @@ const allItems: FrameData[] = [
   },
   {
     id: "fuego-platform",
-    title: "Fuego.Earth Platform (live)",
+    title: "Fuego Simulator (live)",
     type: "embed",
     section: "featured",
     // Framing is allowed (no X-Frame-Options / frame-ancestors on the
     // origin, checked with `curl -sI`). If that ever changes, swap this for
     // a `link` frame like the old LANDFIRE one.
-    src: "https://platform.fuego.earth",
+    src: "https://platform.fuego.earth/simulator",
     // Credit assumed to be mine — change `who`/`relation` if the platform
     // is a team or org effort that should be named.
     credit: { who: "Álvaro Galván", relation: "mine" },
-    ...SHAPE.landscape,
+    ...SHAPE.statement,
   },
   {
     id: "fuego-risk-map",
-    title: "Fuego.Earth Risk Map (live)",
+    title: "Burn Probability Map (live)",
     type: "embed",
     section: "featured",
     // Same origin as fuego-platform above: no frame-blocking headers.
-    src: "https://platform.fuego.earth/risk_map",
+    src: "https://platform.fuego.earth/burn-probability",
     credit: { who: "Álvaro Galván", relation: "mine" },
-    ...SHAPE.landscape,
+    ...SHAPE.statement,
   },
   {
     id: "graduacion",
@@ -499,13 +474,9 @@ const GALLERY_ES: Record<string, FrameText> = {
   brain: { title: "Autómata celular (Cerebro de Brian)" },
   cyclic: { title: "Autómata celular (cíclico)" },
   "rule-30": { title: "Autómata celular (Regla 30)" },
-  "map-rivers": {
-    title: "Los ríos de México",
-    alt: "Un mapa de la red fluvial de México, dibujada como finas líneas ramificadas.",
-  },
-  "map-soils": {
-    title: "Los suelos de Oaxaca",
-    alt: "Un mapa de los perfiles de suelo de Oaxaca, sombreado por tipo de suelo.",
+  "maps-mexico-oaxaca": {
+    title: "Mapas de México y Oaxaca",
+    alt: "Cuatro mapas: la red fluvial y los tipos de suelo de México y de Oaxaca.",
   },
   "leopard-gecko": { title: "Gecko leopardo" },
   "growing-ca": {
@@ -513,8 +484,8 @@ const GALLERY_ES: Record<string, FrameText> = {
     linkLabel: "Léelo en Distill ↗",
   },
   "landfire-viewer": { title: "Cobertura vegetal LANDFIRE, 2024 (en vivo)" },
-  "fuego-platform": { title: "Plataforma Fuego.Earth (en vivo)" },
-  "fuego-risk-map": { title: "Mapa de riesgo Fuego.Earth (en vivo)" },
+  "fuego-platform": { title: "Simulador Fuego (en vivo)" },
+  "fuego-risk-map": { title: "Mapa de probabilidad de quema (en vivo)" },
   graduacion: {
     alt: "Álvaro en su graduación universitaria.",
     linkLabel: "Léelo en LinkedIn ↗",

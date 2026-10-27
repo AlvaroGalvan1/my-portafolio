@@ -6,10 +6,10 @@ import type { Locale } from "@/content/i18n";
 import { wallTeaserContent } from "./wallteaser.content";
 
 // Three pieces from the Wall, picked by id so the Home page shows real work
-// without a new data model. Each is a still: the maps are images already, and
-// the live Fuego.Earth platform shows as its mark (and loses its "(live)" tag,
+// without a new data model. Each is a still: the maps are an image already, and
+// the two live Fuego.Earth pieces show as its mark (and lose its "(live)" tag,
 // since the tile is not live), so Home never loads an embed. Every tile links to /wall.
-const PICKS = ["map-rivers", "map-soils", "fuego-platform"] as const;
+const PICKS = ["maps-mexico-oaxaca", "fuego-platform", "fuego-risk-map"] as const;
 
 export default function WallTeaser({ lang }: { lang: Locale }) {
   const copy = wallTeaserContent[lang];
