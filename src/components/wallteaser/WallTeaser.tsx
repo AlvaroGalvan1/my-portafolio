@@ -6,9 +6,10 @@ import type { Locale } from "@/content/i18n";
 import { wallTeaserContent } from "./wallteaser.content";
 
 // Three pieces from the Wall, picked by id so the Home page shows real work
-// without a new data model. Each is a still: the maps are an image already, and
-// the two live Fuego.Earth pieces show as its mark (and lose its "(live)" tag,
-// since the tile is not live), so Home never loads an embed. Every tile links to /wall.
+// without a new data model. The maps are an image; the two Fuego.Earth pieces
+// show their real page, a small non-interactive preview (the iframe is
+// scaled down and cannot be clicked, so the whole tile is just the link) that
+// only loads when it scrolls near. Every tile links to /wall.
 const PICKS = ["maps-mexico-oaxaca", "fuego-platform", "fuego-risk-map"] as const;
 
 export default function WallTeaser({ lang }: { lang: Locale }) {
@@ -39,7 +40,15 @@ export default function WallTeaser({ lang }: { lang: Locale }) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <Image src="/logos/fuego-earth.svg" alt="" fill className="object-contain p-10" />
+                      // Four times the tile's size, drawn at a quarter: the app lays out as desktop.
+                      <iframe
+                        src={"src" in item ? item.src : undefined}
+                        title={item.title}
+                        loading="lazy"
+                        tabIndex={-1}
+                        sandbox="allow-scripts allow-same-origin"
+                        className="pointer-events-none absolute left-0 top-0 h-[400%] w-[400%] origin-top-left scale-25 border-0"
+                      />
                     )}
                   </div>
                   <p className="px-4 py-3 font-sans text-base font-semibold">{item.title.replace(/ \((live|en vivo)\)$/, "")}</p>
