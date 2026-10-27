@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Areas from "@/components/areas/Areas";
+import WallTeaser from "@/components/wallteaser/WallTeaser";
 import Testimonials from "@/components/testimonials/Testimonials";
 import { heroContent } from "@/components/hero/hero.content";
 import { shellContent } from "@/components/shell/shell.content";
@@ -38,6 +39,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </section>
         <Story lang={lang} />
         <Areas lang={lang} />
+        <WallTeaser lang={lang} />
         <Testimonials lang={lang} />
         <div className="flex justify-center px-6 pb-4 pt-2">
           <Button href={`/${lang}/work-with-me`}>{shellContent[lang].nav.work}</Button>
