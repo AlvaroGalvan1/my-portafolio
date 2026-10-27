@@ -48,8 +48,8 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 3. **What I do.** Three items: **Grid Intelligence · Fire Tech · Data Fusion**.
    Each is a simple line icon (SVG, maroon) above its name: a bolt, a flame,
    and a network. No company names.
-4. **Wall teaser.** Three real pieces from the Wall (two maps and the Fuego.Earth
-   platform as its mark), each linking to `/wall`, plus a quiet "See the Wall"
+4. **Wall teaser.** Three real pieces from the Wall (the four maps as one, then the
+   Fuego Simulator and the Burn Probability Map as live previews), each linking to `/wall`, plus a quiet "See the Wall"
    link. Tiles come from `components/gallery/data.ts`.
 5. **Testimonials.** Short excerpts with key words in orange, the person's
    name, and their company's logo. Small cards that scroll slowly sideways,
