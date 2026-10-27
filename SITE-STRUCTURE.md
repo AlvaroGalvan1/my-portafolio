@@ -45,17 +45,14 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 2. **Story.** The story-v7 prototype: one fire, four steps, then a zoom out to the Earth.
    Each step's logo links to `/wall`, each step carries one number from the CV
    work, and the drawn fire is tagged "Illustration" (STORYTELLING §3).
-3. **What I do.** Three items: **Grid Intelligence · Fire Tech · Data Fusion**.
-   Each is a simple line icon (SVG, maroon) above its name: a bolt, a flame,
-   and a network. No company names.
-4. **Wall teaser.** Three real pieces from the Wall (the four maps as one, then the
-   Fuego Simulator and the Burn Probability Map as live previews), each linking to `/wall`, plus a quiet "See the Wall"
-   link. Tiles come from `components/gallery/data.ts`.
-5. **Testimonials.** Short excerpts with key words in orange, the person's
+3. **Testimonials.** Short excerpts with key words in orange, the person's
    name, and their company's logo. Small cards that scroll slowly sideways,
    pause on hover, and stop under `prefers-reduced-motion`. More are coming,
    so adding one is a data change only.
-6. **A "Work with me" button**, linking to `/work-with-me`.
+4. **Wall teaser.** Three real pieces from the Wall (the four maps as one, then the
+   Fuego Simulator and the Burn Probability Map as live previews), each linking to `/wall`, plus a quiet "See the Wall"
+   link. Tiles come from `components/gallery/data.ts`.
+5. **A "Work with me" button**, linking to `/work-with-me`.
 
 ### Work with me `/work-with-me`
 
@@ -121,7 +118,7 @@ src/
   components/
     ui/                   shared pieces: Button, Icon, Highlight, Marquee
     shell/                Nav, Footer
-    <section>/            one folder per section (areas/, testimonials/, steps/, …)
+    <section>/            one folder per section (testimonials/, steps/, …)
       Section.tsx
       section.content.ts  that section's copy, en + es
     story/  gallery/      kept from v2.0 and v1
