@@ -28,7 +28,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <p className="mt-4 max-w-[22ch] font-sans text-xl font-semibold text-brand-maroon sm:max-w-none sm:text-2xl">
               {heroContent[lang].tagline}
             </p>
-            <Button href={`/${lang}/work-with-me`} className="mt-10">
+            <p className="mt-2 font-sans text-base font-medium text-brand-maroon/80 sm:text-lg">
+              {heroContent[lang].identity}
+            </p>
+            <Button href={`/${lang}/work-with-me`} className="mt-8">
               {heroContent[lang].cta}
             </Button>
           </div>
