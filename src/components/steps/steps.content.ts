@@ -1,7 +1,6 @@
 import type { Locale } from "@/content/i18n";
 
-// Copy for this section, en + es. The visuals are placeholders (a simple
-// icon per step); the final art is a later design pass.
+// Copy for this section, en + es.
 export const stepsContent: Record<Locale, { heading: string; line: string; steps: string[]; label: string }> = {
   en: {
     heading: "Let's build your tool",

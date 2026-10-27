@@ -1,6 +1,6 @@
 import type { Locale } from "@/content/i18n";
 
-// Copy for this section, en + es. The $125 itself is in content/services.ts.
+// Copy for this section, en + es. The $85 itself is in content/services.ts.
 export const ratesContent: Record<Locale, {
   rateLabel: string;
   unit: string;

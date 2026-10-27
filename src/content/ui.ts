@@ -328,7 +328,7 @@ const en = {
     // The route's <title>, run through the layout's "%s — name" template.
     metaTitle: "Pricing",
     metaDescription:
-      "Geospatial consulting: research, building and design. $125 USD/hour, and down to $0 for NGOs and mission-driven work.",
+      "Geospatial consulting: research, building and design. $85 USD/hour, and down to $0 for NGOs and mission-driven work.",
     eyebrow: "Work with me",
     heading: "Pricing",
     lede: "Four ways to work together. Every project starts with a 30-minute call.",
@@ -605,7 +605,7 @@ const es: UiStrings = {
   pricing: {
     metaTitle: "Tarifas",
     metaDescription:
-      "Consultoría geoespacial: investigación, desarrollo y diseño. 125 USD por hora, y hasta 0 USD para ONG y trabajo con propósito.",
+      "Consultoría geoespacial: investigación, desarrollo y diseño. 85 USD por hora, y hasta 0 USD para ONG y trabajo con propósito.",
     eyebrow: "Trabajemos juntos",
     heading: "Tarifas",
     lede: "Hay cuatro formas de trabajar juntos. Todo proyecto empieza con una llamada de 30 minutos.",

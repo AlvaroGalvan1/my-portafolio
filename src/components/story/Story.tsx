@@ -8,7 +8,8 @@ import { mountStory } from "./story-map";
 
 // One fire, told on one real map, one step per company. The orange page
 // stays as a frame and the map is a card inside it, pinned while the steps
-// play as you scroll. The card has a chosen shape (3:4 on a phone, 16:10
+// play as you scroll: four steps, a satellite pass over the same fire, then a
+// zoom out to the Earth and one closing line. The card has a chosen shape (3:4 on a phone, 16:10
 // from `sm`) that it keeps at every width: it is as large as that shape
 // allows in the screen, never stretched to the leftover space.
 const LOGOS = [
@@ -31,7 +32,7 @@ export default function Story({ lang }: { lang: Locale }) {
   }, [copy]);
 
   return (
-    <section ref={section} className="relative h-[540svh]">
+    <section ref={section} className="relative h-[760svh]">
       <div className="sticky top-[var(--nav-h)] flex h-[calc(100svh-var(--nav-h))] items-center justify-center px-3 sm:px-6">
         <div className="relative aspect-(--r) w-[min(100%,calc((100svh-var(--nav-h)-3rem)*var(--r)))] overflow-hidden rounded-3xl bg-[#f6f3ee] shadow-[0_30px_70px_-30px_rgba(59,19,15,.55)] [--r:.75] sm:[--r:1.6]">
           <svg
@@ -49,6 +50,21 @@ export default function Story({ lang }: { lang: Locale }) {
               </mask>
             </defs>
             <g ref={world} />
+          </svg>
+          {/* The Earth, drawn over the map as it pulls away. */}
+          <svg data-globe aria-hidden className="pointer-events-none absolute inset-0 block size-full opacity-0">
+            <defs>
+              <radialGradient id="ocean" cx="38%" cy="32%" r="80%">
+                <stop offset="0" stopColor="#5fa3d8" />
+                <stop offset=".55" stopColor="#2f72b3" />
+                <stop offset="1" stopColor="#1a4373" />
+              </radialGradient>
+            </defs>
+            <path className="sphere" fill="url(#ocean)" stroke="#1a4373" strokeOpacity=".5" />
+            <path className="grat" fill="none" stroke="#fff" strokeOpacity=".14" />
+            <path className="land" fill="#7fa564" stroke="#3f6a3a" strokeOpacity=".7" strokeWidth=".6" />
+            <circle className="here-ring" fill="none" stroke="#d92b1c" strokeWidth="1.5" />
+            <circle className="here" r="5" fill="#d92b1c" />
           </svg>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#f6f3ee]/95 via-[#f6f3ee]/70 to-transparent" />
 
@@ -81,6 +97,13 @@ export default function Story({ lang }: { lang: Locale }) {
               </div>
             );
           })}
+
+          <div
+            data-beat={4}
+            className={`pointer-events-none absolute ${INSET} bottom-[clamp(1.5rem,8svh,5.5rem)] translate-y-3.5 text-brand-maroon opacity-0 transition-[opacity,translate] duration-500 data-on:translate-y-0 data-on:opacity-100`}
+          >
+            <h2 className="max-w-[14ch] text-balance text-[clamp(1.9rem,4.4vw,4rem)] font-semibold leading-none tracking-tight">{copy.close}</h2>
+          </div>
 
           <div className="absolute right-[clamp(.75rem,2.4vw,2.25rem)] top-1/2 grid -translate-y-1/2 gap-2.5">
             {copy.steps.map((title, i) => (
