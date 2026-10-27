@@ -45,11 +45,14 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 3. **What I do.** Three items: **Grid Intelligence · Fire Tech · Data Fusion**.
    Each is a simple line icon (SVG, maroon) above its name: a bolt, a flame,
    and a network. No company names.
-4. **Testimonials.** Short excerpts with key words in orange, the person's
+4. **Wall teaser.** Three real pieces from the Wall (two maps and the Fuego.Earth
+   platform as its mark), each linking to `/wall`, plus a quiet "See the Wall"
+   link. Tiles come from `components/gallery/data.ts`.
+5. **Testimonials.** Short excerpts with key words in orange, the person's
    name, and their company's logo. Small cards that scroll slowly sideways,
    pause on hover, and stop under `prefers-reduced-motion`. More are coming,
    so adding one is a data change only.
-5. **A "Work with me" button**, linking to `/work-with-me`.
+6. **A "Work with me" button**, linking to `/work-with-me`.
 
 ### Work with me `/work-with-me`
 
@@ -57,8 +60,7 @@ them is wrong: fix it, or change this file on purpose in the same PR.
    with the heading **"Let's build your tool"** and one line on the left
    (draft: "You bring the problem and the data. I turn them into a tool your
    team uses."). The numbered steps are on the right: **Let's talk · Explore
-   it together · Build it · Test and refine**. The active step shows a small
-   visual instead of a sentence. The panel has no button.
+   it together · Build it · Test and refine**. The active step's number lights up. The panel has no button.
 2. **Form.** Name, Email, "What's the problem?", and a Send button. How it
    sends is decided in its own issue. Until then, it uses v1's fallback,
    which opens the visitor's mail app with the message filled in.
