@@ -18,12 +18,10 @@ import {
   siGrafana,
   type SimpleIcon,
 } from "simple-icons";
-import { services } from "./services";
 import type { Phrase } from "./i18n";
 
 // The toolkit, in the same three stages Work with me is — Research, Build
-// & deploy, Design — reusing those titles directly rather than a second
-// translated copy of the same three words. See services.ts.
+// & deploy, Design.
 //
 // ── Why the same three stages, and not Build → Process → Domain ────────
 // The old three rows (build pipelines, process & analyse, geospatial &
@@ -51,7 +49,7 @@ export type Skill = {
 };
 
 export type SkillGroup = {
-  /** Reused from services.ts — see the note above. */
+  /** The three stages of a product. */
   label: Phrase;
   /** One line under the label, where the row needs a claim a list of
    *  names can't make on its own. Only Research has one: "wildfire and
@@ -62,7 +60,7 @@ export type SkillGroup = {
 
 export const skillGroups: SkillGroup[] = [
   {
-    label: services[0].title, // "Research"
+    label: { en: "Research", es: "Investigación" },
     note: {
       en: "Wildfire and utility-grid data, mostly.",
       es: "Sobre todo datos de incendios y de redes eléctricas.",
@@ -76,7 +74,7 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
-    label: services[1].title, // "Build & deploy"
+    label: { en: "Build & deploy", es: "Desarrollo y despliegue" },
     tools: [
       { name: "Python", icon: siPython },
       { name: "Pandas", icon: siPandas },
@@ -99,7 +97,7 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
-    label: services[2].title, // "Design"
+    label: { en: "Design", es: "Diseño" },
     tools: [
       { name: "ArcGIS", icon: siArcgis },
       { name: "QGIS", icon: siQgis },

@@ -1,12 +1,10 @@
-import WallSections from "@/components/gallery/WallSections";
-import { galleryItems } from "@/components/gallery/data";
-import { creditLine } from "@/components/gallery/credit";
-import type { WallSection } from "@/components/gallery/frames/base";
-import type { FrameData } from "@/components/gallery/frames/registry";
-import { say } from "@/content/i18n";
-import { currentLocale } from "@/content/locale.server";
+import WallSections from "./WallSections";
+import { galleryItems } from "./data";
+import { creditLine } from "./credit";
+import type { WallSection } from "./frames/base";
+import type { FrameData } from "./frames/registry";
+import { say, type Locale } from "@/content/i18n";
 import { UI } from "@/content/ui";
-import { Z } from "@/lib/layers";
 
 // Three rows, not one: what's mine, what I've read, what's someone else's
 // that I liked enough to hang up. This used to be one wall where "mine"
@@ -31,8 +29,7 @@ function bySection(items: FrameData[]): Record<WallSection, FrameData[]> {
 // A horizontally-scrollable, looping wall of pieces — sits inline in the
 // normal page flow (no scroll hijacking). See src/components/gallery/ for
 // the implementation and src/components/gallery/data.ts for the pieces.
-export default async function Wall() {
-  const locale = await currentLocale();
+export default function Wall({ locale }: { locale: Locale }) {
   const ui = UI[locale].wall;
   const groups = bySection(galleryItems);
   const rowStrings: Record<WallSection, { heading: string; note: string }> = {
@@ -42,47 +39,17 @@ export default async function Wall() {
   };
 
   return (
-    // No fixed height any more: three rows run taller than the one screen
-    // every other part of the page keeps to, and that's the right trade —
-    // see the note above. `min-h` was already a floor, not a cap, so this
-    // is the same rule the rest of the page uses, just no longer the only
-    // thing deciding the section's height.
     <section
       id="wall"
-      className="relative flex min-h-[calc(100svh-var(--nav-h))] flex-col bg-brand-brick print:block print:min-h-0"
+      className="relative flex flex-1 flex-col justify-center gap-4 bg-brand-brick py-4 print:block"
     >
-      {/* Each row renders its items three times over for the loop, so a
-          keyboard visitor who tabs in has three rows of tripled tiles to
-          get through before reaching what follows. This is the way out:
-          invisible until it takes focus, which happens exactly once — on
-          the tab that would otherwise have started that walk.
-
-          The target is whatever follows the Wall: `#work` today, since
-          `#testimonials` renders nothing while that array is empty and a
-          skip link to an element not in the document does nothing at all.
-          Revisit this the day testimonials ship. */}
-      <a
-        href="#work"
-        style={{ zIndex: Z.CARD_OVERLAY_CONTROL }}
-        className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:border-2 focus:border-brand-yellow focus:bg-brand-maroon focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-semibold focus:normal-case focus:text-brand-cream sm:focus:left-16"
-      >
-        {ui.skip}
-      </a>
-      {/* The title and what the Wall is, together above the pieces, like
-          the sign over a gallery wall. The line under the title used to
-          hide behind an "i" marker as a tooltip; it says what the pieces
-          are and that more keep arriving, which is worth saying out loud
-          rather than on hover. Same heading size and side padding as
-          every other section. */}
-      <header className="px-6 pt-16 sm:px-16">
-        <h2 className="font-[family-name:var(--font-display)] text-4xl text-white">
+      {/* One screen: the title, the tabs and two rows of pieces. */}
+      <header className="px-6 sm:px-16">
+        <h2 className="font-[family-name:var(--font-display)] text-3xl text-white">
           {ui.heading}
         </h2>
-        <p className="mt-3 max-w-2xl font-sans text-base leading-relaxed text-white/85 sm:text-lg">
-          {ui.note}
-        </p>
       </header>
-      <div className="pb-4 print:hidden">
+      <div className="print:hidden">
         <WallSections
           order={ROW_ORDER.filter((section) => groups[section].length > 0)}
           groups={groups}

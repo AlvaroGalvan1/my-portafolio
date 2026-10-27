@@ -34,7 +34,7 @@ export default async function FaqPage({ params }: PageProps<"/[lang]/faq">) {
   if (!isLocale(lang)) notFound();
 
   return (
-    <main>
+    <main className="flex-1 bg-brand-orange">
       <Faq lang={lang} />
     </main>
   );

@@ -299,17 +299,6 @@ const en = {
     placeholder: "Placeholder",
   },
 
-  services: {
-    heading: "Work with me",
-    lede: "I build end-to-end geospatial products for wildfire and climate work, from the first question to a tool running in production.",
-    pipeline: "One person, the whole product",
-    callBefore: "Rates, including NGO and pro bono options, are on the ",
-    callLink: "pricing page",
-    callAfter: ".",
-    book: "Book a 30-minute call",
-    brief: "or send a brief instead",
-  },
-
   process: {
     heading: "Talk, plan, ship.",
     lede: "Every project moves through the same three steps, in this order.",
@@ -339,7 +328,7 @@ const en = {
     // The route's <title>, run through the layout's "%s — name" template.
     metaTitle: "Pricing",
     metaDescription:
-      "Geospatial consulting: research, building and design. $85 USD/hour base rate, fixed-price projects, reduced rates for NGOs, and pro bono work for mission-aligned climate projects.",
+      "Geospatial consulting: research, building and design. $85 USD/hour, and down to $0 for NGOs and mission-driven work.",
     eyebrow: "Work with me",
     heading: "Pricing",
     lede: "Four ways to work together. Every project starts with a 30-minute call.",
@@ -348,26 +337,6 @@ const en = {
       "Tell me what you're working on and we'll find the right fit.",
     book: "Book a 30-minute call",
     brief: "or send me a message",
-  },
-
-  contact: {
-    heading: "Get In Touch",
-    close: "Close",
-    book: "Book 30 minutes",
-    preferDirect: "Prefer to chat directly?",
-    emailMeAt: "Email me at",
-    name: "Name",
-    email: "Your email",
-    subject: "Subject",
-    message: "Message",
-    send: "Send",
-    sending: "Sending…",
-    sent: "Sent. Thanks, I'll reply soon.",
-    openedClient:
-      "Your email app opened with this message filled in. Hit send there to reach me.",
-    failed:
-      "Something went wrong. Try the email link above instead.",
-    defaultSubject: "Portfolio contact",
   },
 
   footer: {
@@ -612,17 +581,6 @@ const es: UiStrings = {
     placeholder: "Ejemplo",
   },
 
-  services: {
-    heading: "Trabajemos juntos",
-    lede: "Construyo productos geoespaciales de principio a fin para incendios y clima, desde la primera pregunta hasta una herramienta en producción.",
-    pipeline: "Una sola persona, el producto completo",
-    callBefore: "Las tarifas, con opciones para ONG y pro bono, están en la ",
-    callLink: "página de tarifas",
-    callAfter: ".",
-    book: "Agenda una llamada de 30 minutos",
-    brief: "o mándame un resumen del proyecto",
-  },
-
   process: {
     heading: "Hablamos, planeamos, entregamos.",
     lede: "Todo proyecto pasa por los mismos tres pasos, en este orden.",
@@ -647,7 +605,7 @@ const es: UiStrings = {
   pricing: {
     metaTitle: "Tarifas",
     metaDescription:
-      "Consultoría geoespacial: investigación, desarrollo y diseño. Tarifa base de 85 USD por hora, proyectos con precio cerrado, tarifas reducidas para ONG y trabajo pro bono para proyectos climáticos con los que comparto causa.",
+      "Consultoría geoespacial: investigación, desarrollo y diseño. 85 USD por hora, y hasta 0 USD para ONG y trabajo con propósito.",
     eyebrow: "Trabajemos juntos",
     heading: "Tarifas",
     lede: "Hay cuatro formas de trabajar juntos. Todo proyecto empieza con una llamada de 30 minutos.",
@@ -656,26 +614,6 @@ const es: UiStrings = {
       "Cuéntame en qué estás trabajando y encontramos la mejor opción.",
     book: "Agenda una llamada de 30 minutos",
     brief: "o mándame un mensaje",
-  },
-
-  contact: {
-    heading: "Hablemos",
-    close: "Cerrar",
-    book: "Agenda una llamada",
-    preferDirect: "¿Prefieres escribir directamente?",
-    emailMeAt: "Escríbeme a",
-    name: "Nombre",
-    email: "Tu correo",
-    subject: "Asunto",
-    message: "Mensaje",
-    send: "Enviar",
-    sending: "Enviando…",
-    sent: "Enviado. Gracias, te contesto pronto.",
-    openedClient:
-      "Se abrió tu correo con el mensaje ya escrito. Solo dale enviar.",
-    failed:
-      "Algo salió mal. Mejor escríbeme al correo de arriba.",
-    defaultSubject: "Contacto desde el portafolio",
   },
 
   footer: {
