@@ -42,6 +42,8 @@ them is wrong: fix it, or change this file on purpose in the same PR.
    (es: "Construyo software para incendios forestales."), and a button
    "Let's build together" that links to `/work-with-me`. It is a link, not a modal.
 2. **Story.** The story-v7 prototype: one fire, four steps, then a zoom out to the Earth.
+   Each step's logo links to `/wall`, each step carries one number from the CV
+   work, and the drawn fire is tagged "Illustration" (STORYTELLING §3).
 3. **What I do.** Three items: **Grid Intelligence · Fire Tech · Data Fusion**.
    Each is a simple line icon (SVG, maroon) above its name: a bolt, a flame,
    and a network. No company names.
