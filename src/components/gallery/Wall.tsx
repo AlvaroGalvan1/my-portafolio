@@ -45,9 +45,9 @@ export default function Wall({ locale }: { locale: Locale }) {
     >
       {/* One screen: the title, the tabs and two rows of pieces. */}
       <header className="px-6 sm:px-16">
-        <h2 className="font-[family-name:var(--font-display)] text-3xl text-white">
+        <h1 className="font-[family-name:var(--font-display)] text-3xl text-white">
           {ui.heading}
-        </h2>
+        </h1>
       </header>
       <div className="print:hidden">
         <WallSections
@@ -70,9 +70,9 @@ export default function Wall({ locale }: { locale: Locale }) {
       <div className="hidden bg-white px-6 py-8 font-sans sm:px-16 print:block">
         {ROW_ORDER.filter((section) => groups[section].length > 0).map((section) => (
           <div key={section} className="mb-6 last:mb-0">
-            <h3 className="mb-2 font-semibold text-brand-maroon">
+            <h2 className="mb-2 font-semibold text-brand-maroon">
               {rowStrings[section].heading}
-            </h3>
+            </h2>
             <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-neutral-700">
               {groups[section].map((item) => {
                 const credit = creditLine(item.credit, locale);
