@@ -9,6 +9,7 @@ import { faqContent } from "./faq.content";
 export default function Faq({ lang }: { lang: Locale }) {
   return (
     <section className="px-4 py-12 sm:px-16">
+      <h1 className="sr-only">{faqContent[lang].heading}</h1>
       <div className="mx-auto flex max-w-2xl flex-col gap-3">
         {faq.slice(0, 4).map((item) => (
           <details key={say(item.question, "en")} className="group rounded-xl bg-brand-cream text-brand-maroon">

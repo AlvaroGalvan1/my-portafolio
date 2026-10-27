@@ -8,6 +8,7 @@ export default function Rates({ lang }: { lang: Locale }) {
 
   return (
     <section className="px-4 py-12 sm:px-16">
+      <h1 className="sr-only">{copy.heading}</h1>
       <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2 sm:gap-6">
         <div className="flex flex-col gap-2 rounded-xl bg-brand-cream p-6 text-brand-maroon">
           <p className="eyebrow">{copy.rateLabel}</p>
@@ -16,7 +17,10 @@ export default function Rates({ lang }: { lang: Locale }) {
           </p>
         </div>
         <div className="flex flex-col gap-2 rounded-xl bg-brand-cream p-6 text-brand-maroon">
-          <p className="font-[family-name:var(--font-display)] text-5xl leading-none">{copy.floor}</p>
+          {/* Bungee draws a 0 like an O, so the number is set in the sans. */}
+          <p className="font-[family-name:var(--font-display)] text-5xl leading-none">
+            {copy.floorLead} <span className="font-sans font-extrabold">{copy.floorAmount}</span>
+          </p>
           <p className="font-sans text-base font-semibold">{copy.floorNote}</p>
         </div>
       </div>

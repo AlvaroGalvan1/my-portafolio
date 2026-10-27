@@ -170,7 +170,7 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
       ${CAMS.map((c) => `<g transform="translate(${c.x} ${c.y})"><circle r="5.5" fill="${INK}"/><circle r="2" fill="#fff"/></g>`).join("")}
     </g>
     <g class="smoke" opacity="0">${[0, 1, 2, 3].map((k) => `<circle cx="${P[0] + 3 + k * 5}" cy="${P[1] - 6 - k * 7}" r="${4 + k * 2.8}" fill="#8f8780" fill-opacity="${0.55 - k * 0.11}"/>`).join("")}</g>
-    <g class="notes" font-family="var(--font-geist-mono), monospace" fill="${INK}" letter-spacing=".04em">
+    <g class="notes" font-family="var(--font-geist-mono), monospace" fill="${INK}" stroke="#f6f3ee" stroke-linejoin="round" paint-order="stroke" letter-spacing=".04em">
       <text opacity="0" data-on="0" x="186" y="216">${labels.powerLine}</text>
       <text opacity="0" data-on="0" x="258" y="190" text-anchor="end">${labels.lineSensor}</text>
       <text opacity="0" data-on="0" x="322" y="182" fill="${C.red}">${labels.fault}</text>
@@ -261,9 +261,11 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
     const k = k0 * Math.pow(k1 / k0, g);
     const z = (z0 * k) / k0;
     world.setAttribute("transform", `translate(200 200) scale(${z}) translate(${-cx} ${-cy})`);
-    // Labels stay 12px on screen whatever the zoom.
+    // Labels stay 13px on screen whatever the zoom, with a pale halo so they
+    // read on the grey imagery.
     const unit = (Math.max(svgEl.clientWidth, svgEl.clientHeight) / 400) * z;
-    notesG.setAttribute("font-size", String(12 / unit));
+    notesG.setAttribute("font-size", String(13 / unit));
+    notesG.setAttribute("stroke-width", String(3.5 / unit));
     const beat = Math.min(4, Math.floor(t / 1000));
     notes.forEach((n) => n.setAttribute("opacity", String(+n.dataset.on! === beat && t % 1000 > 200 && t % 1000 < 920 ? 1 : 0)));
 
