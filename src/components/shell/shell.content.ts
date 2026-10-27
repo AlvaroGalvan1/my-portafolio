@@ -9,7 +9,6 @@ export const shellContent: Record<
       email: string;
       linkedin: string;
       github: string;
-      cv: string;
       pricing: string;
       faq: string;
       language: string;
@@ -29,7 +28,6 @@ export const shellContent: Record<
       email: "Email",
       linkedin: "LinkedIn",
       github: "GitHub",
-      cv: "CV",
       pricing: "Pricing",
       faq: "FAQ",
       language: "Language",
@@ -48,7 +46,6 @@ export const shellContent: Record<
       email: "Correo",
       linkedin: "LinkedIn",
       github: "GitHub",
-      cv: "CV",
       pricing: "Tarifas",
       faq: "Preguntas",
       language: "Idioma",
