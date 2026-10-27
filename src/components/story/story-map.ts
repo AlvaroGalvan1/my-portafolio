@@ -207,6 +207,7 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
   const beats = [...root.querySelectorAll<HTMLElement>("[data-beat]")];
   const ticks = [...root.querySelectorAll<HTMLElement>("[data-tick]")];
   const clockEl = root.querySelector<HTMLElement>("[data-clock]")!;
+  const illusEl = root.querySelector<HTMLElement>("[data-illus]")!;
   const clockText = clockEl.querySelector("span")!;
   const svgEl = world.ownerSVGElement!;
   const globeEl = root.querySelector<SVGSVGElement>("[data-globe]")!;
@@ -369,6 +370,9 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
       shown = beat;
       beats.forEach((b, i) => (i === beat ? b.setAttribute("data-on", "") : b.removeAttribute("data-on")));
       ticks.forEach((k, i) => (i === beat ? k.setAttribute("data-on", "") : k.removeAttribute("data-on")));
+      // The spreading fire is a simulation: beats 2 and 3 (the pass shows the same fire).
+      if (beat === 2 || beat === 3) illusEl.setAttribute("data-on", "");
+      else illusEl.removeAttribute("data-on");
     }
   }
 

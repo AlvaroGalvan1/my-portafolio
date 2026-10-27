@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import type { Locale } from "@/content/i18n";
 import { fuegoLogo } from "./fuego-logo";
@@ -77,23 +78,36 @@ export default function Story({ lang }: { lang: Locale }) {
             <span />
           </div>
 
+          {/* The fire is drawn, not measured: say so while it is on the card. */}
+          <span
+            data-illus
+            className="pointer-events-none absolute right-[clamp(1.25rem,5vw,5rem)] top-5 font-[family-name:var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-wider text-[#3b130f] opacity-0 transition-opacity duration-300 data-on:opacity-100"
+          >
+            {copy.illustration}
+          </span>
+
           {copy.steps.map((title, i) => {
             const logo = LOGOS[i];
             return (
               <div
                 key={title}
                 data-beat={i}
-                className={`pointer-events-none absolute ${INSET} bottom-[clamp(1.5rem,8svh,5.5rem)] translate-y-3.5 text-brand-maroon opacity-0 transition-[opacity,translate] duration-500 data-on:translate-y-0 data-on:opacity-100`}
+                className={`group pointer-events-none absolute ${INSET} bottom-[clamp(1.5rem,8svh,5.5rem)] translate-y-3.5 text-brand-maroon opacity-0 transition-[opacity,translate] duration-500 data-on:translate-y-0 data-on:opacity-100`}
               >
-                <span className="block h-[30px] w-[140px]">
+                {/* The logo is the link to the real work on the Wall. It is hidden, so
+                    also out of the tab order, until its step is the one showing. */}
+                <Link href={`/${lang}/wall`} className="pointer-events-auto invisible block h-[30px] w-[140px] transition-[visibility] duration-500 group-data-on:visible">
                   {"svg" in logo ? (
                     <span className="block size-full [&>svg]:size-full [&>svg]:object-left" dangerouslySetInnerHTML={{ __html: logo.svg ?? "" }} />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={logo.src} alt={logo.alt} className="size-full object-contain object-left" />
                   )}
-                </span>
+                </Link>
                 <h2 className="mt-3.5 text-[clamp(1.9rem,4.4vw,4rem)] font-semibold leading-none tracking-tight">{title}</h2>
+                <p className="mt-2 max-w-[30ch] text-[clamp(.9rem,1.4vw,1.1rem)] font-medium leading-snug">
+                  <b className="font-bold">{copy.proof[i].value}</b> {copy.proof[i].label}
+                </p>
               </div>
             );
           })}
