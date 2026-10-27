@@ -30,7 +30,8 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 - **On Home**, the name starts hidden, because the hero already shows it. It
   fades into the bar once the hero scrolls away. Every other page shows it
   from the start.
-- **Footer:** email, LinkedIn, GitHub, CV, Pricing, FAQ, and the EN/ES switch.
+- **Footer:** email, LinkedIn and GitHub as logos (no words, no CV; the CV is on
+  About), then Pricing, FAQ, and the EN/ES switch.
   The site already picks the language from the browser (`src/proxy.ts`), so
   the switch only needs to live here.
 
