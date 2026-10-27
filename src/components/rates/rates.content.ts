@@ -8,6 +8,7 @@ export const ratesContent: Record<Locale, {
   floorLead: string;
   floorAmount: string;
   floorNote: string;
+  availability: string;
 }> = {
   en: {
     heading: "Pricing",
@@ -16,6 +17,7 @@ export const ratesContent: Record<Locale, {
     floorLead: "down to",
     floorAmount: "$0",
     floorNote: "NGOs and mission-driven work. I adjust.",
+    availability: "Open to consulting contracts and full-time geospatial roles.",
   },
   es: {
     heading: "Tarifas",
@@ -24,5 +26,6 @@ export const ratesContent: Record<Locale, {
     floorLead: "hasta",
     floorAmount: "0 USD",
     floorNote: "ONG y trabajo con propósito. Me adapto.",
+    availability: "Disponible para contratos de consultoría y puestos de tiempo completo en ingeniería geoespacial.",
   },
 };

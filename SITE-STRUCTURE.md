@@ -70,10 +70,13 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 
 ### Pricing `/pricing`
 
-Two boxes, nothing else:
+Two boxes and one availability line, nothing else:
 
-- **$125 / hour**, labelled "My rate". This is the normal rate, not a maximum.
+- **$85 / hour**, labelled "My rate". This is the normal rate, not a maximum.
 - **down to $0**: "NGOs and mission-driven work. I adjust."
+- **Availability line** under the boxes: "Open to consulting contracts and
+  full-time geospatial roles." (es: "Disponible para contratos de consultoría y
+  puestos de tiempo completo en ingeniería geoespacial.")
 
 The fixed-term and NGO tiers and the Services cards from v1 are gone.
 

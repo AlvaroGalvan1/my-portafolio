@@ -24,6 +24,9 @@ export default function Rates({ lang }: { lang: Locale }) {
           <p className="font-sans text-base font-semibold">{copy.floorNote}</p>
         </div>
       </div>
+      <p className="mx-auto mt-6 max-w-3xl text-center font-sans text-lg font-semibold text-brand-maroon">
+        {copy.availability}
+      </p>
     </section>
   );
 }
