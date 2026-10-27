@@ -13,6 +13,9 @@ export type PostFrameData = FrameBase & {
    *  only `src`, so a series is one framed piece rather than one tile per
    *  sheet. Defaults to just `src` when left out. */
   images?: { src: string; alt: string }[];
+  /** Show the first four of `images` as a 2x2 grid on the tile instead of
+   *  `src`, so a set of four sheets is one project on the Wall. */
+  grid?: boolean;
   /** Paragraphs, in order. Rendered as prose in the lightbox. */
   body: string[];
   /** BCP-47 tag for `body` — set it when the post isn't in the page's
@@ -48,11 +51,21 @@ export function PostFrameCell({ frame, onOpenLightbox, onFail }: FrameCellProps<
         })
       }
     >
-      <TileImage
-        src={frame.src}
-        alt={frame.alt}
-        onLoadError={() => onFail(`post image failed to load: ${frame.src}`)}
-      />
+      {frame.grid && frame.images ? (
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1 bg-black/40 p-1">
+          {frame.images.slice(0, 4).map((image) => (
+            <div key={image.src} className="relative overflow-hidden">
+              <TileImage src={image.src} alt={image.alt} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <TileImage
+          src={frame.src}
+          alt={frame.alt}
+          onLoadError={() => onFail(`post image failed to load: ${frame.src}`)}
+        />
+      )}
       <TileLabel title={frame.title} />
     </button>
   );
