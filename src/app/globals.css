@@ -686,3 +686,55 @@ footer :focus-visible,
     color: inherit;
   }
 }
+
+/* Page crossfade (React <ViewTransition> in the layout). Under reduced
+   motion the swap is instant, which is the browser's default. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* ── Marquee ─────────────────────────────────────────────────────────
+   A slow sideways loop (ui/Marquee). The track holds two copies of the
+   cards and slides left by exactly one copy, so the loop has no seam.
+   It pauses while hovered or while anything inside has focus, and under
+   reduced motion it stops and becomes a row you scroll by hand. */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide var(--marquee-duration, 60s) linear infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-group {
+  display: flex;
+  flex: none;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+@keyframes marquee-slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .marquee-group[aria-hidden] {
+    display: none;
+  }
+}

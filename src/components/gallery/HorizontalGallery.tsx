@@ -37,7 +37,11 @@ export type { FrameData } from "./frames/registry";
 // 27 and two rows. Three rows of 18 made every piece a postcard and the
 // Wall read as crowded: the visuals are the point, so fewer, larger pieces
 // with air between them. The Wall's total height is unchanged.
-const ROW_H_VH = 27;
+//
+// On the Wall page the rows share one screen with the nav, footer, title
+// and tabs, so the row is what is left of the screen after those (about
+// 30rem), split across the rows, and never under 9rem.
+const ROW_H = `max(9rem, calc((100svh - 30rem) / 2))`;
 const ROWS = 2;
 // Width of one column track lives in CSS as `--wall-col` on `.wall-scroller`
 // (see globals.css) rather than here, because it has to change with the
@@ -56,7 +60,7 @@ const GAP_REM = 1.25;
 //     keeps its true proportions instead of being cropped to a cell.
 //   - Everything else fills the column track(s) its colSpan covers.
 function tileHeight(item: { rowSpan: number }) {
-  return `calc(${ROW_H_VH * item.rowSpan}svh + ${(item.rowSpan - 1) * GAP_REM}rem)`;
+  return `calc(${ROW_H} * ${item.rowSpan} + ${(item.rowSpan - 1) * GAP_REM}rem)`;
 }
 
 function tileWidth(item: FrameData) {
@@ -410,7 +414,7 @@ export default function HorizontalGallery({
             style={{
               gap: `${GAP_REM}rem`,
               marginRight: `${GAP_REM}rem`,
-              height: `calc(${ROWS * ROW_H_VH}svh + ${(ROWS - 1) * GAP_REM}rem)`,
+              height: `calc(${ROW_H} * ${ROWS} + ${(ROWS - 1) * GAP_REM}rem)`,
             }}
           >
             {stack.map((item, i) => (

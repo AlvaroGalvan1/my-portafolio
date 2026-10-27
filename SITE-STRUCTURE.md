@@ -30,7 +30,8 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 - **On Home**, the name starts hidden, because the hero already shows it. It
   fades into the bar once the hero scrolls away. Every other page shows it
   from the start.
-- **Footer:** email, LinkedIn, GitHub, CV, Pricing, FAQ, and the EN/ES switch.
+- **Footer:** email, LinkedIn and GitHub as logos (no words, no CV; the CV is on
+  About), then Pricing, FAQ, and the EN/ES switch.
   The site already picks the language from the browser (`src/proxy.ts`), so
   the switch only needs to live here.
 
@@ -42,14 +43,19 @@ them is wrong: fix it, or change this file on purpose in the same PR.
    (es: "Construyo software para incendios forestales."), and a button
    "Let's build together" that links to `/work-with-me`. It is a link, not a modal.
 2. **Story.** The story-v7 prototype: one fire, four steps, then a zoom out to the Earth.
+   Each step's logo links to `/wall`, each step carries one number from the CV
+   work, and the drawn fire is tagged "Illustration" (STORYTELLING §3).
 3. **What I do.** Three items: **Grid Intelligence · Fire Tech · Data Fusion**.
    Each is a simple line icon (SVG, maroon) above its name: a bolt, a flame,
    and a network. No company names.
-4. **Testimonials.** Short excerpts with key words in orange, the person's
+4. **Wall teaser.** Three real pieces from the Wall (two maps and the Fuego.Earth
+   platform as its mark), each linking to `/wall`, plus a quiet "See the Wall"
+   link. Tiles come from `components/gallery/data.ts`.
+5. **Testimonials.** Short excerpts with key words in orange, the person's
    name, and their company's logo. Small cards that scroll slowly sideways,
    pause on hover, and stop under `prefers-reduced-motion`. More are coming,
    so adding one is a data change only.
-5. **A "Work with me" button**, linking to `/work-with-me`.
+6. **A "Work with me" button**, linking to `/work-with-me`.
 
 ### Work with me `/work-with-me`
 
@@ -57,8 +63,7 @@ them is wrong: fix it, or change this file on purpose in the same PR.
    with the heading **"Let's build your tool"** and one line on the left
    (draft: "You bring the problem and the data. I turn them into a tool your
    team uses."). The numbered steps are on the right: **Let's talk · Explore
-   it together · Build it · Test and refine**. The active step shows a small
-   visual instead of a sentence. The panel has no button.
+   it together · Build it · Test and refine**. The active step's number lights up. The panel has no button.
 2. **Form.** Name, Email, "What's the problem?", and a Send button. How it
    sends is decided in its own issue. Until then, it uses v1's fallback,
    which opens the visitor's mail app with the message filled in.
@@ -70,10 +75,13 @@ them is wrong: fix it, or change this file on purpose in the same PR.
 
 ### Pricing `/pricing`
 
-Two boxes, nothing else:
+Two boxes and one availability line, nothing else:
 
-- **$125 / hour**, labelled "My rate". This is the normal rate, not a maximum.
+- **$85 / hour**, labelled "My rate". This is the normal rate, not a maximum.
 - **down to $0**: "NGOs and mission-driven work. I adjust."
+- **Availability line** under the boxes: "Open to consulting contracts and
+  full-time geospatial roles." (es: "Disponible para contratos de consultoría y
+  puestos de tiempo completo en ingeniería geoespacial.")
 
 The fixed-term and NGO tiers and the Services cards from v1 are gone.
 

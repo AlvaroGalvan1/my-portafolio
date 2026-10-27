@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION } from "@/content/site";
 import { BCP47, LOCALES, isLocale } from "@/content/i18n";
+import Footer from "@/components/shell/Footer";
+import Nav from "@/components/shell/Nav";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -93,7 +96,13 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
       className={`${geistSans.variable} ${geistMono.variable} ${bungee.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <Nav lang={lang} />
+        {/* Every page crossfades into the next. Route changes are React
+            transitions, so this animates with no further wiring; the bar and
+            footer sit outside it and stay put. Motion is switched off for
+            prefers-reduced-motion in globals.css. */}
+        <ViewTransition>{children}</ViewTransition>
+        <Footer lang={lang} />
         {/* Vercel Web Analytics. Imported from `@vercel/analytics/next`
             rather than `/react`: that entry is the one built for the App
             Router, and it already carries its own "use client", so it drops
