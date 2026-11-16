@@ -69,10 +69,11 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Everything except the framework's own paths, the API route, and any
+  // Everything except the framework's own paths, the API route, the QR
+  // landing page (/hola, outside the language split), and any
   // request with a file extension — which is every asset in public/. A
   // matcher this shape is not optional: without it the proxy runs on the
   // stylesheet and the Coral loop too, and redirects them into a language
   // that has no such file.
-  matcher: ["/((?!_next|api|.*\\.).*)"],
+  matcher: ["/((?!_next|api|hola$|.*\\.).*)"],
 };
