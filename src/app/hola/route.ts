@@ -6,7 +6,8 @@
 // would need its own root layout and a restructure of the app. This one
 // screen needs neither the site's nav nor its fonts.
 //
-// On load the script sends the phone to /alvaro.vcf, which opens the
+// Everything is on one phone screen and nothing links to the rest of the
+// site: the call to action is Text / Call. On load the script sends the phone to /alvaro.vcf, which opens the
 // "Add to Contacts" sheet. Some browsers refuse a navigation the visitor
 // didn't tap; the Save contact button is the fallback for that case.
 //
@@ -24,15 +25,17 @@ const html = `<!doctype html>
 <meta name="robots" content="noindex">
 <title>Álvaro from Oaxaca</title>
 <style>
-body{margin:0;background:#f5821f;color:#7a1710;font-family:ui-monospace,Menlo,monospace;min-height:100vh}
-main{padding:36px 22px;max-width:480px;margin:0 auto}
-h1{font-size:22px;margin:0 0 18px}
-p,li{font-size:15px;line-height:1.6;margin:0 0 12px}
-ul{margin:0 0 12px;padding-left:18px;list-style:"- "}
-.tel{font-weight:700;font-size:19px;margin:18px 0 22px}
-.btn.s{background:transparent;color:#7a1710;border:2px solid #7a1710;margin-top:10px}
-.btn{display:block;text-align:center;background:#7a1710;color:#fff4de;padding:15px;font-weight:700;border-radius:10px;text-decoration:none}
-.note{font-size:12px;text-align:center;margin-top:10px}
+*{box-sizing:border-box}
+body{margin:0;background:#f5821f;color:#7a1710;font-family:ui-monospace,Menlo,monospace;min-height:100dvh}
+main{padding:22px 20px 18px;max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+h1{font-size:20px;margin:0 0 12px}
+p,li{font-size:14px;line-height:1.45;margin:0 0 9px}
+ul{margin:0 0 9px;padding-left:18px;list-style:"- "}
+.cta{margin-top:auto;padding-top:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:block;text-align:center;background:#7a1710;color:#fff4de;padding:15px 8px;font-weight:700;font-size:17px;border-radius:10px;text-decoration:none}
+.btn.s{background:transparent;color:#7a1710;border:2px solid #7a1710;font-size:14px;padding:11px 8px;margin-top:10px}
+.tel{text-align:center;font-weight:700;font-size:18px;margin:0 0 10px}
 </style>
 </head>
 <body>
@@ -42,11 +45,12 @@ ul{margin:0 0 12px;padding-left:18px;list-style:"- "}
 <p>I studied Computer Science (just graduated). I've been a:</p>
 <ul><li>Waiter</li><li>Tutor (SAT/Spanish)</li><li>Front desk</li><li>Web designer</li></ul>
 <p>I'm hardworking, proactive, and responsible.</p>
-<p>If you think I can help you with something, message me. I'm open to temporary positions or side gigs.</p>
+<p>If you think I can help you with something, let's chat. I'm open to temporary positions or side gigs.</p>
+<div class="cta">
 <div class="tel">(415) 825-7580</div>
-<a class="btn" href="${CONTACT_FILE}">Save contact</a>
-<a class="btn s" href="/">Open my site</a>
-<div class="note">Contact sheet opens automatically.<br>Didn't? Tap Save contact.</div>
+<div class="row"><a class="btn" href="sms:+14158257580">Text me</a><a class="btn" href="tel:+14158257580">Call me</a></div>
+<a class="btn s" href="${CONTACT_FILE}">Save my contact</a>
+</div>
 </main>
 <script>location.href=${JSON.stringify(CONTACT_FILE)}</script>
 </body>
