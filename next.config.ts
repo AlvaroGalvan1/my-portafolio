@@ -12,6 +12,27 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "i.ytimg.com" },
     ],
   },
+  async redirects() {
+    return [
+      // The QR code on the printed cards points at /hola. A redirect (not a
+      // page) so a scan goes straight to the iPhone/Android "Add to
+      // Contacts" sheet with no tap. `permanent: false` = 307, which
+      // browsers don't cache, so the destination stays editable.
+      { source: "/hola", destination: "/alvaro.vcf", permanent: false },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        // iOS Safari opens the contact sheet for text/vcard served inline.
+        source: "/alvaro.vcf",
+        headers: [
+          { key: "Content-Type", value: "text/vcard; charset=utf-8" },
+          { key: "Content-Disposition", value: "inline; filename=alvaro.vcf" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
