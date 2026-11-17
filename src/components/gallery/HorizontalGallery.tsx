@@ -54,6 +54,18 @@ const ROWS = 2;
 // enough that the row reads as one wall.
 const GAP_REM = 1.25;
 
+// The one-time hint, in both languages (it was English on the Spanish site).
+const HINT: Record<Locale, { touch: string; pointer: string }> = {
+  en: {
+    touch: "Swipe — the wall keeps going.",
+    pointer: "Put your mouse here and the wall starts moving.",
+  },
+  es: {
+    touch: "Desliza — el muro sigue.",
+    pointer: "Pon el ratón aquí y el muro empieza a moverse.",
+  },
+};
+
 // How wide one tile is. Two cases:
 //   - A piece with a real-world shape (a map print, a book cover) states an
 //     `aspectRatio`; its width follows from the height it occupies, so it
@@ -371,10 +383,8 @@ export default function HorizontalGallery({
           hinted ? "opacity-0" : "opacity-95"
         }`}
       >
-        <span className="sm:hidden">Swipe — the wall keeps going.</span>
-        <span className="hidden sm:inline">
-          Put your mouse here and the wall starts moving.
-        </span>
+        <span className="sm:hidden">{HINT[locale].touch}</span>
+        <span className="hidden sm:inline">{HINT[locale].pointer}</span>
         <span aria-hidden className="hint-arrow hidden text-xl leading-none sm:inline">
           →
         </span>

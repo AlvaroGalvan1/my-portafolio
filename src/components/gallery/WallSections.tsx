@@ -35,7 +35,9 @@ export default function WallSections({
 
   return (
     <div className="flex flex-col">
-      <div role="tablist" aria-label={strings.heading} className="flex flex-wrap gap-3 px-6 sm:px-16">
+      {/* One line on a phone, swiped sideways if it runs out of room, so
+          the tabs don't wrap into two rows and push the Wall down. */}
+      <div role="tablist" aria-label={strings.heading} className="no-scrollbar flex gap-2 overflow-x-auto px-6 py-1 sm:flex-wrap sm:gap-3 sm:px-16">
         {order.map((section) => {
           const on = section === active;
           return (
@@ -47,7 +49,7 @@ export default function WallSections({
               aria-selected={on}
               aria-controls="wall-panel"
               onClick={() => setActive(section)}
-              className={`border-2 px-4 py-2 font-sans text-sm font-semibold transition-colors ${
+              className={`min-h-11 flex-none whitespace-nowrap border-2 px-3 py-2 font-sans text-sm font-semibold transition-colors sm:px-4 ${
                 on
                   ? "border-brand-yellow bg-brand-yellow text-brand-maroon"
                   : "border-white/30 text-white/80 hover:border-white hover:text-white"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
@@ -24,6 +24,13 @@ const bungee = Bungee({
   weight: "400",
   subsets: ["latin"],
 });
+
+// The phone's browser chrome (the status bar on iOS, the address bar on
+// Android) takes this colour, so the top of the screen runs straight into
+// the maroon nav instead of a white strip above it.
+export const viewport: Viewport = {
+  themeColor: "#7a1710",
+};
 
 // Both languages, both built. Two static pages rather than one page that
 // swaps its strings in the browser — see content/i18n.ts for why that
@@ -91,8 +98,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) notFound();
 
   return (
+    // `data-scroll-behavior="smooth"`: globals.css asks for smooth
+    // scrolling, which is right for in-page jumps and wrong for a page
+    // change. Since Next 16 the router no longer switches it off on its own,
+    // so tapping "Work with me" at the bottom of Home animated the whole
+    // 7,000px climb back to the top. This attribute puts the instant jump back.
     <html
       lang={lang}
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${bungee.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
