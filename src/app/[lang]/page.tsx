@@ -14,7 +14,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   return (
     <>
       <main className="bg-brand-orange pb-[10svh]">
-        <section id="hero" className="grid min-h-svh place-items-center px-6">
+        {/* Exactly the screen under the nav, so the story starts the moment
+            the hero leaves, and a small cue at the foot says there is more. */}
+        <section id="hero" className="relative grid min-h-[calc(100svh-var(--nav-h))] place-items-center px-6 pb-20 pt-10">
           <div className="flex flex-col items-center text-center">
             {/* The site's display face, as large as the screen allows: by
                 width on phones, by height on short laptops. A touch of
@@ -35,6 +37,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               {heroContent[lang].cta}
             </Button>
           </div>
+          <span
+            aria-hidden
+            className="scroll-cue absolute bottom-5 left-1/2 h-10 w-0.5 -translate-x-1/2 overflow-hidden rounded-full bg-brand-maroon/20 text-brand-maroon"
+          />
         </section>
         <Story lang={lang} />
         <Testimonials lang={lang} />

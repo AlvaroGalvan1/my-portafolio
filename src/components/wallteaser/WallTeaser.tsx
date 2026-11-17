@@ -18,14 +18,18 @@ export default function WallTeaser({ lang }: { lang: Locale }) {
   const tiles = PICKS.map((id) => items.find((item) => item.id === id)).filter((item) => item !== undefined);
 
   return (
-    <section className="px-4 py-12 sm:px-16">
+    <section className="py-12 sm:px-16">
       <div className="mx-auto max-w-4xl">
         <h2 className="sr-only">{copy.label}</h2>
-        <ul className="grid gap-4 sm:grid-cols-3">
+        {/* On a phone the three tiles are one sideways row you swipe, with
+            the next tile peeking in, rather than three screens of cards
+            stacked between the testimonials and the button. From `sm` they
+            sit side by side as a grid. */}
+        <ul className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-px-4 px-4 pb-6 pt-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:p-0">
           {tiles.map((item) => {
             const image = "src" in item && item.type === "post" ? item : null;
             return (
-              <li key={item.id}>
+              <li key={item.id} className="w-[78%] flex-none snap-start sm:w-auto">
                 <Link
                   href={`/${lang}/wall`}
                   className="group block overflow-hidden rounded-xl bg-brand-cream text-brand-maroon shadow-[0_14px_30px_-18px_rgba(59,19,15,.6)]"
@@ -36,7 +40,7 @@ export default function WallTeaser({ lang }: { lang: Locale }) {
                         src={image.src}
                         alt={image.alt ?? ""}
                         fill
-                        sizes="(min-width: 640px) 26vw, 90vw"
+                        sizes="(min-width: 640px) 26vw, 80vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
@@ -57,7 +61,7 @@ export default function WallTeaser({ lang }: { lang: Locale }) {
             );
           })}
         </ul>
-        <div className="mt-6 flex justify-center">
+        <div className="mt-2 flex justify-center sm:mt-6">
           <Button variant="quiet" href={`/${lang}/wall`}>
             {copy.more}
           </Button>

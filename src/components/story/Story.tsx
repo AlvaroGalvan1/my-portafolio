@@ -33,7 +33,9 @@ export default function Story({ lang }: { lang: Locale }) {
   }, [copy]);
 
   return (
-    <section ref={section} className="relative h-[760svh]">
+    // Shorter on a phone: the same five beats, but each one a swipe or two
+    // rather than a long thumb-ache of pinned scrolling before the page moves on.
+    <section ref={section} className="relative h-[540svh] sm:h-[760svh]">
       <div className="sticky top-[var(--nav-h)] flex h-[calc(100svh-var(--nav-h))] items-center justify-center px-3 sm:px-6">
         <div className="relative aspect-(--r) w-[min(100%,calc((100svh-var(--nav-h)-3rem)*var(--r)))] overflow-hidden rounded-3xl bg-[#f6f3ee] shadow-[0_30px_70px_-30px_rgba(59,19,15,.55)] [--r:.75] sm:[--r:1.6]">
           <svg

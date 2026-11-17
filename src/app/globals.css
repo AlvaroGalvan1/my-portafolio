@@ -88,6 +88,22 @@
 
 html {
   scroll-behavior: smooth;
+  /* iOS enlarges text on its own when a phone turns sideways. The type here
+     is already sized for every width, so that only breaks the layouts. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Tapping a link on a phone flashes a grey box over it. Every link and
+     button here has its own pressed and focus styles, so the box is noise. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A sideways row you swipe on a phone: the swipe is the signal, so the
+   scrollbar under it only takes room. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Smooth scrolling is a motion effect like any other, and this one is
@@ -736,5 +752,60 @@ footer :focus-visible,
   }
   .marquee-group[aria-hidden] {
     display: none;
+  }
+}
+
+/* On a touch screen there is no hover to pause the loop, so a card slides
+   away while it is being read, and a finger can't pull it back. There the
+   row stands still and swipes instead: each card snaps into place, and the
+   next one peeks in at the edge to say there is more. */
+@media (hover: none) {
+  .marquee {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .marquee-group {
+    padding-inline: 1.25rem;
+  }
+  .marquee-group > * {
+    scroll-snap-align: start;
+  }
+  .marquee-group[aria-hidden] {
+    display: none;
+  }
+}
+
+/* The hero's "there is more below" cue: a short line that drips down, so
+   the full-screen hero doesn't read as the whole page. */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  animation: scroll-cue 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue::after {
+    animation: none;
+    transform: none;
   }
 }
