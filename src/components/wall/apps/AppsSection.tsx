@@ -29,7 +29,7 @@ const INK = "#0f1f3d";
 
 export default function AppsSection({ locale }: { locale: Locale }) {
   return (
-    <div className="h-full [container-type:size]">
+    <div className="h-52 [container-type:size] sm:h-full">
       <div className="flex h-full items-center justify-center gap-[calc(var(--u)*7)] [--u:min(1cqh,0.54cqw)]">
         <BrowserWindow alt={say(APPS_STRINGS.desktopAlt, locale)} />
         <div className="relative flex flex-col items-center">

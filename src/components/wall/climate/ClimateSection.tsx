@@ -8,7 +8,7 @@ import { say, type Locale } from "@/content/i18n";
 // the motion (hover → Oaxaca appears → zoom out).
 export default function ClimateSection({ locale }: { locale: Locale }) {
   return (
-    <div className="grid h-full grid-cols-[1fr_1.4fr] items-center gap-[4%] px-[4.5%] pb-[4%] pt-[1%]">
+    <div className="grid grid-cols-1 gap-5 px-[4.5%] pb-[4%] sm:h-full sm:grid-cols-[1fr_1.4fr] sm:items-center sm:gap-[4%] sm:pt-[1%]">
       <figure className="m-0 flex min-w-0 flex-col gap-2" aria-label={say(CLIMATE_STRINGS.mapsLabel, locale)}>
         <div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
           {CLIMATE_MAPS.map((map) => (

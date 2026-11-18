@@ -22,8 +22,27 @@ const ORIGIN: Record<QuadrantId, string> = {
   d: "100% 100%",
 };
 
+// Below `sm` the quadrants stack, each already the full width, so there is
+// nothing to zoom into: the titles do nothing there.
+const ZOOMS = "(min-width: 640px)";
+
 export default function WallStage({ quadrants, backLabel }: { quadrants: Quadrant[]; backLabel: string }) {
   const [zoomed, setZoomed] = useState<QuadrantId | null>(null);
+  const toggle = (id: QuadrantId) => {
+    if (!window.matchMedia(ZOOMS).matches) return;
+    setZoomed(zoomed === id ? null : id);
+  };
+
+  // Turning a tablet or narrowing the window while zoomed: drop the zoom,
+  // or the stacked sections would stay inert behind a zoom nobody sees.
+  useEffect(() => {
+    const query = window.matchMedia(ZOOMS);
+    const onChange = () => {
+      if (!query.matches) setZoomed(null);
+    };
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     if (!zoomed) return;
@@ -35,9 +54,9 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
   }, [zoomed]);
 
   return (
-    <div className="relative h-[calc(100svh-var(--nav-h))] min-h-[32rem] overflow-hidden bg-brand-brick">
+    <div className="relative bg-brand-brick sm:h-[calc(100svh-var(--nav-h))] sm:min-h-[32rem] sm:overflow-hidden">
       <div
-        className="grid h-full grid-cols-2 grid-rows-2 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none"
+        className="grid grid-cols-1 transition-transform sm:h-full sm:grid-cols-2 sm:grid-rows-2 duration-700 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none"
         style={{
           transform: zoomed ? "scale(2)" : "none",
           transformOrigin: zoomed ? ORIGIN[zoomed] : "50% 50%",
@@ -54,7 +73,7 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
             <h2 id={`wall-${q.id}-title`} className="absolute left-4 top-3 z-10">
               <button
                 type="button"
-                onClick={() => setZoomed(zoomed === q.id ? null : q.id)}
+                onClick={() => toggle(q.id)}
                 aria-label={zoomed === q.id ? backLabel : q.zoomLabel}
                 aria-expanded={zoomed === q.id}
                 className="group flex items-baseline gap-2 rounded px-1 outline-none focus-visible:ring-2 focus-visible:ring-current"
@@ -65,7 +84,7 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
                 </span>
               </button>
             </h2>
-            <div className="min-h-0 flex-1 pt-10">{q.panel}</div>
+            <div className="pb-6 pt-12 sm:min-h-0 sm:flex-1 sm:pb-0 sm:pt-10">{q.panel}</div>
           </section>
         ))}
       </div>
@@ -74,7 +93,7 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
         <button
           type="button"
           onClick={() => setZoomed(null)}
-          className="absolute right-4 top-3 z-20 rounded-full bg-brand-cream px-3 py-1.5 text-sm font-semibold text-brand-maroon shadow ring-1 ring-black/10"
+          className="absolute right-4 top-3 z-20 hidden sm:block rounded-full bg-brand-cream px-3 py-1.5 text-sm font-semibold text-brand-maroon shadow ring-1 ring-black/10"
         >
           ← {backLabel}
         </button>

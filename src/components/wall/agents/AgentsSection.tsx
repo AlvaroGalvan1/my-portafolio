@@ -11,7 +11,7 @@ const AGENTS = [
 
 export default function AgentsSection({ locale: _locale }: { locale: Locale }) {
   return (
-    <div className="relative h-full">
+    <div className="relative h-56 sm:h-full">
       <div className="absolute inset-x-[8%] bottom-[30%] flex items-end justify-around">
         {AGENTS.map((agent) => (
           <Slot
