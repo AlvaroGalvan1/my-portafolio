@@ -1,15 +1,17 @@
 import Image from "next/image";
 import type { TeamMember } from "./brand.content";
 
-// A3 · the people who built Fuego, as a contact card. Only names from the
+// B3 · the people who built Fuego, as a contact card. Only names from the
 // platform's own records (see TEAM in brand.content.ts); a portrait where
 // one exists on this site, initials otherwise.
 export default function Team({
   title,
   members,
+  about,
   className = "",
 }: {
   title: string;
+  about: { href: string; label: string };
   className?: string;
   members: (Omit<TeamMember, "area"> & { area: string })[];
 }) {
@@ -59,6 +61,14 @@ export default function Team({
           </li>
         ))}
       </ul>
+      <a
+        href={about.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-[9%] block text-[9px] font-semibold tracking-wide underline-offset-2 hover:underline"
+      >
+        {about.label} ↗
+      </a>
     </section>
   );
 }

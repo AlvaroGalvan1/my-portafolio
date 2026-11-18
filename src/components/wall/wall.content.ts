@@ -1,7 +1,7 @@
 import type { Phrase } from "@/content/i18n";
 
 // The Wall v3: one screen, four quadrants. Each quadrant is one section
-// folder next to this file (brand/, agents/, climate/, apps/), so each can
+// folder next to this file (agents/, brand/, climate/, apps/), so each can
 // be built on its own without touching the others.
 export type QuadrantId = "a" | "b" | "c" | "d";
 
@@ -14,16 +14,16 @@ export const QUADRANTS: { id: QuadrantId; letter: string; title: Phrase; theme: 
   {
     id: "a",
     letter: "A",
-    title: { en: "Brand", es: "Marca" },
-    // Fuego's orange; maroon is the only text that reads on it.
-    theme: { panel: "bg-brand-orange text-brand-maroon", accent: "text-white" },
+    title: { en: "Agents", es: "Agentes" },
+    // A plain tabletop the agents stand on.
+    theme: { panel: "bg-[#f4f1ec] text-[#1c1c1c]", accent: "text-[#1c1c1c]" },
   },
   {
     id: "b",
     letter: "B",
-    title: { en: "Agents", es: "Agentes" },
-    // A plain tabletop the agents stand on.
-    theme: { panel: "bg-[#f4f1ec] text-[#1c1c1c]", accent: "text-[#1c1c1c]" },
+    title: { en: "Brand", es: "Marca" },
+    // Fuego's orange; maroon is the only text that reads on it.
+    theme: { panel: "bg-brand-orange text-brand-maroon", accent: "text-white" },
   },
   {
     id: "c",
@@ -38,7 +38,8 @@ export const QUADRANTS: { id: QuadrantId; letter: string; title: Phrase; theme: 
   {
     id: "d",
     letter: "D",
-    title: { en: "Websites & Apps", es: "Sitios y apps" },
+    title: { en: "Design", es: "Diseño" },
+    // Websites and apps.
     theme: { panel: "bg-[#0f1f3d] text-white", accent: "text-[#87ceeb]" },
   },
 ];

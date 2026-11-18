@@ -1,9 +1,9 @@
 import { hand } from "../handFont";
 
-// Note A · a handwritten note with an Excalidraw-style arrow curving up
-// from the bottom-left into A2. The arrow follows the words, so a longer
+// Note B · a handwritten note with an Excalidraw-style arrow curving up
+// from the bottom-left into B2. The arrow follows the words, so a longer
 // translation pushes it right rather than running into it; its height
-// (the note box's) is what carries the tip over A2's bottom edge. The
+// (the note box's) is what carries the tip over B2's bottom edge. The
 // stroke is drawn twice, the second pass a hair off the first, the way a
 // quick pen line doubles back on itself.
 export default function BuiltThisNote({ text, className = "" }: { text: string; className?: string }) {

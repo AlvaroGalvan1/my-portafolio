@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { FUEGO_CREAM, FUEGO_ORANGE, LETTERS } from "./fuegoMark";
 
-// A2 · the Fuego platform in a minimal browser window. A still preview by
+// B2 · the Fuego platform in a minimal browser window. A still preview by
 // default, so the Wall looks finished before anything loads and no visitor
 // pays for a map they didn't ask for; "Try it live" swaps in the real page.
 //

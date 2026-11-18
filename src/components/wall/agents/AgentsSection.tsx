@@ -1,30 +1,17 @@
-import Slot from "../Slot";
-import type { Locale } from "@/content/i18n";
+import AgentsTable from "./AgentsTable";
+import { AGENTS, AGENT_STRINGS } from "./agents.content";
+import { say, type Locale } from "@/content/i18n";
 
-// B · Agents. Three characters standing on the ground: Fuego, Hunter,
-// Dwayne. Physics (pick up, throw, drop) comes later.
-const AGENTS = [
-  { id: "B1", name: "Fuego" },
-  { id: "B2", name: "Hunter" },
-  { id: "B3", name: "Dwayne" },
-];
-
-export default function AgentsSection({ locale: _locale }: { locale: Locale }) {
+// A · Agents. Three characters standing on a plain tabletop: A1 Fuego,
+// A2 Hunter, A3 Dwayne. Click one and it says what it does. Physics (pick
+// up, throw, drop) comes later; the characters are placeholders for the
+// owner's own (see Characters.tsx).
+export default function AgentsSection({ locale }: { locale: Locale }) {
   return (
-    <div className="relative h-56 sm:h-full">
-      <div className="absolute inset-x-[8%] bottom-[30%] flex items-end justify-around">
-        {AGENTS.map((agent) => (
-          <Slot
-            key={agent.id}
-            id={agent.id}
-            label={agent.name}
-            rounded="rounded-t-full"
-            className="h-[min(9rem,22vh)] w-[min(5rem,12vh)]"
-          />
-        ))}
-      </div>
-      {/* The ground the agents stand on. */}
-      <div className="absolute inset-x-[8%] bottom-[30%] h-0.5 bg-current opacity-80" />
-    </div>
+    <AgentsTable
+      agents={AGENTS.map((a) => ({ id: a.id, name: a.name, tag: say(a.tag, locale), does: say(a.does, locale) }))}
+      hint={say(AGENT_STRINGS.hint, locale)}
+      close={say(AGENT_STRINGS.close, locale)}
+    />
   );
 }

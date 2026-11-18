@@ -809,3 +809,15 @@ footer :focus-visible,
     transform: none;
   }
 }
+
+/* The Wall's agents: a speech bubble pops in from its tail. */
+@keyframes agent-pop {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}

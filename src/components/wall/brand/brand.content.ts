@@ -1,12 +1,20 @@
 import type { Phrase } from "@/content/i18n";
 
-// A · Brand: every word the section says, in both languages, plus the few
+// B · Brand: every word the section says, in both languages, plus the few
 // facts it shows (the page it frames, the team). Swap text here, not in the
 // components.
 
-/** The page A2 frames. platform.fuego.earth sends no X-Frame-Options or
+/** The page B2 frames. platform.fuego.earth sends no X-Frame-Options or
  *  frame-ancestors (checked for the gallery's own embed in
  *  src/components/gallery/data.ts), so it can be shown live in an iframe. */
+// B1, the app icon, opens the simulator like opening the app; B3, the team,
+// links to fuego.earth's About page.
+export const FUEGO_LINKS = {
+  app: "https://platform.fuego.earth/simulator",
+  about: "https://www.fuego.earth/about",
+  aboutLabel: "fuego.earth/about",
+};
+
 export const FUEGO_PAGE = {
   url: "https://platform.fuego.earth/simulator",
   /** What the address bar shows. */
@@ -19,7 +27,7 @@ export const FUEGO_PAGE = {
 };
 
 export const BRAND_STRINGS = {
-  /** A1's home-screen label, under the icon. A name: same in both. */
+  /** B1's home-screen label, under the icon. A name: same in both. */
   appName: "Fuego",
   appIconAlt: { en: "The Fuego app icon", es: "El ícono de la app de Fuego" } as Phrase,
 
@@ -45,7 +53,7 @@ export const BRAND_STRINGS = {
 
   teamTitle: { en: "The team", es: "El equipo" } as Phrase,
 
-  /** Note A, handwritten. Kept short: it has to read at quadrant size. */
+  /** Note B, handwritten. Kept short: it has to read at quadrant size. */
   note: { en: "We built this!", es: "¡Lo hicimos nosotros!" } as Phrase,
 };
 

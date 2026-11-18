@@ -6,13 +6,13 @@ import AppsSection from "./apps/AppsSection";
 import { QUADRANTS, STAGE_STRINGS, type QuadrantId } from "./wall.content";
 import { fill, say, type Locale } from "@/content/i18n";
 
-// The Wall v3: one screen split into four quadrants, A Brand · B Agents ·
-// C Climate Adaptation · D Websites & Apps. Clicking a quadrant's title
+// The Wall v3: one screen split into four quadrants, A Agents · B Brand ·
+// C Climate Adaptation · D Design (websites and apps). Clicking a quadrant's title
 // zooms the stage into it. Each section lives in its own folder and only
 // receives the locale, so it can be built without touching the others.
 const PANELS: Record<QuadrantId, (props: { locale: Locale }) => React.ReactNode> = {
-  a: BrandSection,
-  b: AgentsSection,
+  a: AgentsSection,
+  b: BrandSection,
   c: ClimateSection,
   d: AppsSection,
 };

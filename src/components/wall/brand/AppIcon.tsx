@@ -1,6 +1,6 @@
 import { FUEGO_CREAM, FUEGO_ORANGE, LETTERS } from "./fuegoMark";
 
-// A1 · the Fuego logo as a home-screen app icon.
+// B1 · the Fuego logo as a home-screen app icon.
 //
 // The artwork is the platform's own apple-touch-icon (fuego-earth-platform
 // apps/web/public/apple-touch-icon.png): the FUEGO mark from fuego.earth,
