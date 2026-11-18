@@ -1,0 +1,111 @@
+/* C5's choreography, all in CSS: hover (or keyboard focus) on the frame
+ *   1. Oaxaca draws in: outline traced, then filled            0 – 0.9s
+ *   2. the camera pulls back from Oaxaca to all of Mexico     0.7 – 2.3s
+ * Leaving plays it backwards: the camera pushes in first, then Oaxaca
+ * fades. Each step's delay is set on the state it moves TO, which is how
+ * one transition list gives the two orders. */
+
+.frame {
+  --ease-camera: cubic-bezier(0.65, 0, 0.35, 1);
+  outline: none;
+}
+
+.frame:focus-visible {
+  box-shadow:
+    0 0 0 2px #f4f8ef,
+    0 0 0 4px #2f7d6b;
+}
+
+/* The camera starts pushed in on Oaxaca (--tx, --ty, --k come from the
+ * geometry) and comes back to the fitted view of Mexico. */
+.camera {
+  transform: translate(var(--tx), var(--ty)) scale(var(--k));
+  transform-origin: 0 0;
+  transition: transform 1100ms var(--ease-camera) 0ms;
+}
+
+.frame:hover .camera,
+.frame:focus-visible .camera {
+  transform: translate(0px, 0px) scale(1);
+  transition: transform 1600ms var(--ease-camera) 700ms;
+}
+
+/* Lines keep their weight whatever the zoom. */
+.line {
+  vector-effect: non-scaling-stroke;
+}
+
+/* Oaxaca: an outline traced with a dash (pathLength="1"), then its fill. */
+.oaxacaLine {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 500ms ease-in 900ms,
+    opacity 300ms ease 1200ms;
+}
+
+.oaxacaFill {
+  opacity: 0;
+  transition: opacity 400ms ease 900ms;
+}
+
+.frame:hover .oaxacaLine,
+.frame:focus-visible .oaxacaLine {
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transition:
+    stroke-dashoffset 700ms cubic-bezier(0.3, 0, 0.2, 1) 0ms,
+    opacity 150ms ease 0ms;
+}
+
+.frame:hover .oaxacaFill,
+.frame:focus-visible .oaxacaFill {
+  opacity: 1;
+  transition: opacity 500ms ease 350ms;
+}
+
+/* The label rides with Oaxaca and leaves before the camera settles back. */
+.label {
+  opacity: 0;
+  transition: opacity 250ms ease 0ms;
+}
+
+.frame:hover .label,
+.frame:focus-visible .label {
+  opacity: 1;
+  transition: opacity 400ms ease 500ms;
+}
+
+/* The little "hover" cue at rest; it goes as soon as the motion starts. */
+.hint {
+  transition: opacity 300ms ease 1400ms;
+}
+
+.frame:hover .hint,
+.frame:focus-visible .hint {
+  opacity: 0;
+  transition: opacity 200ms ease 0ms;
+}
+
+/* Reduced motion: no motion at all, just where it ends. */
+@media (prefers-reduced-motion: reduce) {
+  .camera,
+  .frame:hover .camera,
+  .frame:focus-visible .camera {
+    transform: none;
+    transition: none;
+  }
+
+  .oaxacaLine,
+  .oaxacaFill,
+  .label {
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transition: none;
+  }
+
+  .hint {
+    display: none;
+  }
+}
