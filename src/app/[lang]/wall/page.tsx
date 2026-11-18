@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Wall from "@/components/gallery/Wall";
+import Wall from "@/components/wall/Wall";
 import { BCP47, LOCALES, isLocale, type Locale } from "@/content/i18n";
 
 const META: Record<Locale, { title: string; description: string }> = {
@@ -35,6 +35,7 @@ export default async function WallPage({ params }: PageProps<"/[lang]/wall">) {
 
   return (
     <main className="flex flex-1 flex-col bg-brand-brick">
+      <h1 className="sr-only">{META[lang].title}</h1>
       <Wall locale={lang} />
     </main>
   );
