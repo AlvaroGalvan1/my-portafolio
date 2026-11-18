@@ -24,7 +24,7 @@ export default function AgentsSection({ locale: _locale }: { locale: Locale }) {
         ))}
       </div>
       {/* The ground the agents stand on. */}
-      <div className="absolute inset-x-[8%] bottom-[30%] h-0.5 bg-brand-cream/80" />
+      <div className="absolute inset-x-[8%] bottom-[30%] h-0.5 bg-current opacity-80" />
     </div>
   );
 }

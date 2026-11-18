@@ -25,6 +25,7 @@ export default function Wall({ locale }: { locale: Locale }) {
       id: q.id,
       letter: q.letter,
       title,
+      theme: q.theme,
       zoomLabel: fill(say(STAGE_STRINGS.zoomIn, locale), { title }),
       panel: <Panel locale={locale} />,
     };

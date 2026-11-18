@@ -15,10 +15,10 @@ export default function Slot({
   return (
     <div
       data-slot={id}
-      className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed border-brand-cream/60 text-center text-brand-cream ${rounded} ${className}`}
+      className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed border-current/50 text-center ${rounded} ${className}`}
     >
       <span className="font-[family-name:var(--font-display)] text-lg leading-none">{id}</span>
-      {label && <span className="px-2 text-[11px] leading-tight text-brand-cream/70">{label}</span>}
+      {label && <span className="px-2 text-[11px] leading-tight opacity-70">{label}</span>}
     </div>
   );
 }

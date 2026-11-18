@@ -1,9 +1,16 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import type { QuadrantId } from "./wall.content";
+import type { QuadrantId, QuadrantTheme } from "./wall.content";
 
-type Quadrant = { id: QuadrantId; letter: string; title: string; zoomLabel: string; panel: ReactNode };
+type Quadrant = {
+  id: QuadrantId;
+  letter: string;
+  title: string;
+  zoomLabel: string;
+  theme: QuadrantTheme;
+  panel: ReactNode;
+};
 
 // Each quadrant's corner of the stage. Zooming scales the whole 2×2 by two
 // from that corner, so the chosen quadrant fills the stage: a camera move,
@@ -13,14 +20,6 @@ const ORIGIN: Record<QuadrantId, string> = {
   b: "100% 0%",
   c: "0% 100%",
   d: "100% 100%",
-};
-
-// The cross that splits the stage, drawn as each quadrant's inner edges.
-const EDGES: Record<QuadrantId, string> = {
-  a: "border-r border-b",
-  b: "border-b",
-  c: "border-r",
-  d: "",
 };
 
 export default function WallStage({ quadrants, backLabel }: { quadrants: Quadrant[]; backLabel: string }) {
@@ -50,7 +49,7 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
             id={`wall-${q.id}`}
             aria-labelledby={`wall-${q.id}-title`}
             inert={zoomed !== null && zoomed !== q.id}
-            className={`relative flex min-h-0 flex-col border-brand-cream/40 ${EDGES[q.id]}`}
+            className={`relative flex min-h-0 flex-col ${q.theme.panel}`}
           >
             <h2 id={`wall-${q.id}-title`} className="absolute left-4 top-3 z-10">
               <button
@@ -58,9 +57,9 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
                 onClick={() => setZoomed(zoomed === q.id ? null : q.id)}
                 aria-label={zoomed === q.id ? backLabel : q.zoomLabel}
                 aria-expanded={zoomed === q.id}
-                className="group flex items-baseline gap-2 rounded px-1 text-white outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow"
+                className="group flex items-baseline gap-2 rounded px-1 outline-none focus-visible:ring-2 focus-visible:ring-current"
               >
-                <span className="font-[family-name:var(--font-display)] text-xl text-brand-yellow">{q.letter}</span>
+                <span className={`font-[family-name:var(--font-display)] text-xl ${q.theme.accent}`}>{q.letter}</span>
                 <span className="font-[family-name:var(--font-display)] text-sm tracking-wide underline-offset-4 group-hover:underline sm:text-base">
                   {q.title}
                 </span>
@@ -75,7 +74,7 @@ export default function WallStage({ quadrants, backLabel }: { quadrants: Quadran
         <button
           type="button"
           onClick={() => setZoomed(null)}
-          className="absolute right-4 top-3 z-20 rounded-full bg-brand-cream px-3 py-1.5 text-sm font-semibold text-brand-maroon shadow"
+          className="absolute right-4 top-3 z-20 rounded-full bg-brand-cream px-3 py-1.5 text-sm font-semibold text-brand-maroon shadow ring-1 ring-black/10"
         >
           ← {backLabel}
         </button>
