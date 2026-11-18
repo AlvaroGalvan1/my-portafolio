@@ -45,13 +45,9 @@ export default function Story({ lang }: { lang: Locale }) {
             role="img"
             aria-label={copy.label}
           >
-            <defs>
-              <filter id="mute"><feColorMatrix type="saturate" values="0" /></filter>
-              <filter id="soft"><feGaussianBlur stdDeviation="14" /></filter>
-              <mask id="feather" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
-                <rect x="18" y="18" width="364" height="364" fill="#fff" filter="url(#soft)" />
-              </mask>
-            </defs>
+            {/* The imagery comes pre-greyed, pre-tinted and pre-feathered
+                (scripts/mute-story-maps.py): no SVG filter or mask to redo
+                on every frame. */}
             <g ref={world} />
           </svg>
           {/* The Earth, drawn over the map as it pulls away. */}

@@ -3,13 +3,13 @@ import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { galleryItems, localizeGallery } from "@/components/gallery/data";
 import type { Locale } from "@/content/i18n";
+import LivePreview from "./LivePreview";
 import { wallTeaserContent } from "./wallteaser.content";
 
 // Three pieces from the Wall, picked by id so the Home page shows real work
 // without a new data model. The maps are an image; the two Fuego.Earth pieces
-// show their real page, a small non-interactive preview (the iframe is
-// scaled down and cannot be clicked, so the whole tile is just the link) that
-// only loads when it scrolls near. Every tile links to /wall.
+// show their real page, a small non-interactive preview (see LivePreview)
+// that only starts once its tile is on screen. Every tile links to /wall.
 const PICKS = ["maps-mexico-oaxaca", "fuego-platform", "fuego-risk-map"] as const;
 
 export default function WallTeaser({ lang }: { lang: Locale }) {
@@ -44,15 +44,7 @@ export default function WallTeaser({ lang }: { lang: Locale }) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      // Four times the tile's size, drawn at a quarter: the app lays out as desktop.
-                      <iframe
-                        src={"src" in item ? item.src : undefined}
-                        title={item.title}
-                        loading="lazy"
-                        tabIndex={-1}
-                        sandbox="allow-scripts allow-same-origin"
-                        className="pointer-events-none absolute left-0 top-0 h-[400%] w-[400%] origin-top-left scale-25 border-0"
-                      />
+                      <LivePreview src={"src" in item ? item.src : ""} title={item.title} label={copy.live} />
                     )}
                   </div>
                   <p className="px-4 py-3 font-sans text-base font-semibold">{item.title.replace(/ \((live|en vivo)\)$/, "")}</p>

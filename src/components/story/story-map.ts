@@ -146,9 +146,8 @@ export const DURATION = 6000;
 export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLabels): () => void {
   const NS = 'vector-effect="non-scaling-stroke"';
   world.innerHTML = `
-    <image href="/maps/grass-valley-wide-s2-2016.webp" x="-800" y="-800" width="2000" height="2000" filter="url(#mute)"/>
-    <rect x="-800" y="-800" width="2000" height="2000" fill="#f6f3ee" opacity=".74"/>
-    <g class="near" mask="url(#feather)"><image href="/maps/grass-valley-naip.webp" width="400" height="400" filter="url(#mute)"/><rect width="400" height="400" fill="#f6f3ee" opacity=".66"/></g>
+    <image href="/maps/grass-valley-wide-muted.webp" x="-800" y="-800" width="2000" height="2000"/>
+    <image class="near" href="/maps/grass-valley-naip-muted.webp" width="400" height="400"/>
     <g class="grid" fill="none" stroke-linejoin="round" stroke-linecap="round">
       <path d="${TRANSMISSION}" stroke="${INK}" stroke-width="1.8" stroke-opacity=".6" ${NS}/>
       <path d="${FEEDERS}" stroke="${INK}" stroke-width="1" stroke-opacity=".45" ${NS}/>
@@ -216,8 +215,11 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
   const landEl = globeEl.querySelector(".land")!;
   const hereEl = globeEl.querySelector(".here")!;
   const ringEl = globeEl.querySelector(".here-ring")!;
-  const proj = geoOrthographic().rotate([-HERE[0], -HERE[1]]).precision(0.3);
-  const gpath = geoPath(proj);
+  // Precision 1 and one decimal: the Earth is redrawn on every frame of the
+  // zoom-out, and finer resampling and longer path strings cost a phone real
+  // frames for detail smaller than a screen pixel.
+  const proj = geoOrthographic().rotate([-HERE[0], -HERE[1]]).precision(1);
+  const gpath = geoPath(proj).digits(1);
   const grat = geoGraticule10();
   // The land outline is only needed at the very end, so it loads on its own.
   let land: ReturnType<typeof feature> | null = null;
@@ -232,6 +234,20 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
   // The fire's cells, computed once and painted into a canvas as it grows.
   const ARR = new Float32Array(NX * NY);
   for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) ARR[j * NX + i] = arrival(GX + (i + 0.5) * CELL, GY + (j + 0.5) * CELL);
+  // The same cells sorted by when the fire reaches them, so a frame can find
+  // the few that changed with a binary search instead of visiting them all.
+  const ORDER = Uint32Array.from(ARR.keys()).sort((x, y) => ARR[x] - ARR[y]);
+  const SORTED = Float32Array.from(ORDER, (k) => ARR[k]);
+  const firstAtOrAfter = (v: number) => {
+    let lo = 0;
+    let hi = SORTED.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (SORTED[mid] < v) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  };
   const cvs = Object.assign(document.createElement("canvas"), { width: NX, height: NY });
   const ctx = cvs.getContext("2d")!;
   const img = ctx.createImageData(NX, NY);
@@ -245,8 +261,74 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
     return `${labels.day} ${day}  ${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
   };
 
+  // The fire's picture is a PNG the <image> points at. Encoding it with
+  // toDataURL blocked the main thread on every frame the fire grew, right in
+  // the middle of a scroll. toBlob encodes off the main thread; while one is
+  // in flight, newer frames just mark the picture stale and the latest one
+  // goes next.
+  let simUrl = "";
+  let encoding = false;
+  let stale = false;
+  const paintSim = () => {
+    if (encoding) {
+      stale = true;
+      return;
+    }
+    encoding = true;
+    stale = false;
+    cvs.toBlob((blob) => {
+      encoding = false;
+      if (!alive) return;
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        sim.setAttribute("href", url);
+        if (simUrl) URL.revokeObjectURL(simUrl);
+        simUrl = url;
+      }
+      if (stale) paintSim();
+    });
+  };
+
+  // The card's size, measured when it changes rather than read every frame
+  // (each read forced the browser to lay the page out again mid-scroll).
+  const size = { w: svgEl.clientWidth, h: svgEl.clientHeight };
+  const measure = () => {
+    size.w = svgEl.clientWidth;
+    size.h = svgEl.clientHeight;
+    stageH = (root.firstElementChild as HTMLElement).clientHeight;
+    sectionH = root.offsetHeight;
+    sectionTop = root.getBoundingClientRect().top + scrollY;
+  };
+  // Anything above the story growing or shrinking (fonts, images) moves it,
+  // so the whole body is watched, not just the story.
+  const resize = new ResizeObserver(measure);
+  resize.observe(svgEl);
+  resize.observe(root);
+  resize.observe(document.body);
+
+  // Most of a frame's writes repeat the last frame's values (a label that is
+  // still hidden, a layer that is still faded out). Skipping those keeps the
+  // browser from restyling the map for nothing.
+  const written = new WeakMap<Element, Map<string, string>>();
+  const set = (el: Element, name: string, value: string) => {
+    let seen = written.get(el);
+    if (!seen) written.set(el, (seen = new Map()));
+    if (seen.get(name) === value) return;
+    seen.set(name, value);
+    el.setAttribute(name, value);
+  };
+  const unset = (el: Element, name: string) => {
+    const seen = written.get(el);
+    if (seen && !seen.has(name)) return;
+    seen?.delete(name);
+    el.removeAttribute(name);
+  };
+
   let shown = -1;
+  let pingsOn = true;
+  let lastGlobe = "";
   let lastS: number | null = null;
+  let lastW = 0;
   let lastPass: number | null = null;
   function render(t: number, now: number) {
     const S = { fault: ramp(t, 200, 300), cams: ramp(t, 1150, 450), bear: ramp(t, 1550, 300), smoke: ramp(t, 1800, 250), spread: clamp((t - 2150) / 800), zoom: ramp(t, 2980, 420) };
@@ -254,52 +336,74 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
     // Past the satellite view, both layers zoom out at the same rate: the map
     // shrinks away while the globe arrives at the scale it is leaving.
     const g = ease(clamp((t - T_EARTH) / EARTH_DUR));
-    const W = svgEl.clientWidth;
-    const H = svgEl.clientHeight;
+    const W = size.w;
+    const H = size.h;
     const mPerPx = (5 * 1609) / ((Math.max(W, H) / 400) * 0.3) / 400; // metres per pixel at z = .3
     const k0 = 6371000 / mPerPx;
     const k1 = 0.36 * Math.min(W, H);
     const k = k0 * Math.pow(k1 / k0, g);
     const z = (z0 * k) / k0;
-    world.setAttribute("transform", `translate(200 200) scale(${z}) translate(${-cx} ${-cy})`);
+    set(world, "transform", `translate(200 200) scale(${z}) translate(${-cx} ${-cy})`);
     // Labels stay 13px on screen whatever the zoom, with a pale halo so they
     // read on the grey imagery.
-    const unit = (Math.max(svgEl.clientWidth, svgEl.clientHeight) / 400) * z;
-    notesG.setAttribute("font-size", String(13 / unit));
-    notesG.setAttribute("stroke-width", String(3.5 / unit));
+    const unit = (Math.max(W, H) / 400) * z;
+    set(notesG, "font-size", String(13 / unit));
+    set(notesG, "stroke-width", String(3.5 / unit));
     const beat = Math.min(4, Math.floor(t / 1000));
-    notes.forEach((n) => n.setAttribute("opacity", String(+n.dataset.on! === beat && t % 1000 > 200 && t % 1000 < 920 ? 1 : 0)));
+    notes.forEach((n) => set(n, "opacity", String(+n.dataset.on! === beat && t % 1000 > 200 && t % 1000 < 920 ? 1 : 0)));
 
     // 1. Grid sensing
-    hit.setAttribute("fill", S.fault > 0.5 ? C.red : "#fff");
-    hit.setAttribute("r", String(1.7 + 1.3 * S.fault));
-    faulted.setAttribute("opacity", String(S.fault * (1 - S.spread)));
-    pings.forEach((p, i) => {
-      const ph = (now / 1400 + i / 2) % 1;
-      p.setAttribute("r", String(3 + 22 * ph));
-      p.setAttribute("opacity", String(S.fault * (1 - ph) * (1 - S.cams)));
-    });
+    set(hit, "fill", S.fault > 0.5 ? C.red : "#fff");
+    set(hit, "r", String(1.7 + 1.3 * S.fault));
+    set(faulted, "opacity", String(S.fault * (1 - S.spread)));
+    // The idle motion below only runs while its layer can be seen.
+    if (S.fault * (1 - S.cams) > 0 || pingsOn) {
+      pingsOn = S.fault * (1 - S.cams) > 0;
+      pings.forEach((p, i) => {
+        const ph = (now / 1400 + i / 2) % 1;
+        set(p, "r", String(3 + 22 * ph));
+        set(p, "opacity", String(S.fault * (1 - ph) * (1 - S.cams)));
+      });
+    }
 
     // 2. Smoke detection
+    const viewsOpacity = Math.min(1, 0.25 + S.cams) * clamp((t - 900) / 250) * (1 - S.spread);
     CAMS.forEach((c, i) => {
-      const amb = (c.bearing + 120 + c.dir * now * 0.04) % 360;
-      const diff = ((c.bearing - amb + 540) % 360) - 180;
-      sweeps[i].setAttribute("transform", `rotate(${amb + diff * S.cams} ${c.x} ${c.y})`);
-      bearings[i].setAttribute("stroke-dashoffset", String(1 - S.bear));
+      if (viewsOpacity > 0) {
+        const amb = (c.bearing + 120 + c.dir * now * 0.04) % 360;
+        const diff = ((c.bearing - amb + 540) % 360) - 180;
+        set(sweeps[i], "transform", `rotate(${amb + diff * S.cams} ${c.x} ${c.y})`);
+      }
+      set(bearings[i], "stroke-dashoffset", String(1 - S.bear));
     });
-    views.setAttribute("opacity", String(Math.min(1, 0.25 + S.cams) * clamp((t - 900) / 250) * (1 - S.spread)));
-    bearingsG.setAttribute("opacity", String(1 - clamp(S.spread * 3)));
-    smoke.setAttribute("opacity", String(S.smoke * (1 - clamp(S.spread * 2))));
-    smokeCircles.forEach((c, k) => c.setAttribute("transform", `translate(0 ${-4 * Math.sin(now / 900 + k)})`));
+    set(views, "opacity", String(viewsOpacity));
+    set(bearingsG, "opacity", String(1 - clamp(S.spread * 3)));
+    set(smoke, "opacity", String(S.smoke * (1 - clamp(S.spread * 2))));
+    if (S.smoke * (1 - clamp(S.spread * 2)) > 0)
+      smokeCircles.forEach((c, k) => set(c, "transform", `translate(0 ${-4 * Math.sin(now / 900 + k)})`));
 
     // 3. Fire simulation: cells ignite in arrival order; the front burns
     // bright, then settles into its hour colour.
     const s = simS(t);
     if (s !== lastS) {
-      lastS = s;
       const w = 3 + 0.05 * Math.max(0, s);
       const d = img.data;
-      for (let k = 0; k < ARR.length; k++) {
+      // Only the cells whose look can have changed since the last frame: the
+      // ring between the old and new fire fronts. Everything outside it is
+      // either still unburned or already settled into its hour colour. The
+      // first frame paints the whole grid.
+      let from = 0;
+      let to = ARR.length;
+      if (lastS !== null) {
+        const lo = Math.min(s, lastS) - Math.max(w, lastW) - 1;
+        const hi = Math.max(s, lastS) + 1;
+        from = firstAtOrAfter(lo);
+        to = firstAtOrAfter(hi);
+      }
+      lastS = s;
+      lastW = w;
+      for (let n = from; n < to; n++) {
+        const k = ORDER[n];
         const a = ARR[k];
         const o = k * 4;
         if (s < 0 || a > s) {
@@ -313,20 +417,20 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
         d[o + 3] = s - a < w ? 255 : 190;
       }
       ctx.putImageData(img, 0, 0);
-      sim.setAttribute("href", cvs.toDataURL());
+      paintSim();
       // Park the "Fire front" label just ahead of the head of the fire.
       const r = Math.max(10, s) * reach1(WIND) * 1.05 + 8;
-      frontNote.setAttribute("x", (P[0] + r * Math.cos(WIND)).toFixed(1));
-      frontNote.setAttribute("y", (P[1] + r * Math.sin(WIND)).toFixed(1));
+      set(frontNote, "x", (P[0] + r * Math.cos(WIND)).toFixed(1));
+      set(frontNote, "y", (P[1] + r * Math.sin(WIND)).toFixed(1));
     }
 
     // 4. Remote sensing: a pass crosses the same fire and lights the pixels
     // that are still burning when it goes over.
     const px = passX(t);
-    swath.setAttribute("opacity", String(clamp((t - T_PASS + 100) / 120) * (1 - clamp((t - T_PASS - PASS_DUR) / 120))));
-    swath.setAttribute("transform", `translate(${px} 0)`);
-    passNote.setAttribute("x", String(px + 136));
-    passNote.setAttribute("y", String(P[1] - 230));
+    set(swath, "opacity", String(clamp((t - T_PASS + 100) / 120) * (1 - clamp((t - T_PASS - PASS_DUR) / 120))));
+    set(swath, "transform", `translate(${px} 0)`);
+    set(passNote, "x", String(px + 136));
+    set(passNote, "y", String(P[1] - 230));
     if (px !== lastPass) {
       lastPass = px;
       pixEls.forEach((el, i) => {
@@ -339,64 +443,95 @@ export function mountStory(root: HTMLElement, world: SVGGElement, labels: MapLab
           const sp = simS(tp);
           on = p.a <= sp && sp - p.a < 28;
         }
-        el.setAttribute("opacity", on ? ".85" : "0");
+        set(el, "opacity", on ? ".85" : "0");
       });
     }
 
-    near.setAttribute("opacity", String(1 - clamp((S.zoom - 0.3) / 0.5)));
-    kit.setAttribute("opacity", String(1 - clamp(S.zoom / 0.4)));
-    grid.setAttribute("opacity", String(1 - 0.6 * clamp(S.zoom / 0.7)));
+    set(near, "opacity", String(1 - clamp((S.zoom - 0.3) / 0.5)));
+    set(kit, "opacity", String(1 - clamp(S.zoom / 0.4)));
+    set(grid, "opacity", String(1 - 0.6 * clamp(S.zoom / 0.7)));
 
     svgEl.style.opacity = String(1 - clamp((g - 0.08) / 0.22));
     globeEl.style.opacity = String(clamp((g - 0.02) / 0.2));
-    if (t > T_EARTH - 50) {
+    if (t > T_EARTH - 50 && g > 0.02) {
       const end = [Math.max(W / 2, Math.min(W * 0.66, W - k1 - 32)), H * 0.42];
       proj.scale(k).translate([W / 2 + (end[0] - W / 2) * g, H / 2 + (end[1] - H / 2) * g]);
-      sphereEl.setAttribute("d", gpath({ type: "Sphere" }) ?? "");
-      gratEl.setAttribute("d", gpath(grat) ?? "");
-      if (land) landEl.setAttribute("d", gpath(land) ?? "");
+      // Redrawing the Earth is the costliest thing here, so only when it
+      // moved (or the land outline just arrived), not for the pulsing ring.
+      const globeKey = `${k}|${g}|${W}|${H}|${land ? 1 : 0}`;
+      if (globeKey !== lastGlobe) {
+        lastGlobe = globeKey;
+        set(sphereEl, "d", gpath({ type: "Sphere" }) ?? "");
+        set(gratEl, "d", gpath(grat) ?? "");
+        if (land) set(landEl, "d", gpath(land) ?? "");
+      }
       const [hx, hy] = proj(HERE) ?? [0, 0];
       const ph = (now / 1600) % 1;
-      hereEl.setAttribute("cx", String(hx));
-      hereEl.setAttribute("cy", String(hy));
-      ringEl.setAttribute("cx", String(hx));
-      ringEl.setAttribute("cy", String(hy));
-      ringEl.setAttribute("r", String(5 + 22 * ph));
-      ringEl.setAttribute("opacity", String((1 - ph) * g));
+      set(hereEl, "cx", String(hx));
+      set(hereEl, "cy", String(hy));
+      set(ringEl, "cx", String(hx));
+      set(ringEl, "cy", String(hy));
+      set(ringEl, "r", String(5 + 22 * ph));
+      set(ringEl, "opacity", String((1 - ph) * g));
     }
-    if (t > 150 && t < T_EARTH + 200) clockEl.setAttribute("data-on", "");
-    else clockEl.removeAttribute("data-on");
-    clockText.textContent = clock(t, s);
+    if (t > 150 && t < T_EARTH + 200) set(clockEl, "data-on", "");
+    else unset(clockEl, "data-on");
+    const time = clock(t, s);
+    if (clockText.textContent !== time) clockText.textContent = time;
 
     if (beat !== shown) {
       shown = beat;
-      beats.forEach((b, i) => (i === beat ? b.setAttribute("data-on", "") : b.removeAttribute("data-on")));
-      ticks.forEach((k, i) => (i === beat ? k.setAttribute("data-on", "") : k.removeAttribute("data-on")));
+      beats.forEach((b, i) => (i === beat ? set(b, "data-on", "") : unset(b, "data-on")));
+      ticks.forEach((k, i) => (i === beat ? set(k, "data-on", "") : unset(k, "data-on")));
       // The spreading fire is a simulation: beats 2 and 3 (the pass shows the same fire).
-      if (beat === 2 || beat === 3) illusEl.setAttribute("data-on", "");
-      else illusEl.removeAttribute("data-on");
+      if (beat === 2 || beat === 3) set(illusEl, "data-on", "");
+      else unset(illusEl, "data-on");
     }
   }
 
+  // The pinned stage is the first child; the section scrolls past it.
+  // Read from the scroll position and the measured top, not from
+  // getBoundingClientRect: that call, right after a frame's worth of SVG
+  // writes, made the browser lay out the page again on every frame.
+  let stageH = (root.firstElementChild as HTMLElement).clientHeight;
+  let sectionH = root.offsetHeight;
+  let sectionTop = root.getBoundingClientRect().top + scrollY;
   const progress = () => {
-    // The pinned stage is the first child; the section scrolls past it.
-    const r = root.getBoundingClientRect();
-    const stageH = (root.firstElementChild as HTMLElement).clientHeight;
+    const top = sectionTop - scrollY;
     const navH = innerHeight - stageH;
-    return clamp((navH - r.top) / (r.height - stageH));
+    return clamp((navH - top) / (sectionH - stageH));
   };
   let t = 0;
   let raf = 0;
   const tick = (now: number) => {
+    raf = 0;
     const target = progress() * DURATION;
     t = reduced.matches || Math.abs(target - t) < 0.5 ? target : t + (target - t) * 0.12;
     // Idle motion (pings, sweeping cameras, drifting smoke) stands still under reduced motion.
     render(t, reduced.matches ? 0 : now);
-    raf = requestAnimationFrame(tick);
+    if (onScreen) raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
+
+  // The loop only runs while the story is on screen. It used to run on every
+  // frame from the moment Home opened, so the hero, the testimonials and the
+  // rest of the page all scrolled with a map animating behind them.
+  let onScreen = false;
+  const visible = new IntersectionObserver(
+    ([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen && !raf) raf = requestAnimationFrame(tick);
+    },
+    { rootMargin: "100px 0px" },
+  );
+  visible.observe(root);
+  // One frame straight away, so the card is drawn before it scrolls in.
+  render(0, 0);
+
   return () => {
     alive = false;
+    visible.disconnect();
+    resize.disconnect();
     cancelAnimationFrame(raf);
+    if (simUrl) URL.revokeObjectURL(simUrl);
   };
 }
