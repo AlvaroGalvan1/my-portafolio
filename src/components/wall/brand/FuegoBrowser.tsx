@@ -30,7 +30,9 @@ export type FuegoBrowserText = {
 };
 
 export default function FuegoBrowser({ text }: { text: FuegoBrowserText }) {
-  const [live, setLive] = useState(false);
+  // The live simulator shows from the start; the preview is only what a
+  // visitor gets back to with the "Live ×" pill.
+  const [live, setLive] = useState(true);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-[10px] bg-[#f6f3ec] shadow-[0_2px_4px_rgba(90,20,0,.2),0_18px_40px_-14px_rgba(90,20,0,.55)] ring-1 ring-black/15">

@@ -58,39 +58,54 @@ export const BRAND_STRINGS = {
 };
 
 /**
- * The people who built the platform, from fuego-earth-platform's own
- * records: its commit history and .github/CODEOWNERS. Names are spelled as
- * in those records (Goran's commits sign "Goran Miletic"; Julia's GitHub
- * account is JuliaAlkmimSantos). `area` is the part of the code CODEOWNERS
- * makes each one a reviewer of, not a job title: none is written down.
+ * The Fuego team as fuego.earth's About page lists it (fuego-earth repo,
+ * src/lib/team.js): the same five people, roles, photos and LinkedIn links.
+ * Keep the two in step: when the About page changes, change this.
  */
 export type TeamMember = {
   name: string;
   initials: string;
+  /** Their role, as written on the About page. */
   area: Phrase;
-  github: string;
+  href: string;
   /** A portrait under /public. Initials stand in without one. */
   photoSrc?: string;
 };
 
 export const TEAM: TeamMember[] = [
   {
-    name: "Álvaro Galván",
-    initials: "ÁG",
-    area: { en: "Simulator, maps, deploy", es: "Simulador, mapas, despliegue" },
-    github: "AlvaroGalvan1",
-    photoSrc: "/gallery/portraits/headshot.jpeg",
+    name: "Alvaro Galvan",
+    initials: "AG",
+    area: { en: "Full-Stack Software Engineer", es: "Ingeniero de software full-stack" },
+    href: "https://www.linkedin.com/in/alvarogalvan",
+    photoSrc: "/wall/brand/team/alvaro.jpg",
   },
   {
     name: "Goran Miletic",
     initials: "GM",
-    area: { en: "API & web app", es: "API y app web" },
-    github: "miletic22",
+    area: { en: "Head of AI", es: "Jefe de IA" },
+    href: "https://www.linkedin.com/in/gmiletic2",
+    photoSrc: "/wall/brand/team/goran.jpg",
   },
   {
-    name: "Julia Alkmim Santos",
+    name: "Julia Alkmim",
     initials: "JA",
-    area: { en: "Risk map & research", es: "Mapa de riesgo e investigación" },
-    github: "JuliaAlkmimSantos",
+    area: { en: "Simulation Platform Engineer", es: "Ingeniera de la plataforma de simulación" },
+    href: "https://www.linkedin.com/in/j%C3%BAlia-alkmim",
+    photoSrc: "/wall/brand/team/julia.jpg",
+  },
+  {
+    name: "Sofiia Bilyk",
+    initials: "SB",
+    area: { en: "Product Manager", es: "Product Manager" },
+    href: "https://www.linkedin.com/in/sofia-bilyk",
+    photoSrc: "/wall/brand/team/sofiia.jpg",
+  },
+  {
+    name: "My Chan",
+    initials: "MC",
+    area: { en: "Product Manager", es: "Product Manager" },
+    href: "https://www.linkedin.com/in/mee-tran-34530725b",
+    photoSrc: "/wall/brand/team/my.jpg",
   },
 ];

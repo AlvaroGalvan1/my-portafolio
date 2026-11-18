@@ -1,13 +1,15 @@
 "use client";
 
+import Script from "next/script";
 import { useEffect, useState } from "react";
-import Character from "./Characters";
+import Character, { AGENT_SCRIPTS, FEET } from "./Characters";
 import type { AgentId } from "./agents.content";
 
 type Agent = { id: AgentId; name: string; tag: string; does: string };
 
 // A1–A3 standing on the tabletop. Clicking one opens a speech bubble with
 // what it does; clicking it again, another one, the table or Esc closes it.
+// The characters hop by themselves on hover and click (see Characters.tsx).
 // No physics yet: picking up, throwing and dropping come later.
 export default function AgentsTable({ agents, hint, close }: { agents: Agent[]; hint: string; close: string }) {
   const [open, setOpen] = useState<AgentId | null>(null);
@@ -22,8 +24,11 @@ export default function AgentsTable({ agents, hint, close }: { agents: Agent[]; 
   }, [open]);
 
   return (
-    <div className="relative h-80 sm:h-full" onClick={() => setOpen(null)}>
-      <p className="absolute right-4 top-0 text-[10px] uppercase tracking-[0.16em] opacity-45">{hint}</p>
+    <div className="relative h-80 [--s:min(7.5rem,27vw)] sm:h-full sm:[--s:min(12.5rem,30vh)]" onClick={() => setOpen(null)}>
+      {agents.map((agent) => (
+        <Script key={agent.id} src={AGENT_SCRIPTS[agent.id]} strategy="afterInteractive" />
+      ))}
+      <p className="absolute bottom-3 right-4 text-[10px] uppercase tracking-[0.16em] opacity-45">{hint}</p>
 
       <ul className="absolute inset-x-[8%] bottom-[16%] z-[1] flex items-end justify-around">
         {agents.map((agent, i) => {
@@ -68,14 +73,17 @@ export default function AgentsTable({ agents, hint, close }: { agents: Agent[]; 
                   event.stopPropagation();
                   setOpen(isOpen ? null : agent.id);
                 }}
-                className={`h-[min(7.5rem,19vh)] origin-bottom rounded-lg outline-none transition-transform duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#1c1c1c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#f4f1ec] motion-reduce:transition-none ${
-                  isOpen ? "-translate-y-1 scale-105" : "hover:-translate-y-1 hover:-rotate-2"
-                }`}
+                // The button ends at the feet; the square stage hangs below it,
+                // so every character stands on the table's edge.
+                style={{ height: `calc(var(--s) * ${FEET})` }}
+                className="relative w-(--s) rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#f4f1ec]"
               >
-                <Character id={agent.id} />
+                <span className="absolute left-0 top-0 block size-(--s)">
+                  <Character id={agent.id} />
+                </span>
                 <span className="sr-only">{agent.name}</span>
               </button>
-              <span className="mt-2 text-[11px] font-semibold tracking-wide">{agent.name}</span>
+              <span className="relative mt-2 text-[11px] font-semibold tracking-wide">{agent.name}</span>
             </li>
           );
         })}
