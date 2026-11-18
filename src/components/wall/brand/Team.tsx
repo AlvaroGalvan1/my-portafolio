@@ -7,14 +7,16 @@ import type { TeamMember } from "./brand.content";
 export default function Team({
   title,
   members,
+  className = "",
 }: {
   title: string;
+  className?: string;
   members: (Omit<TeamMember, "area"> & { area: string })[];
 }) {
   return (
     <section
       aria-label={title}
-      className="w-full rounded-[14px] bg-brand-cream/95 px-[9%] py-[10%] text-brand-maroon shadow-[0_2px_4px_rgba(90,20,0,.18),0_14px_28px_-12px_rgba(90,20,0,.5)] ring-1 ring-black/5"
+      className={`w-full rounded-[14px] bg-brand-cream/95 px-[9%] py-[10%] text-brand-maroon shadow-[0_2px_4px_rgba(90,20,0,.18),0_14px_28px_-12px_rgba(90,20,0,.5)] ring-1 ring-black/5 ${className}`}
     >
       <h3 className="mb-[9%] flex items-center gap-1.5 text-[8.5px] font-semibold uppercase leading-none tracking-[0.14em] opacity-70">
         <span aria-hidden className="flex -space-x-[5px]">

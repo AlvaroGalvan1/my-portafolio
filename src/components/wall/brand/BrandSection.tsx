@@ -11,14 +11,16 @@ import { say, sayAll, type Locale } from "@/content/i18n";
 // A1 and A3 sit vertically centred on A2; the note fills the bottom-left
 // corner under A1. Everything is sized to the quadrant: the stage's zoom is
 // a transform, so the zoomed view is this same layout, twice as big.
+// Narrower than `sm` (until the phone layout exists) only A2 and the note
+// show, so nothing spills out of the quadrant.
 export default function BrandSection({ locale }: { locale: Locale }) {
   return (
     <div className="relative h-full px-[4.5%] pb-[6%]">
-      <div className="grid h-full grid-cols-[0.8fr_3.6fr_1.3fr] items-center gap-x-[3%]">
-        <div className="px-[4%]">
+      <div className="grid h-full grid-cols-1 items-center gap-x-[3%] sm:grid-cols-[minmax(0,0.8fr)_minmax(0,3.6fr)_minmax(0,1.3fr)]">
+        <div className="hidden px-[4%] sm:block">
           <AppIcon name={S.appName} alt={say(S.appIconAlt, locale)} />
         </div>
-        <div className="aspect-[16/10] max-h-full w-full">
+        <div className="aspect-[16/10] max-h-full w-full min-w-0">
           <FuegoBrowser
             text={{
               title: say(S.browserTitle, locale),
@@ -35,7 +37,9 @@ export default function BrandSection({ locale }: { locale: Locale }) {
             }}
           />
         </div>
-        <Team title={say(S.teamTitle, locale)} members={TEAM.map((m) => ({ ...m, area: say(m.area, locale) }))} />
+        <Team
+          className="hidden sm:block"
+          title={say(S.teamTitle, locale)} members={TEAM.map((m) => ({ ...m, area: say(m.area, locale) }))} />
       </div>
       <BuiltThisNote text={say(S.note, locale)} className="absolute bottom-[4%] left-[4.5%] h-[29%]" />
     </div>
